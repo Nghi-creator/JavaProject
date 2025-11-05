@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Text?>
+
+<!--
+  This is the main FXML layout file.
+  It uses a BorderPane to structure the main sections:
+  - Left: Server and Channel lists
+  - Center: Chat header, message area, and input box
+  - Right: User list
+-->
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" styleClass="root" stylesheets="@DiscordTheme.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+    <left>
+        <HBox prefHeight="100.0" prefWidth="310.0" BorderPane.alignment="CENTER">
+            <children>
+                <!-- Server List Column -->
+                <VBox alignment="TOP_CENTER" prefHeight="720.0" prefWidth="70.0" styleClass="server-list">
+                    <padding>
+                        <Insets top="12.0" />
+                    </padding>
+                    <children>
+                        <Circle fill="#5865f2" radius="24.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="server-icon" />
+                        <Circle fill="#57f287" radius="24.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="server-icon">
+                            <VBox.margin>
+                                <Insets top="10.0" />
+                            </VBox.margin>
+                        </Circle>
+                        <Circle fill="#f25757" radius="24.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="server-icon">
+                            <VBox.margin>
+                                <Insets top="10.0" />
+                            </VBox.margin>
+                        </Circle>
+                    </children>
+                </VBox>
+                <!-- Channel List Column -->
+                <VBox prefHeight="720.0" prefWidth="240.0" styleClass="channel-list">
+                    <children>
+                        <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="server-name" text="My Awesome Server" />
+                        <Text fill="#8e9297" layoutX="22.0" layoutY="44.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="channel-category" text="TEXT CHANNELS">
+                            <VBox.margin>
+                                <Insets top="20.0" />
+                            </VBox.margin>
+                        </Text>
+                        <Text fill="WHITE" layoutX="22.0" layoutY="60.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="channel-name-selected" text="# general" />
+                        <Text fill="#8e9297" layoutX="22.0" layoutY="79.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="channel-name" text="# off-topic" />
+                        <Text fill="#8e9297" layoutX="22.0" layoutY="98.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="channel-name" text="# gaming" />
+                    </children>
+                    <padding>
+                        <Insets left="12.0" right="12.0" top="12.0" />
+                    </padding>
+                </VBox>
+            </children>
+        </HBox>
+    </left>
+    <center>
+        <BorderPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <top>
+                <!-- Chat Header -->
+                <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="200.0" styleClass="chat-header" BorderPane.alignment="CENTER">
+                    <children>
+                        <Text fill="#8e9297" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="chat-header-icon" text="#" />
+                        <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="chat-header-text" text="general" />
+                    </children>
+                    <padding>
+                        <Insets left="15.0" />
+                    </padding>
+                </HBox>
+            </top>
+            <bottom>
+                <!-- Message Input Box -->
+                <HBox alignment="CENTER" prefHeight="68.0" prefWidth="730.0" styleClass="chat-input-box" BorderPane.alignment="CENTER">
+                    <children>
+                        <TextField prefHeight="44.0" prefWidth="690.0" promptText="Message #general" styleClass="chat-input-field" />
+                    </children>
+                    <padding>
+                        <Insets left="15.0" right="15.0" />
+                    </padding>
+                </HBox>
+            </bottom>
+            <center>
+                <!-- Chat Message Area -->
+                <ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="scroll-pane" vbarPolicy="ALWAYS" BorderPane.alignment="CENTER">
+                    <content>
+                        <VBox prefHeight="602.0" prefWidth="728.0" spacing="20.0" styleClass="chat-messages-area">
+                            <padding>
+                                <Insets bottom="10.0" left="15.0" right="15.0" top="10.0" />
+                            </padding>
+                            <children>
+                                <!-- Mock Message 1 -->
+                                <HBox alignment="TOP_LEFT" spacing="15.0">
+                                    <children>
+                                        <Circle fill="#5865f2" radius="20.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
+                                        <VBox>
+                                            <children>
+                                                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                                    <children>
+                                                        <Text fill="#ffffff" styleClass="message-username" text="UserOne" />
+                                                        <Text fill="#a3a6aa" styleClass="message-timestamp" text="Today at 9:20 PM" />
+                                                    </children>
+                                                </HBox>
+                                                <Text fill="#dcddde" styleClass="message-content" text="Hey everyone! This is the first message." wrappingWidth="600.0" />
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                </HBox>
+                                <!-- Mock Message 2 -->
+                                <HBox alignment="TOP_LEFT" layoutX="25.0" layoutY="20.0" spacing="15.0">
+                                    <children>
+                                        <Circle fill="#f25757" radius="20.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
+                                        <VBox>
+                                            <children>
+                                                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                                    <children>
+                                                        <Text fill="#f25757" styleClass="message-username" text="Admin" />
+                                                        <Text fill="#a3a6aa" styleClass="message-timestamp" text="Today at 9:21 PM" />
+                                                    </children>
+                                                </HBox>
+                                                <Text fill="#dcddde" styleClass="message-content" text="Welcome to the server! Trying to make this look as much like Discord as possible. It's tricky with just FXML and CSS, but it's a start." wrappingWidth="600.0" />
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                </HBox>
+                                <!-- Mock Message 3 -->
+                                <HBox alignment="TOP_LEFT" layoutX="25.0" layoutY="89.0" spacing="15.0">
+                                    <children>
+                                        <Circle fill="#57f287" radius="20.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
+                                        <VBox>
+                                            <children>
+                                                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                                    <children>
+                                                        <Text fill="#57f287" styleClass="message-username" text="UserTwo" />
+                                                        <Text fill="#a3a6aa" styleClass="message-timestamp" text="Today at 9:22 PM" />
+                                                    </children>
+                                                </HBox>
+                                                <Text fill="#dcddde" styleClass="message-content" text="Looks pretty good so far!" wrappingWidth="600.0" />
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                    </content>
+                </ScrollPane>
+            </center>
+        </BorderPane>
+    </center>
+    <right>
+        <!-- User List -->
+        <VBox prefHeight="720.0" prefWidth="240.0" styleClass="user-list" BorderPane.alignment="CENTER">
+            <padding>
+                <Insets left="15.0" right="15.0" top="15.0" />
+            </padding>
+            <children>
+                <Text fill="#8e9297" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="user-list-category" text="ONLINE - 3" />
+                <!-- Mock User 1 -->
+                <HBox alignment="CENTER_LEFT" prefHeight="40.0" prefWidth="210.0" spacing="12.0">
+                    <children>
+                        <Circle fill="#5865f2" radius="16.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
+                        <Text fill="#ffffff" styleClass="user-list-name" text="UserOne" />
+                    </children>
+                    <VBox.margin>
+                        <Insets top="10.0" />
+                    </VBox.margin>
+                </HBox>
+                <!-- Mock User 2 -->
+                <HBox alignment="CENTER_LEFT" layoutX="25.0" layoutY="66.0" prefHeight="40.0" prefWidth="210.0" spacing="12.0">
+                    <children>
+                        <Circle fill="#f25757" radius="16.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
+                        <Text fill="#f25757" styleClass="user-list-name" text="Admin" />
+                    </children>
+                </HBox>
+                <!-- Mock User 3 -->
+                <HBox alignment="CENTER_LEFT" layoutX="25.0" layoutY="116.0" prefHeight="40.0" prefWidth="210.0" spacing="12.0">
+                    <children>
+                        <Circle fill="#57f287" radius="16.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
+                        <Text fill="#57f287" styleClass="user-list-name" text="UserTwo" />
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </right>
+</BorderPane>
