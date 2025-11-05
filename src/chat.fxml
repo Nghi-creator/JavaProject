@@ -24,12 +24,11 @@
             <HBox spacing="10" alignment="CENTER_LEFT" style="-fx-background-color: #212121; -fx-padding: 10;">
                 <Circle radius="20">
                     <fill>
-                        <ImageView fitWidth="40" fitHeight="40">
+                        <ImagePattern>
                             <image>
                                 <Image url="@profile.jpg"/>
                             </image>
-                        </ImageView>
-
+                        </ImagePattern>
                     </fill>
                 </Circle>
                 <VBox>
