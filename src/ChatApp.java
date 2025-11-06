@@ -22,7 +22,7 @@ public class ChatApp extends Application {
 
             // **** THIS IS THE CORRECTED LINE ****
             // We need to tell it to look inside the "src" folder
-            URL fxmlUrl = new File("src/ChatroomView.fxml").toURI().toURL();
+            URL fxmlUrl = getClass().getResource("/fxml/ChatroomView.fxml");
 
             if (fxmlUrl == null) {
                 System.err.println("Cannot find FXML file. Make sure 'ChatroomView.fxml' is in the 'src' directory.");
@@ -37,7 +37,7 @@ public class ChatApp extends Application {
             // We also need to fix the path for the CSS file.
             // The FXML file links to "@DiscordTheme.css", but it's also in the "src" folder.
             // Let's add it from the code to be safe.
-            URL cssUrl = new File("src/DiscordTheme.css").toURI().toURL();
+            URL cssUrl = getClass().getResource("/css/DiscordTheme.css");
             if (cssUrl != null) {
                 scene.getStylesheets().add(cssUrl.toExternalForm());
             } else {
@@ -46,7 +46,7 @@ public class ChatApp extends Application {
 
 
             // 4. Configure and show the Stage (the main window)
-            primaryStage.setTitle("Discord Clone - Chatroom");
+            primaryStage.setTitle("Chatroom");
             primaryStage.setScene(scene);
             primaryStage.setMinHeight(600);
             primaryStage.setMinWidth(1000);

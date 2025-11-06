@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.control.Button?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" styleClass="root" stylesheets="/css/DiscordTheme.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+    <top>
+        <HBox alignment="CENTER_LEFT" prefHeight="50.0" styleClass="app-header" spacing="10">
+            <padding>
+                <Insets left="15.0" right="15.0" top="5.0" bottom="5.0"/>
+            </padding>
+            <ImageView fx:id="appIcon" fitHeight="32" fitWidth="32" preserveRatio="true">
+                <Image url="/images/feline.png"/>
+            </ImageView>
+            <Text text="Chatroom or some shit" styleClass="app-header-title"/>
+            <HBox alignment="CENTER" spacing="20" HBox.hgrow="ALWAYS">
+                <Button text="Friends" styleClass="nav-button" HBox.hgrow="ALWAYS"/>
+                <Button text="Create Group Chat" styleClass="nav-button" HBox.hgrow="ALWAYS"/>
+                <Button text="Notifications" styleClass="nav-button" HBox.hgrow="ALWAYS"/>
+                <Button text="Account" styleClass="nav-button" HBox.hgrow="ALWAYS"/>
+            </HBox>
+        </HBox>
+    </top>
+
+    <left>
+        <VBox prefWidth="240.0" styleClass="channel-list" BorderPane.alignment="CENTER" spacing="10" stylesheets="/css/SearchBar.css">
+            <children>
+                <Text fill="WHITE" styleClass="server-name" text="CHATS" />
+                <fx:include fx:id="chatSearch" source="SearchBar.fxml">
+                </fx:include>
+                <Separator />
+                <Text fill="WHITE" styleClass="channel-name-selected" text="group-chat" />
+                <fx:include fx:id="userOneCard" source="UserCard.fxml">
+                </fx:include>
+                <fx:include fx:id="userTwo" source="UserCard.fxml">
+                </fx:include>
+            </children>
+            <padding>
+                <Insets left="12.0" right="12.0" top="12.0" />
+            </padding>
+        </VBox>
+    </left>
+    <center>
+        <BorderPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <top>
+                <!-- Chat Header -->
+                <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="200.0" styleClass="chat-header" BorderPane.alignment="CENTER">
+                    <children>
+                        <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="chat-header-text" text="group-chat" />
+                    </children>
+                    <padding>
+                        <Insets left="15.0" />
+                    </padding>
+                </HBox>
+            </top>
+            <bottom>
+                <!-- Message Input Box -->
+                <HBox alignment="CENTER" prefHeight="68.0" prefWidth="730.0" styleClass="chat-input-box" BorderPane.alignment="CENTER">
+                    <children>
+                        <TextField prefHeight="44.0" prefWidth="690.0" promptText="Enter message..." styleClass="chat-input-field" />
+                    </children>
+                    <padding>
+                        <Insets left="15.0" right="15.0" />
+                    </padding>
+                </HBox>
+            </bottom>
+            <center>
+                <!-- Chat Message Area -->
+                <ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="scroll-pane" vbarPolicy="ALWAYS" BorderPane.alignment="CENTER">
+                    <content>
+                        <VBox prefHeight="602.0" prefWidth="728.0" spacing="20.0" styleClass="chat-messages-area">
+                            <padding>
+                                <Insets bottom="10.0" left="15.0" right="15.0" top="10.0" />
+                            </padding>
+                            <children>
+                                <!-- Mock Message 1 -->
+                                <HBox alignment="TOP_LEFT" spacing="15.0">
+                                    <children>
+                                        <fx:include fx:id="avatarIcon" source="/fxml/StatusIcon.fxml"/>
+                                        <VBox>
+                                            <children>
+                                                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                                    <children>
+                                                        <Text fill="#ffffff" styleClass="message-username" text="Username" />
+                                                        <Text fill="#a3a6aa" styleClass="message-timestamp" text="Today at 9:20 PM" />
+                                                    </children>
+                                                </HBox>
+                                                <Text fill="#dcddde" styleClass="message-content" text="Hey everyone! This is the first message." wrappingWidth="600.0" />
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                </HBox>
+                                <!-- Mock Message 2 -->
+                                <HBox alignment="TOP_LEFT" layoutX="25.0" layoutY="20.0" spacing="15.0">
+                                    <children>
+                                        <fx:include fx:id="avatarIcon2" source="/fxml/StatusIcon.fxml"/>
+                                        <VBox>
+                                            <children>
+                                                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                                    <children>
+                                                        <Text fill="#f25757" styleClass="message-username" text="Username" />
+                                                        <Text fill="#a3a6aa" styleClass="message-timestamp" text="Today at 9:21 PM" />
+                                                    </children>
+                                                </HBox>
+                                                <Text fill="#dcddde" styleClass="message-content" text="Welcome to the server! Trying to make this look as much like Discord as possible. It's tricky with just FXML and CSS, but it's a start." wrappingWidth="600.0" />
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                </HBox>
+                                <!-- Mock Message 3 -->
+                                <HBox alignment="TOP_LEFT" layoutX="25.0" layoutY="89.0" spacing="15.0">
+                                    <children>
+                                        <fx:include fx:id="avatarIcon3" source="/fxml/StatusIcon.fxml"/>
+                                        <VBox>
+                                            <children>
+                                                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                                    <children>
+                                                        <Text fill="#57f287" styleClass="message-username" text="Username" />
+                                                        <Text fill="#a3a6aa" styleClass="message-timestamp" text="Today at 9:22 PM" />
+                                                    </children>
+                                                </HBox>
+                                                <Text fill="#dcddde" styleClass="message-content" text="Looks pretty good so far!" wrappingWidth="600.0" />
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                    </content>
+                </ScrollPane>
+            </center>
+        </BorderPane>
+    </center>
+    <right>
+        <!-- User List -->
+        <VBox prefHeight="720.0" prefWidth="240.0" styleClass="user-list" BorderPane.alignment="CENTER" spacing="10" stylesheets="/css/SearchBar.css">
+            <padding>
+                <Insets left="15.0" right="15.0" top="15.0"/>
+            </padding>
+            <Text fill="#8e9297" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="user-list-category"
+                  text="MEMBERS (3 ONLINE)"/>
+            <fx:include fx:id="memberSearch" source="SearchBar.fxml">
+            </fx:include>
+            <Separator/>
+            <!-- Mock User 1 -->
+            <fx:include fx:id="userCard1" source="UserCard.fxml">
+            </fx:include>
+            <!-- Mock User 2 -->
+            <fx:include fx:id="userCard2" source="UserCard.fxml">
+            </fx:include>
+            <!-- Mock User 3 -->
+            <fx:include fx:id="userCard3" source="UserCard.fxml">
+            </fx:include>
+        </VBox>
+    </right>
+</BorderPane>

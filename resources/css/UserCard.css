@@ -1,0 +1,15 @@
+.user-card {
+    -fx-background-color: transparent;
+    -fx-background-radius: 5px;
+    -fx-padding: 5px;
+}
+
+.user-card:hover {
+    -fx-background-color: #40444b;
+}
+
+.user-card-name {
+    -fx-font-size: 15px;
+    -fx-font-weight: 700;
+    -fx-fill: #c8c8c8;
+}

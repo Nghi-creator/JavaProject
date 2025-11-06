@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Text?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.control.Label?>
+
+<HBox spacing="10" alignment="CENTER_LEFT" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.UserCardController">
+    <fx:include fx:id="avatarIcon" source="/fxml/StatusIcon.fxml"/>
+    <Label fx:id="usernameLabel" text="Username" style="-fx-font-size: 14; -fx-text-fill: #c8c8c8; -fx-font-weight: 700"/>
+</HBox>
