@@ -6,16 +6,14 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 
-<HBox xmlns:fx="http://javafx.com/fxml/1" spacing="8" alignment="CENTER_LEFT" styleClass="search-bar">
+<HBox xmlns:fx="http://javafx.com/fxml/1" spacing="8" alignment="CENTER_LEFT" styleClass="search-bar" stylesheets="/css/SearchBar.css">
     <padding>
         <Insets top="5" bottom="5" left="10" right="10"/>
     </padding>
 
     <!-- Search icon -->
     <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
-        <image>
-            <Image url="/images/magnifying-glass.png"/>
-        </image>
+        <Image url="/images/magnifying-glass.png"/>
     </ImageView>
 
     <!-- Search input -->
