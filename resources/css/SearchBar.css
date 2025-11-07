@@ -1,6 +1,11 @@
 .search-bar {
     -fx-background-color: #2f3136;
     -fx-background-radius: 8px;
+
+    -fx-border-color: #40444b;
+    -fx-border-radius: 8px;
+    -fx-border-width: 1px;
+
     -fx-alignment: center-left;
 }
 
