@@ -14,6 +14,7 @@
     -fx-padding: 4; 
 }
 
+/* --- GRADIENT STYLES --- */
 .header-panel {
     -fx-background-radius: 12px;
     -fx-background-color: linear-gradient(to bottom, #0a0f2b, #04071a);
@@ -27,11 +28,11 @@
     -fx-background-color: linear-gradient(to bottom right, #3a2a4f, #111111 75%);
 }
 
+/* --- APP HEADER --- */
 .app-header {
     -fx-background-color: transparent;
     -fx-padding: 0 0 0 8px; 
 }
-
 .app-header-title {
     -fx-font-size: 18px;
     -fx-font-weight: 700;
@@ -69,17 +70,14 @@
     -fx-opacity: 0.8;
 }
 
-.chat-list {
-    -fx-background-color: transparent;
-}
-
+/* --- CHAT VIEW STYLES --- */
+.chat-list { -fx-background-color: transparent; }
 .chat-list-title {
     -fx-font-size: 18px;
     -fx-font-weight: 700;
     -fx-fill: #c8c8c8;
     -fx-padding: 6px 0 0 4px;
 }
-
 .chat-header {
     -fx-padding: 0 0 0 15;
     -fx-background-color: transparent;
@@ -91,27 +89,11 @@
     -fx-font-weight: 700;
     -fx-fill: #c8c8c8;
 }
-
-.chat-messages-area {
-    -fx-background-color: transparent;
-}
-.message-username {
-    -fx-font-size: 16px;
-    -fx-font-weight: 700;
-}
-.message-timestamp {
-    -fx-font-size: 12px;
-    -fx-fill: #a3a6aa;
-}
-.message-content {
-    -fx-font-size: 15px;
-    -fx-fill: #dcddde;
-    -fx-line-spacing: 4px;
-}
-
-.chat-input-box {
-    -fx-background-color: transparent;
-}
+.chat-messages-area { -fx-background-color: transparent; }
+.message-username { -fx-font-size: 16px; -fx-font-weight: 700; }
+.message-timestamp { -fx-font-size: 12px; -fx-fill: #a3a6aa; }
+.message-content { -fx-font-size: 15px; -fx-fill: #dcddde; -fx-line-spacing: 4px; }
+.chat-input-box { -fx-background-color: transparent; }
 .chat-input-field {
     -fx-background-color: #1a1a1a; 
     -fx-text-fill: #dcddde;
@@ -122,14 +104,8 @@
     -fx-border-color: rgba(0, 0, 0, 0.3);
     -fx-border-width: 1px;
 }
-.chat-input-field:focused {
-    -fx-border-color: #3a2a4f; 
-    -fx-border-width: 1px;
-}
-
-.member-list {
-    -fx-background-color: transparent;
-}
+.chat-input-field:focused { -fx-border-color: #3a2a4f; -fx-border-width: 1px; }
+.member-list { -fx-background-color: transparent; }
 .user-list-category {
     -fx-font-size: 13px;
     -fx-font-weight: 700;
@@ -137,20 +113,162 @@
     -fx-padding: 6px 0 0 4px; 
 }
 
-.scroll-pane {
+/* --- SCROLL PANE --- */
+.scroll-pane { -fx-background-color: transparent; }
+.scroll-pane .viewport { -fx-background-color: transparent; }
+.scroll-bar:vertical, .scroll-bar:horizontal { -fx-background-color: transparent; }
+.scroll-bar .thumb { -fx-background-color: #1a1a1a; -fx-background-radius: 8px; }
+.scroll-bar .track { -fx-background-color: transparent; -fx-background-radius: 8px; }
+
+
+/* --- FRIENDS VIEW STYLES --- */
+.friends-nav-bar {
     -fx-background-color: transparent;
+    -fx-border-color: rgba(0, 0, 0, 0.2);
+    -fx-border-width: 0 1px 0 0; 
 }
-.scroll-pane .viewport {
+.friends-nav-button {
     -fx-background-color: transparent;
+    -fx-text-fill: #c8c8c8;
+    -fx-font-weight: 600;
+    -fx-font-size: 15px;
+    -fx-padding: 10px 15px;
+    -fx-background-radius: 6px;
+    -fx-alignment: CENTER_LEFT;
+    -fx-cursor: hand;
+    -fx-pref-width: 200; 
 }
-.scroll-bar:vertical, .scroll-bar:horizontal {
+.friends-nav-button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.05);
+    -fx-text-fill: #ffffff;
+}
+/* Highlight for selected friend tab */
+.friends-nav-button-selected {
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+    -fx-text-fill: #ffffff;
+    -fx-font-weight: 600;
+    -fx-font-size: 15px;
+    -fx-padding: 10px 15px;
+    -fx-background-radius: 6px;
+    -fx-alignment: CENTER_LEFT;
+    -fx-cursor: hand;
+    -fx-pref-width: 200;
+}
+.friends-content-area {
     -fx-background-color: transparent;
+    -fx-padding: 0 0 0 15px; 
 }
-.scroll-bar .thumb {
-    -fx-background-color: #1a1a1a; 
+
+/* --- FRIEND ACTION BUTTONS (New) --- */
+/* Base style for action buttons (Unfriend, Block, etc.) */
+.friend-action-button {
+    /* Gradient Blue (matches nav bar) */
+    -fx-background-color: linear-gradient(to bottom, #2c3e50, #233140);
+    -fx-text-fill: #ffffff;
+    -fx-font-weight: 700;
+    -fx-font-size: 12px;
+    -fx-background-radius: 5px;
+    -fx-padding: 5px 12px;
+    -fx-cursor: hand;
+    -fx-border-color: rgba(255,255,255,0.1);
+    -fx-border-radius: 5px;
+}
+.friend-action-button:hover {
+    -fx-background-color: linear-gradient(to bottom, #3b4b7a, #2c3a61);
+}
+
+/* Danger style (Block, Decline) - darker shade */
+.friend-action-button-danger {
+    -fx-background-color: linear-gradient(to bottom, #2c1d3b, #1a1a1a);
+    -fx-text-fill: #ff9999;
+    -fx-font-weight: 700;
+    -fx-font-size: 12px;
+    -fx-background-radius: 5px;
+    -fx-padding: 5px 12px;
+    -fx-cursor: hand;
+    -fx-border-color: rgba(255,0,0,0.2);
+    -fx-border-radius: 5px;
+}
+.friend-action-button-danger:hover {
+    -fx-background-color: linear-gradient(to bottom, #4a2a4f, #2c1d3b);
+}
+
+/* Online Status Indicator */
+.online-indicator {
+    -fx-fill: #3ba55c; /* Green */
+    -fx-stroke: #202225;
+    -fx-stroke-width: 2px;
+}
+
+
+/* --- CREATE GROUP STYLES --- */
+.form-label {
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+    -fx-fill: #8e9297; 
+    -fx-padding: 0 0 0 2px;
+}
+
+.form-input-field {
+    -fx-background-color: #2f3136; /* Same as search bar */
     -fx-background-radius: 8px;
+    -fx-border-color: #40444b;
+    -fx-border-radius: 8px;
+    -fx-border-width: 1px;
+    -fx-text-fill: #dcddde;
+    -fx-prompt-text-fill: #72767d;
+    -fx-font-size: 14px;
+    -fx-padding: 5px 10px; 
 }
-.scroll-bar .track {
+.form-input-field:focused {
+    -fx-border-color: #3a2a4f; 
+    -fx-border-width: 1px;
+}
+
+.suggested-header {
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+    -fx-fill: #8e9297; 
+    -fx-padding: 5px 0 0 5px;
+}
+
+.list-separator {
+    -fx-border-color: rgba(255, 255, 255, 0.1);
+    -fx-border-width: 1 0 0 0;
+}
+
+.suggested-list-vbox {
     -fx-background-color: transparent;
-    -fx-background-radius: 8px;
+}
+
+.create-group-button {
+    -fx-background-color: #2b2d31; 
+    -fx-text-fill: #8e9297; 
+    -fx-font-weight: 700;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+    -fx-padding: 8px 16px; 
+    -fx-background-radius: 5px;
+}
+.create-group-button:hover {
+    -fx-background-color: #40444b; 
+    -fx-text-fill: #ffffff;
+}
+
+.add-friend-button {
+    -fx-background-color: #2b2d31;
+    -fx-text-fill: #c8c8c8;
+    -fx-font-size: 16px;
+    -fx-font-weight: 700;
+    -fx-background-radius: 50px; 
+    -fx-padding: 0px;
+    -fx-min-width: 28px; 
+    -fx-min-height: 28px;
+    -fx-pref-width: 28px;
+    -fx-pref-height: 28px;
+    -fx-cursor: hand;
+    -fx-alignment: CENTER;
+}
+.add-friend-button:hover {
+    -fx-background-color: #40444b;
 }

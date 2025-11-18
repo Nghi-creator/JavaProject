@@ -1,19 +1,26 @@
 .search-bar {
-    -fx-background-color: #2f3136;
+    /* Darker background to match the deep purple/black theme */
+    -fx-background-color: #1a1a1a; 
     -fx-background-radius: 8px;
 
-    -fx-border-color: #40444b;
+    -fx-border-color: #202225; /* Darker border */
     -fx-border-radius: 8px;
     -fx-border-width: 1px;
 
     -fx-alignment: center-left;
+    
+    /* Reduced height by fixing the pref-height or padding */
+    -fx-padding: 2px 8px; /* Smaller padding top/bottom */
+    -fx-min-height: 32px; /* explicit height control */
+    -fx-max-height: 32px;
 }
 
 .search-field {
     -fx-background-color: transparent;
     -fx-text-fill: #dcddde;
     -fx-prompt-text-fill: #72767d;
-    -fx-font-size: 14px;
+    -fx-font-size: 13px; /* Slightly smaller font */
     -fx-border-color: transparent;
     -fx-pref-width: 200px;
+    -fx-padding: 0; /* Remove default padding to center text */
 }

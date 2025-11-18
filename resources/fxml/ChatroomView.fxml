@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--
+  *** FIX: Added padding to the search bar container in the chat header ***
+-->
+
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
@@ -11,7 +15,7 @@
            xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="controllers.ChatroomViewController"
            styleClass="root"
-           stylesheets="@/css/DiscordTheme.css">
+           stylesheets="@../css/DiscordTheme.css">
 
     <BorderPane prefHeight="720.0" prefWidth="1280.0">
         <top>
@@ -24,7 +28,7 @@
                     <left>
                         <HBox alignment="CENTER_LEFT" spacing="10" styleClass="app-header" BorderPane.alignment="CENTER">
                             <ImageView fx:id="appIcon" fitHeight="32" fitWidth="32" preserveRatio="true">
-                                <Image url="@/images/feline.png"/>
+                                <Image url="@../images/feline.png"/>
                             </ImageView>
                             <Text text="CHATROOM" styleClass="app-header-title"/>
                         </HBox>
@@ -34,15 +38,15 @@
                             <padding>
                                 <Insets left="40.0" />
                             </padding>
-                            <Button text="Dashboard" styleClass="nav-button-selected"/>
-                            <Button text="Friends" styleClass="nav-button"/>
-                            <Button text="Create Group Chat" styleClass="nav-button"/>
+                            <Button text="Chat" styleClass="nav-button-selected"/>
+                            <Button text="Friends" styleClass="nav-button" onAction="#handleFriendsClick"/>
+                            <Button text="Create Group Chat" styleClass="nav-button" onAction="#handleCreateGroupClick"/>
                             <Button text="Notifications" styleClass="nav-button"/>
                         </HBox>
                     </center>
                     <right>
                         <StackPane styleClass="account-avatar" BorderPane.alignment="CENTER">
-                            <fx:include fx:id="accountAvatar" source="/fxml/StatusIcon.fxml"/>
+                            <fx:include fx:id="accountAvatar" source="StatusIcon.fxml"/>
                         </StackPane>
                     </right>
                 </BorderPane>
@@ -58,7 +62,7 @@
                     <String fx:value="panel"/>
                     <String fx:value="chat-list-panel"/>
                 </styleClass>
-                <VBox prefWidth="240.0" spacing="10" styleClass="chat-list" stylesheets="@/css/SearchBar.css">
+                <VBox prefWidth="240.0" spacing="10" styleClass="chat-list" stylesheets="@../css/SearchBar.css">
                     <Text fill="WHITE" styleClass="chat-list-title" text="CHATS"/>
                     <fx:include fx:id="chatSearch" source="SearchBar.fxml"/>
                     <Separator/>
@@ -79,8 +83,15 @@
                 </styleClass>
                 <BorderPane>
                     <top>
-                        <HBox alignment="CENTER_LEFT" prefHeight="50.0" styleClass="chat-header">
+                        <!-- Added padding to the right of HBox to space the search bar -->
+                        <HBox alignment="CENTER_LEFT" spacing="20" prefHeight="50.0" styleClass="chat-header">
+                            <padding>
+                                <!-- 5px bottom padding creates distance from the border line -->
+                                <Insets left="15" right="15" bottom="5"/> 
+                            </padding>
                             <Text fill="WHITE" styleClass="chat-header-text" text="group-chat"/>
+                            <Region HBox.hgrow="ALWAYS"/> 
+                            <fx:include source="SearchBar.fxml"/>
                         </HBox>
                     </top>
                     <center>
@@ -89,9 +100,8 @@
                                 <padding>
                                     <Insets bottom="10.0" left="15.0" right="15.0" top="10.0"/>
                                 </padding>
-                                <!-- Mock Messages (Omitted for brevity) -->
                                 <HBox spacing="15.0">
-                                    <fx:include fx:id="avatarIcon" source="/fxml/StatusIcon.fxml"/>
+                                    <fx:include fx:id="avatarIcon" source="StatusIcon.fxml"/>
                                     <VBox>
                                         <HBox alignment="CENTER_LEFT" spacing="10.0">
                                             <Text fill="#ffffff" styleClass="message-username" text="Username"/>
@@ -102,9 +112,8 @@
                                               text="Hey everyone! This is the first message." wrappingWidth="600.0"/>
                                     </VBox>
                                 </HBox>
-
                                 <HBox spacing="15.0">
-                                    <fx:include fx:id="avatarIcon2" source="/fxml/StatusIcon.fxml"/>
+                                    <fx:include fx:id="avatarIcon2" source="StatusIcon.fxml"/>
                                     <VBox>
                                         <HBox alignment="CENTER_LEFT" spacing="10.0">
                                             <Text fill="#f25757" styleClass="message-username" text="Username"/>
@@ -112,13 +121,11 @@
                                                   text="Today at 9:21 PM"/>
                                         </HBox>
                                         <Text fill="#dcddde" styleClass="message-content"
-                                              text="Welcome to the server! Trying to make this look as much like Discord as possible. It's tricky with just FXML and CSS, but it's a start."
-                                              wrappingWidth="600.0"/>
+                                              text="Welcome to the server!" wrappingWidth="600.0"/>
                                     </VBox>
                                 </HBox>
-
                                 <HBox spacing="15.0">
-                                    <fx:include fx:id="avatarIcon3" source="/fxml/StatusIcon.fxml"/>
+                                    <fx:include fx:id="avatarIcon3" source="StatusIcon.fxml"/>
                                     <VBox>
                                         <HBox alignment="CENTER_LEFT" spacing="10.0">
                                             <Text fill="#57f287" styleClass="message-username" text="Username"/>
@@ -151,7 +158,7 @@
                     <String fx:value="panel"/>
                     <String fx:value="member-list-panel"/>
                 </styleClass>
-                <VBox prefHeight="720.0" prefWidth="240.0" spacing="10" styleClass="member-list" stylesheets="@/css/SearchBar.css">
+                <VBox prefHeight="720.0" prefWidth="240.0" spacing="10" styleClass="member-list" stylesheets="@../css/SearchBar.css">
                     <Text fill="#8e9297" styleClass="user-list-category" text="MEMBERS (3 ONLINE)"/>
                     <fx:include fx:id="memberSearch" source="SearchBar.fxml"/>
                     <Separator/>

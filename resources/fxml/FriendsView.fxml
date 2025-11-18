@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  *** UPDATES ***
+  - Removed title labels ("Friend List", etc.) above search bars.
+  - Changed "Matching Results" to "Your friends".
+  - Updated text colors to white/light gray for visibility.
+  - Removed "Send Request" button from "Your friends" section in Find Friends.
+-->
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Text?>
+<?import java.lang.String?>
+
+<StackPane xmlns="http://javafx.com/javafx/17"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="controllers.FriendsViewController"
+           styleClass="root"
+           stylesheets="@../css/DiscordTheme.css">
+
+    <BorderPane prefHeight="720.0" prefWidth="1280.0">
+        <top>
+            <StackPane BorderPane.alignment="CENTER">
+                <styleClass>
+                    <String fx:value="panel"/>
+                    <String fx:value="header-panel"/>
+                </styleClass>
+                <BorderPane>
+                    <left>
+                        <HBox alignment="CENTER_LEFT" spacing="10" styleClass="app-header" BorderPane.alignment="CENTER">
+                            <ImageView fx:id="appIcon" fitHeight="32" fitWidth="32" preserveRatio="true">
+                                <Image url="@../images/feline.png"/>
+                            </ImageView>
+                            <Text text="CHATROOM" styleClass="app-header-title"/>
+                        </HBox>
+                    </left>
+                    <center>
+                        <HBox alignment="CENTER_LEFT" spacing="20" BorderPane.alignment="CENTER_LEFT">
+                            <padding>
+                                <Insets left="40.0" />
+                            </padding>
+                            <Button text="Chat" styleClass="nav-button" onAction="#handleDashboardClick"/>
+                            <Button text="Friends" styleClass="nav-button-selected"/>
+                            <Button text="Create Group Chat" styleClass="nav-button" onAction="#handleCreateGroupClick"/>
+                            <Button text="Notifications" styleClass="nav-button"/>
+                        </HBox>
+                    </center>
+                    <right>
+                        <StackPane styleClass="account-avatar" BorderPane.alignment="CENTER">
+                            <fx:include fx:id="accountAvatar" source="StatusIcon.fxml"/>
+                        </StackPane>
+                    </right>
+                </BorderPane>
+            </StackPane>
+        </top>
+
+        <center>
+            <StackPane BorderPane.alignment="CENTER">
+                <BorderPane.margin>
+                    <Insets top="10" left="10" right="10"/>
+                </BorderPane.margin>
+                <styleClass>
+                    <String fx:value="panel"/>
+                    <String fx:value="chat-area-panel"/>
+                </styleClass>
+
+                <BorderPane>
+                    <padding>
+                        <Insets top="10" left="10" right="10" bottom="10"/>
+                    </padding>
+                    
+                    <!-- LEFT NAV -->
+                    <left>
+                        <VBox spacing="10" prefWidth="200" styleClass="friends-nav-bar">
+                            <padding>
+                                <Insets right="10"/>
+                            </padding>
+                            <Button fx:id="btnFriendList" text="Friend List" styleClass="friends-nav-button-selected" onAction="#showFriendList"/>
+                            <Button fx:id="btnFriendRequests" text="Friend Requests" styleClass="friends-nav-button" onAction="#showRequests"/>
+                            <Button fx:id="btnFindFriends" text="Find Friends" styleClass="friends-nav-button" onAction="#showFindFriends"/>
+                            <Button fx:id="btnBlocked" text="Blocked" styleClass="friends-nav-button" onAction="#showBlocked"/>
+                        </VBox>
+                    </left>
+                    
+                    <!-- CENTER CONTENT -->
+                    <center>
+                        <StackPane styleClass="friends-content-area">
+                             
+                             <!-- 1. FRIEND LIST VIEW -->
+                             <VBox fx:id="friendListPane" spacing="15" visible="true">
+                                 <!-- Removed Title Text -->
+                                 <fx:include source="SearchBar.fxml"/>
+                                 <VBox spacing="10">
+                                     <!-- Friend Item 1 (Online) -->
+                                     <HBox alignment="CENTER_LEFT" spacing="10">
+                                         <Circle radius="4" styleClass="online-indicator"/>
+                                         <fx:include source="NameCard.fxml"/>
+                                         <Region HBox.hgrow="ALWAYS"/>
+                                         <Button text="Unfriend" styleClass="friend-action-button"/>
+                                         <Button text="Block" styleClass="friend-action-button-danger"/>
+                                     </HBox>
+                                     <!-- Friend Item 2 -->
+                                     <HBox alignment="CENTER_LEFT" spacing="10">
+                                          <Region prefWidth="8"/> <!-- spacer for offline -->
+                                         <fx:include source="NameCard.fxml"/>
+                                         <Region HBox.hgrow="ALWAYS"/>
+                                         <Button text="Unfriend" styleClass="friend-action-button"/>
+                                         <Button text="Block" styleClass="friend-action-button-danger"/>
+                                     </HBox>
+                                 </VBox>
+                             </VBox>
+
+                             <!-- 2. REQUESTS VIEW -->
+                             <VBox fx:id="requestsPane" spacing="15" visible="false">
+                                 <!-- Removed Title Text -->
+                                 <fx:include source="SearchBar.fxml"/>
+                                 <VBox spacing="10">
+                                     <HBox alignment="CENTER_LEFT" spacing="10">
+                                         <fx:include source="NameCard.fxml"/>
+                                         <Region HBox.hgrow="ALWAYS"/>
+                                         <Button text="Accept" styleClass="friend-action-button"/>
+                                         <Button text="Decline" styleClass="friend-action-button-danger"/>
+                                     </HBox>
+                                 </VBox>
+                             </VBox>
+
+                             <!-- 3. FIND FRIENDS VIEW -->
+                             <VBox fx:id="findFriendsPane" spacing="15" visible="false">
+                                 <!-- Removed Title Text -->
+                                 <fx:include source="SearchBar.fxml"/>
+                                 <VBox spacing="10">
+                                     <!-- Changed text to "Your friends" and white color -->
+                                     <Text text="Your friends" style="-fx-fill: white; -fx-font-weight: bold; -fx-font-size: 14px;"/>
+                                     <HBox alignment="CENTER_LEFT" spacing="10">
+                                         <fx:include source="NameCard.fxml"/>
+                                         <!-- Removed buttons for already friends -->
+                                     </HBox>
+                                     <Separator styleClass="list-separator"/>
+                                     
+                                     <!-- Changed text color to white -->
+                                     <Text text="People you may know" style="-fx-fill: white; -fx-font-weight: bold; -fx-font-size: 14px;"/>
+                                     <HBox alignment="CENTER_LEFT" spacing="10">
+                                         <fx:include source="NameCard.fxml"/>
+                                         <Region HBox.hgrow="ALWAYS"/>
+                                         <Button text="Send Request" styleClass="friend-action-button"/>
+                                     </HBox>
+                                 </VBox>
+                             </VBox>
+
+                             <!-- 4. BLOCKED VIEW -->
+                             <VBox fx:id="blockedPane" spacing="15" visible="false">
+                                 <!-- Removed Title Text -->
+                                 <fx:include source="SearchBar.fxml"/>
+                                 <VBox spacing="10">
+                                     <HBox alignment="CENTER_LEFT" spacing="10">
+                                         <fx:include source="NameCard.fxml"/>
+                                         <Region HBox.hgrow="ALWAYS"/>
+                                         <Button text="Unblock" styleClass="friend-action-button"/>
+                                     </HBox>
+                                 </VBox>
+                             </VBox>
+
+                        </StackPane>
+                    </center>
+                </BorderPane>
+            </StackPane>
+        </center>
+    </BorderPane>
+</StackPane>
