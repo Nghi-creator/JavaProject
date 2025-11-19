@@ -14,6 +14,12 @@
     -fx-padding: 4; 
 }
 
+.bold-text {
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+    -fx-fill: #c8c8c8;
+}
+
 /* --- GRADIENT STYLES --- */
 .header-panel {
     -fx-background-radius: 12px;
@@ -54,7 +60,9 @@
     -fx-text-fill: #ffffff;
 }
 .nav-button-selected {
-    -fx-background-color: rgba(0, 150, 150, 0.3); 
+    /*-fx-background-color: rgba(0, 150, 150, 0.3);*/
+    /*-fx-background-color: linear-gradient(to bottom right, #3a2a4f, #111111);*/
+    -fx-background-color: #3a2a4f;
     -fx-background-radius: 5px;
     -fx-text-fill: #ffffff;
     -fx-font-weight: 700;
@@ -146,7 +154,7 @@
 .friends-nav-button-selected {
     -fx-background-color: rgba(255, 255, 255, 0.1);
     -fx-text-fill: #ffffff;
-    -fx-font-weight: 600;
+    -fx-font-weight: 700;
     -fx-font-size: 15px;
     -fx-padding: 10px 15px;
     -fx-background-radius: 6px;
