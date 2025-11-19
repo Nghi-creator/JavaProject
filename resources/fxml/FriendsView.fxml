@@ -97,7 +97,6 @@
                                  <VBox spacing="10">
                                      <!-- Friend Item 1 (Online) -->
                                      <HBox alignment="CENTER_LEFT" spacing="10">
-                                         <Circle radius="4" styleClass="online-indicator"/>
                                          <fx:include source="NameCard.fxml"/>
                                          <Region HBox.hgrow="ALWAYS"/>
                                          <Button text="Unfriend" styleClass="friend-action-button"/>
@@ -105,7 +104,6 @@
                                      </HBox>
                                      <!-- Friend Item 2 -->
                                      <HBox alignment="CENTER_LEFT" spacing="10">
-                                          <Region prefWidth="8"/> <!-- spacer for offline -->
                                          <fx:include source="NameCard.fxml"/>
                                          <Region HBox.hgrow="ALWAYS"/>
                                          <Button text="Unfriend" styleClass="friend-action-button"/>
@@ -134,7 +132,7 @@
                                  <fx:include source="SearchBar.fxml"/>
                                  <VBox spacing="10">
                                      <!-- Changed text to "Your friends" and white color -->
-                                     <Text text="Your friends" style="-fx-fill: white; -fx-font-weight: bold; -fx-font-size: 14px;"/>
+                                     <Text text="Your friends" styleClass="bold-text"/>
                                      <HBox alignment="CENTER_LEFT" spacing="10">
                                          <fx:include source="NameCard.fxml"/>
                                          <!-- Removed buttons for already friends -->
@@ -142,7 +140,7 @@
                                      <Separator styleClass="list-separator"/>
                                      
                                      <!-- Changed text color to white -->
-                                     <Text text="People you may know" style="-fx-fill: white; -fx-font-weight: bold; -fx-font-size: 14px;"/>
+                                     <Text text="People you may know" styleClass="bold-text"/>
                                      <HBox alignment="CENTER_LEFT" spacing="10">
                                          <fx:include source="NameCard.fxml"/>
                                          <Region HBox.hgrow="ALWAYS"/>

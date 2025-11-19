@@ -18,7 +18,7 @@
         <jarDirectory url="file://C:/Program Files/Java/javafx-sdk-25.0.1/lib" recursive="false" />
       </library>
     </orderEntry>
-    <orderEntry type="module-library" exported="">
+    <orderEntry type="module-library">
       <library>
         <CLASSES>
           <root url="file://$USER_HOME$/Desktop/javafx-sdk-25.0.1/lib" />

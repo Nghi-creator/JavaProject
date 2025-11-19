@@ -71,7 +71,7 @@
                     </padding>
                     
                     <VBox spacing="5">
-                        <Text text="Group name (optional)" styleClass="form-label"/>
+                        <Text text="Group name" styleClass="form-label"/>
                         <TextField promptText="Enter group name..." styleClass="form-input-field"/>
                     </VBox>
                     

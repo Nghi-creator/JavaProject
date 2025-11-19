@@ -17,11 +17,6 @@ public class ChatApp extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
-            // 1. Load the FXML file
-            // We use getResource to find the file in our project structure
-
-            // **** THIS IS THE CORRECTED LINE ****
-            // We need to tell it to look inside the "src" folder
             URL fxmlUrl = getClass().getResource("/fxml/ChatroomView.fxml");
 
             if (fxmlUrl == null) {
@@ -30,13 +25,8 @@ public class ChatApp extends Application {
             }
             Parent root = FXMLLoader.load(fxmlUrl);
 
-            // 2. Create the Scene
             Scene scene = new Scene(root, 1280, 720);
 
-            // 3. Load the CSS file
-            // We also need to fix the path for the CSS file.
-            // The FXML file links to "@DiscordTheme.css", but it's also in the "src" folder.
-            // Let's add it from the code to be safe.
             URL cssUrl = getClass().getResource("/css/DiscordTheme.css");
             if (cssUrl != null) {
                 scene.getStylesheets().add(cssUrl.toExternalForm());
@@ -44,8 +34,6 @@ public class ChatApp extends Application {
                 System.err.println("Cannot find CSS file. Make sure 'DiscordTheme.css' is in the 'src' directory.");
             }
 
-
-            // 4. Configure and show the Stage (the main window)
             primaryStage.setTitle("Chatroom");
             primaryStage.setScene(scene);
             primaryStage.setMinHeight(600);
@@ -58,7 +46,6 @@ public class ChatApp extends Application {
     }
 
     public static void main(String[] args) {
-        // Launch the JavaFX application
         launch(args);
     }
 }
