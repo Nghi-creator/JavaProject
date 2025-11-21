@@ -14,12 +14,6 @@
     -fx-padding: 4; 
 }
 
-.bold-text {
-    -fx-font-size: 14px;
-    -fx-font-weight: 700;
-    -fx-fill: #c8c8c8;
-}
-
 /* --- GRADIENT STYLES --- */
 .header-panel {
     -fx-background-radius: 12px;
@@ -60,9 +54,7 @@
     -fx-text-fill: #ffffff;
 }
 .nav-button-selected {
-    /*-fx-background-color: rgba(0, 150, 150, 0.3);*/
-    /*-fx-background-color: linear-gradient(to bottom right, #3a2a4f, #111111);*/
-    -fx-background-color: #3a2a4f;
+    -fx-background-color: rgba(0, 150, 150, 0.3); 
     -fx-background-radius: 5px;
     -fx-text-fill: #ffffff;
     -fx-font-weight: 700;
@@ -74,9 +66,148 @@
     -fx-cursor: hand;
     -fx-padding: 0 12px 0 0; 
 }
-.account-avatar:hover {
-    -fx-opacity: 0.8;
+
+/* =========================================
+   === ADMIN DASHBOARD STYLES ===
+   ========================================= */
+
+/* --- ADMIN TABLE STYLES --- */
+.table-view {
+    -fx-background-color: transparent; 
+    -fx-base: #202225;
+    -fx-control-inner-background: #202225;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+    
+    /* NEW: Increased row height so buttons aren't cramped */
+    -fx-fixed-cell-size: 50px; 
 }
+
+.table-view .column-header-background {
+    -fx-background-color: #2f3136; 
+    -fx-background-radius: 8px 8px 0 0;
+    -fx-background-insets: 0;
+}
+
+.table-view .column-header, .table-view .filler {
+    -fx-background-color: transparent;
+    /* Increased header height slightly to match taller rows */
+    -fx-size: 45px; 
+    -fx-border-color: transparent;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: #ffffff;
+    -fx-font-weight: 700;
+    -fx-font-size: 13px;
+    -fx-alignment: CENTER_LEFT;
+    /* Reverted padding to standard */
+    -fx-padding: 0 0 0 5px; 
+}
+
+.table-view .table-cell {
+    -fx-text-fill: #dcddde;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 0 0 0 10px;
+    -fx-border-color: transparent;
+}
+
+.table-row-cell {
+    -fx-background-color: transparent;
+    -fx-border-color: rgba(255,255,255,0.05);
+    -fx-border-width: 0 0 1px 0;
+}
+.table-row-cell:odd {
+    -fx-background-color: rgba(255,255,255,0.02);
+}
+.table-row-cell:hover {
+    -fx-background-color: rgba(0, 150, 150, 0.1);
+}
+.table-row-cell:selected {
+    -fx-background-color: rgba(0, 150, 150, 0.2); 
+}
+
+/* --- ADMIN BUTTONS --- */
+.admin-action-button {
+    -fx-background-color: linear-gradient(to bottom, #1a1f3b, #0a0f2b);
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-background-radius: 5px;
+    -fx-cursor: hand;
+    -fx-border-color: rgba(255,255,255,0.1);
+    -fx-border-radius: 5px;
+}
+.admin-action-button:hover {
+    -fx-background-color: linear-gradient(to bottom, #2a2f4b, #1a1f3b);
+}
+
+/* Darker Red Gradient */
+.admin-danger-button {
+    -fx-background-color: linear-gradient(to bottom, #501818, #2e0a0a);
+    -fx-text-fill: #ffcccc;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-background-radius: 5px;
+    -fx-cursor: hand;
+    -fx-border-color: rgba(255,255,255,0.05);
+    -fx-border-radius: 5px;
+}
+.admin-danger-button:hover {
+    -fx-background-color: linear-gradient(to bottom, #6e2222, #3e0e0e);
+}
+
+/* --- FORMS --- */
+.form-label {
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+    -fx-fill: #ffffff; 
+    -fx-text-fill: #ffffff; 
+    -fx-padding: 0 0 0 2px;
+}
+
+.form-input {
+    -fx-background-color: #1a1a1a;
+    -fx-text-fill: white;
+    -fx-border-color: #40444b;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-padding: 8px;
+}
+
+/* --- DIALOG / ALERT STYLING --- */
+.dialog-pane {
+    -fx-background-color: #202225;
+    -fx-text-fill: white;
+}
+.dialog-pane .header-panel {
+    -fx-background-color: #202225;
+}
+.dialog-pane .label {
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+}
+.dialog-pane .button {
+    -fx-background-color: linear-gradient(to bottom, #1a1f3b, #0a0f2b);
+    -fx-text-fill: white;
+    -fx-cursor: hand;
+}
+.dialog-pane .button:hover {
+    -fx-background-color: linear-gradient(to bottom, #2a2f4b, #1a1f3b);
+}
+
+/* --- OTHER COMPONENTS --- */
+.combo-box { -fx-background-color: #2f3136; -fx-border-color: rgba(255,255,255,0.1); -fx-border-radius: 5px; }
+.combo-box .list-cell { -fx-text-fill: white; -fx-background-color: #2f3136; }
+.combo-box-popup .list-view { -fx-background-color: #2f3136; }
+.combo-box-popup .list-cell:filled:hover { -fx-background-color: #40444b; }
+.combo-box .arrow-button .arrow { -fx-background-color: white; }
+
+.scroll-pane { -fx-background-color: transparent; }
+.scroll-pane .viewport { -fx-background-color: transparent; }
+.scroll-bar:vertical, .scroll-bar:horizontal { -fx-background-color: transparent; }
+.scroll-bar .thumb { -fx-background-color: #1a1a1a; -fx-background-radius: 8px; }
+.scroll-bar .track { -fx-background-color: transparent; -fx-background-radius: 8px; }
 
 /* --- CHAT VIEW STYLES --- */
 .chat-list { -fx-background-color: transparent; }
@@ -154,7 +285,7 @@
 .friends-nav-button-selected {
     -fx-background-color: rgba(255, 255, 255, 0.1);
     -fx-text-fill: #ffffff;
-    -fx-font-weight: 700;
+    -fx-font-weight: 600;
     -fx-font-size: 15px;
     -fx-padding: 10px 15px;
     -fx-background-radius: 6px;
@@ -167,10 +298,8 @@
     -fx-padding: 0 0 0 15px; 
 }
 
-/* --- FRIEND ACTION BUTTONS (New) --- */
-/* Base style for action buttons (Unfriend, Block, etc.) */
+/* --- FRIEND ACTION BUTTONS --- */
 .friend-action-button {
-    /* Gradient Blue (matches nav bar) */
     -fx-background-color: linear-gradient(to bottom, #2c3e50, #233140);
     -fx-text-fill: #ffffff;
     -fx-font-weight: 700;
@@ -185,7 +314,6 @@
     -fx-background-color: linear-gradient(to bottom, #3b4b7a, #2c3a61);
 }
 
-/* Danger style (Block, Decline) - darker shade */
 .friend-action-button-danger {
     -fx-background-color: linear-gradient(to bottom, #2c1d3b, #1a1a1a);
     -fx-text-fill: #ff9999;
@@ -201,9 +329,8 @@
     -fx-background-color: linear-gradient(to bottom, #4a2a4f, #2c1d3b);
 }
 
-/* Online Status Indicator */
 .online-indicator {
-    -fx-fill: #3ba55c; /* Green */
+    -fx-fill: #3ba55c;
     -fx-stroke: #202225;
     -fx-stroke-width: 2px;
 }
@@ -218,7 +345,7 @@
 }
 
 .form-input-field {
-    -fx-background-color: #2f3136; /* Same as search bar */
+    -fx-background-color: #2f3136;
     -fx-background-radius: 8px;
     -fx-border-color: #40444b;
     -fx-border-radius: 8px;
@@ -279,4 +406,14 @@
 }
 .add-friend-button:hover {
     -fx-background-color: #40444b;
+}
+
+/* --- Shared Form Input (For Admin Popups) --- */
+.form-input {
+    -fx-background-color: #1a1a1a;
+    -fx-text-fill: white;
+    -fx-border-color: #40444b;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-padding: 8px;
 }
