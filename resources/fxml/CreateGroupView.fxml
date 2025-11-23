@@ -20,38 +20,7 @@
 
     <BorderPane prefHeight="720.0" prefWidth="1280.0">
         <top>
-            <StackPane BorderPane.alignment="CENTER">
-                <styleClass>
-                    <String fx:value="panel"/>
-                    <String fx:value="header-panel"/>
-                </styleClass>
-                <BorderPane>
-                    <left>
-                        <HBox alignment="CENTER_LEFT" spacing="10" styleClass="app-header" BorderPane.alignment="CENTER">
-                            <ImageView fx:id="appIcon" fitHeight="32" fitWidth="32" preserveRatio="true">
-                                <Image url="@../images/feline.png"/>
-                            </ImageView>
-                            <Text text="CHATROOM" styleClass="app-header-title"/>
-                        </HBox>
-                    </left>
-                    <center>
-                        <HBox alignment="CENTER_LEFT" spacing="20" BorderPane.alignment="CENTER_LEFT">
-                            <padding>
-                                <Insets left="40.0" />
-                            </padding>
-                            <Button text="Chat" styleClass="nav-button" onAction="#handleDashboardClick"/>
-                            <Button text="Friends" styleClass="nav-button" onAction="#handleFriendsClick"/>
-                            <Button text="Create Group Chat" styleClass="nav-button-selected"/>
-                            <Button text="Notifications" styleClass="nav-button"/>
-                        </HBox>
-                    </center>
-                    <right>
-                        <StackPane styleClass="account-avatar" BorderPane.alignment="CENTER">
-                            <fx:include fx:id="accountAvatar" source="StatusIcon.fxml"/>
-                        </StackPane>
-                    </right>
-                </BorderPane>
-            </StackPane>
+            <fx:include fx:id="header" source="Header.fxml"/>
         </top>
 
         <center>

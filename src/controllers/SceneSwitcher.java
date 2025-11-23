@@ -1,8 +1,6 @@
 package controllers;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -13,34 +11,44 @@ import java.net.URL;
 public class SceneSwitcher {
 
     /**
-     * Helper method to switch scenes.
-     *
-     * @param event The ActionEvent from the button click.
-     * @param fxmlPath The path to the new FXML file (e.g., "/fxml/NewScreen.fxml").
+     * Switch scene using a stage directly.
+     * @param stage The stage to replace the scene in.
+     * @param fxmlPath Path to FXML resource.
      */
-    public static void switchScene(ActionEvent event, String fxmlPath) {
+    public static void switchScene(Stage stage, String fxmlPath) {
         try {
-            // 1. Get the URL of the new FXML file
             URL fxmlUrl = SceneSwitcher.class.getResource(fxmlPath);
             if (fxmlUrl == null) {
                 System.err.println("Cannot find FXML file: " + fxmlPath);
                 return;
             }
 
-            // 2. Load the new FXML
             Parent root = FXMLLoader.load(fxmlUrl);
 
-            // 3. Get the current stage (window)
-            // We get the Node that triggered the event, get its Scene, then get its Window (Stage)
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
-            // 4. Set the new scene on the stage
-            Scene scene = new Scene(root, stage.getScene().getWidth(), stage.getScene().getHeight());
-            stage.setScene(scene);
+            Scene scene = stage.getScene();
+            if (scene == null) {
+                // First load — no scene exists yet
+                scene = new Scene(root);
+                stage.setScene(scene);
+            } else {
+                // Later loads — reuse existing scene
+                scene.setRoot(root);
+            }
 
         } catch (IOException e) {
             System.err.println("Failed to switch scene to " + fxmlPath);
             e.printStackTrace();
         }
+    }
+
+
+    /**
+     * Convenience method to switch scene from any node (button, label, etc.)
+     * @param sourceNode Any node in the current scene.
+     * @param fxmlPath Path to FXML resource.
+     */
+    public static void switchScene(javafx.scene.Node sourceNode, String fxmlPath) {
+        Stage stage = (Stage) sourceNode.getScene().getWindow();
+        switchScene(stage, fxmlPath);
     }
 }
