@@ -9,6 +9,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Popup;
@@ -26,7 +27,9 @@ public class AdminHeaderController {
     @FXML private Button spamReportsButton;
     @FXML private Button userRegistrationChartButton;
     @FXML private Button activeUsersChartButton;
-    @FXML private Button accountButton;
+    @FXML private HBox firstRow;
+    @FXML private HBox secondRow;
+    @FXML private ImageView arrowImage;
     @FXML private HBox accountMenu;
 
     private List<Button> navButtons;
@@ -163,5 +166,18 @@ public class AdminHeaderController {
 
     public void handleActiveUsersChartClick(ActionEvent event) {
         SceneSwitcher.switchScene((javafx.scene.Node) event.getSource(), "/fxml/AdminActiveUsersChartView.fxml");
+    }
+
+    @FXML
+    private void handleArrowClick() {
+        boolean showingFirst = firstRow.isVisible();
+
+        firstRow.setVisible(!showingFirst);
+        firstRow.setManaged(!showingFirst);
+
+        secondRow.setVisible(showingFirst);
+        secondRow.setManaged(showingFirst);
+
+        arrowImage.setRotate(180 - arrowImage.getRotate());
     }
 }

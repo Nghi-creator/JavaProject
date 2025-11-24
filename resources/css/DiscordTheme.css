@@ -64,7 +64,7 @@
 }
 
 .gradient-bg {
-    -fx-background-color: linear-gradient(to bottom right, #3a2a4f, #2a2433);
+    -fx-background-color: linear-gradient(to bottom right, #3a2a4f, #1c1526);
 }
 
 .darkened-gradient-bg {

@@ -20,15 +20,10 @@
 
     <BorderPane prefHeight="720.0" prefWidth="1280.0">
         <left>
-            <StackPane BorderPane.alignment="CENTER">
+            <StackPane BorderPane.alignment="CENTER" styleClass="panel,gradient-bg">
                 <BorderPane.margin>
                     <Insets top="10"/>
                 </BorderPane.margin>
-                
-                <styleClass>
-                    <String fx:value="panel"/>
-                    <String fx:value="chat-list-panel"/>
-                </styleClass>
                 <VBox prefWidth="240.0" spacing="5" styleClass="chat-list" stylesheets="@../css/SearchBar.css">
                     <StackPane.margin>
                         <Insets top="10" right="10" bottom="10" left="10"/>
@@ -42,15 +37,10 @@
             </StackPane>
         </left>
         <center>
-            <StackPane BorderPane.alignment="CENTER">
+            <StackPane BorderPane.alignment="CENTER" styleClass="panel,gradient-bg">
                 <BorderPane.margin>
                     <Insets top="10" left="10" right="10"/>
                 </BorderPane.margin>
-                
-                <styleClass>
-                    <String fx:value="panel"/>
-                    <String fx:value="chat-area-panel"/>
-                </styleClass>
                 <BorderPane>
                     <top>
                         <!-- Added padding to the right of HBox to space the search bar -->
@@ -101,15 +91,10 @@
             </StackPane>
         </center>
         <right>
-            <StackPane BorderPane.alignment="CENTER">
+            <StackPane BorderPane.alignment="CENTER" styleClass="panel,gradient-bg">
                 <BorderPane.margin>
                     <Insets top="10"/>
                 </BorderPane.margin>
-                
-                <styleClass>
-                    <String fx:value="panel"/>
-                    <String fx:value="member-list-panel"/>
-                </styleClass>
                 <VBox prefHeight="720.0" prefWidth="240.0" spacing="10" styleClass="member-list" stylesheets="@../css/SearchBar.css">
                     <StackPane.margin>
                         <Insets top="10" right="10" bottom="10" left="10"/>
