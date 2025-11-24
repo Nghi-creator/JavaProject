@@ -10,7 +10,8 @@ import javafx.beans.property.SimpleStringProperty;
 import java.util.Comparator;
 
 public class AdminGroupViewController {
-    
+
+    @FXML private AdminHeaderController headerController;
     @FXML private TableView<Group> groupTable;
     @FXML private TableColumn<Group, String> colGroupName, colCreated, colAction;
     @FXML private ComboBox<String> sortCombo;
@@ -19,6 +20,8 @@ public class AdminGroupViewController {
 
     @FXML
     public void initialize() {
+        headerController.focusButton("groups");
+
         sortCombo.setItems(FXCollections.observableArrayList("Name (A-Z)", "Created Date (Newest)"));
 
         setupColumn(colGroupName, d -> d.name);

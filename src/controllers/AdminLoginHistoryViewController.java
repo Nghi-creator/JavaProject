@@ -8,12 +8,15 @@ import javafx.scene.control.TableView;
 import javafx.beans.property.SimpleStringProperty;
 
 public class AdminLoginHistoryViewController {
-    
+
+    @FXML private AdminHeaderController headerController;
     @FXML private TableView<History> historyTable;
     @FXML private TableColumn<History, String> colTime, colUsername, colFullname;
 
     @FXML
     public void initialize() {
+        headerController.focusButton("loginHistory");
+
         setupColumn(colTime, d -> d.time);
         setupColumn(colUsername, d -> d.username);
         setupColumn(colFullname, d -> d.fullname);

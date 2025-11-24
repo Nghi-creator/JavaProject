@@ -2,24 +2,35 @@ package controllers;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 
 public class ChatroomViewController {
 
-    // This controller is for ChatroomView.fxml
-    // It's already on the Dashboard, so it only needs to
-    // handle clicks for OTHER screens.
+    @FXML private HeaderController headerController;
+
+    @FXML
+    private void initialize() {
+        headerController.focusButton("chat");
+    }
 
     @FXML
     private void handleFriendsClick(ActionEvent event) {
-        // Use the helper to switch to FriendsView.fxml
-        SceneSwitcher.switchScene(event, "/fxml/FriendsView.fxml");
+        SceneSwitcher.switchScene((javafx.scene.Node) event.getSource(), "/fxml/FriendsView.fxml");
     }
 
     @FXML
     private void handleCreateGroupClick(ActionEvent event) {
-        // Use the helper to switch to CreateGroupView.fxml
-        SceneSwitcher.switchScene(event, "/fxml/CreateGroupView.fxml");
+        SceneSwitcher.switchScene((javafx.scene.Node) event.getSource(), "/fxml/CreateGroupView.fxml");
     }
-    
-    // We don't need a handleDashboardClick because we are already here.
+
+    @FXML
+    private void handleNotificationClick(ActionEvent event) {
+        SceneSwitcher.switchScene((javafx.scene.Node) event.getSource(), "/fxml/NotificationView.fxml");
+    }
+
+    @FXML
+    private void handleAccountClick(ActionEvent actionEvent) {
+    }
+
 }

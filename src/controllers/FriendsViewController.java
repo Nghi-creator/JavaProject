@@ -17,16 +17,32 @@ public class FriendsViewController {
     @FXML private Button btnFindFriends;
     @FXML private Button btnBlocked;
 
+    @FXML private HeaderController headerController;
+
+    @FXML
+    private void initialize() {
+        headerController.focusButton("friends");
+    }
+
     // --- Main Navigation ---
 
     @FXML
     private void handleDashboardClick(ActionEvent event) {
-        SceneSwitcher.switchScene(event, "/fxml/ChatroomView.fxml");
+        SceneSwitcher.switchScene((javafx.scene.Node) event.getSource(), "/fxml/ChatroomView.fxml");
     }
 
     @FXML
     private void handleCreateGroupClick(ActionEvent event) {
-        SceneSwitcher.switchScene(event, "/fxml/CreateGroupView.fxml");
+        SceneSwitcher.switchScene((javafx.scene.Node) event.getSource(), "/fxml/CreateGroupView.fxml");
+    }
+
+    @FXML
+    private void handleNotificationClick(ActionEvent event) {
+        SceneSwitcher.switchScene((javafx.scene.Node) event.getSource(), "/fxml/NotificationView.fxml");
+    }
+
+    @FXML
+    private void handleAccountClick(ActionEvent actionEvent) {
     }
 
     // --- Friends Sub-Navigation ---

@@ -5,19 +5,30 @@ import javafx.fxml.FXML;
 
 public class CreateGroupViewController {
 
-    // This controller is for CreateGroupView.fxml
+    @FXML private HeaderController headerController;
+
+    @FXML
+    private void initialize() {
+        headerController.focusButton("createGroup");
+    }
 
     @FXML
     private void handleDashboardClick(ActionEvent event) {
-        // Use the helper to switch to ChatroomView.fxml
-        SceneSwitcher.switchScene(event, "/fxml/ChatroomView.fxml");
+        SceneSwitcher.switchScene((javafx.scene.Node) event.getSource(), "/fxml/ChatroomView.fxml");
     }
 
     @FXML
     private void handleFriendsClick(ActionEvent event) {
-        // Use the helper to switch to FriendsView.fxml
-        SceneSwitcher.switchScene(event, "/fxml/FriendsView.fxml");
+        SceneSwitcher.switchScene((javafx.scene.Node) event.getSource(), "/fxml/FriendsView.fxml");
     }
-    
-    // We don't need a handleCreateGroupClick because we are already here.
+
+    @FXML
+    private void handleNotificationClick(ActionEvent event) {
+        SceneSwitcher.switchScene((javafx.scene.Node) event.getSource(), "/fxml/NotificationView.fxml");
+    }
+
+    @FXML
+    private void handleAccountClick(ActionEvent actionEvent) {
+    }
+
 }

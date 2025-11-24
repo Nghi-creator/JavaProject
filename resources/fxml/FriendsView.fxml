@@ -24,38 +24,7 @@
 
     <BorderPane prefHeight="720.0" prefWidth="1280.0">
         <top>
-            <StackPane BorderPane.alignment="CENTER">
-                <styleClass>
-                    <String fx:value="panel"/>
-                    <String fx:value="header-panel"/>
-                </styleClass>
-                <BorderPane>
-                    <left>
-                        <HBox alignment="CENTER_LEFT" spacing="10" styleClass="app-header" BorderPane.alignment="CENTER">
-                            <ImageView fx:id="appIcon" fitHeight="32" fitWidth="32" preserveRatio="true">
-                                <Image url="@../images/feline.png"/>
-                            </ImageView>
-                            <Text text="CHATROOM" styleClass="app-header-title"/>
-                        </HBox>
-                    </left>
-                    <center>
-                        <HBox alignment="CENTER_LEFT" spacing="20" BorderPane.alignment="CENTER_LEFT">
-                            <padding>
-                                <Insets left="40.0" />
-                            </padding>
-                            <Button text="Chat" styleClass="nav-button" onAction="#handleDashboardClick"/>
-                            <Button text="Friends" styleClass="nav-button-selected"/>
-                            <Button text="Create Group Chat" styleClass="nav-button" onAction="#handleCreateGroupClick"/>
-                            <Button text="Notifications" styleClass="nav-button"/>
-                        </HBox>
-                    </center>
-                    <right>
-                        <StackPane styleClass="account-avatar" BorderPane.alignment="CENTER">
-                            <fx:include fx:id="accountAvatar" source="StatusIcon.fxml"/>
-                        </StackPane>
-                    </right>
-                </BorderPane>
-            </StackPane>
+            <fx:include fx:id="header" source="Header.fxml"/>
         </top>
 
         <center>
@@ -132,7 +101,7 @@
                                  <fx:include source="SearchBar.fxml"/>
                                  <VBox spacing="10">
                                      <!-- Changed text to "Your friends" and white color -->
-                                     <Text text="Your friends" styleClass="bold-text"/>
+                                     <Label text="Your friends" styleClass="heading1"/>
                                      <HBox alignment="CENTER_LEFT" spacing="10">
                                          <fx:include source="NameCard.fxml"/>
                                          <!-- Removed buttons for already friends -->
@@ -140,7 +109,7 @@
                                      <Separator styleClass="list-separator"/>
                                      
                                      <!-- Changed text color to white -->
-                                     <Text text="People you may know" styleClass="bold-text"/>
+                                     <Label text="People you may know" styleClass="heading1"/>
                                      <HBox alignment="CENTER_LEFT" spacing="10">
                                          <fx:include source="NameCard.fxml"/>
                                          <Region HBox.hgrow="ALWAYS"/>

@@ -8,12 +8,16 @@ import javafx.util.Callback;
 import javafx.beans.property.SimpleStringProperty;
 
 public class AdminReportViewController {
+
+    @FXML private AdminHeaderController headerController;
     @FXML private TableView<Report> reportTable;
     @FXML private TableColumn<Report, String> colTime, colReporter, colReported, colReason, colAction;
     @FXML private ComboBox<String> timeFilter, userFilter;
 
     @FXML
     public void initialize() {
+        headerController.focusButton("spamReports");
+
         timeFilter.setItems(FXCollections.observableArrayList("Newest", "Oldest"));
         userFilter.setItems(FXCollections.observableArrayList("User A", "User B"));
 
