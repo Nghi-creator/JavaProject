@@ -2,7 +2,8 @@ package controllers;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.SortedList; // Import for sorting
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -10,19 +11,32 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.util.Callback;
 import javafx.beans.property.SimpleStringProperty;
-import java.util.Comparator; // Import for sorting logic
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 
 public class AdminUserViewController {
 
+    @FXML private AdminHeaderController headerController;
     @FXML private TableView<User> userTable;
     @FXML private TableColumn<User, String> colUsername, colFullname, colAddress, colDob, colEmail, colGender, colStatus, colCreated, colAction;
     @FXML private ComboBox<String> sortCombo, filterCombo;
+    @FXML private DatePicker startDatePicker, endDatePicker;
 
-    private ObservableList<User> masterData; // Keep reference to original data
+    @FXML private SearchBarController searchBarController;
+    @FXML private TextField searchField;
+
+    private ObservableList<User> masterData;
+    private FilteredList<User> filteredData;
+
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @FXML
     public void initialize() {
-        // 1. Setup Filter/Sort
+        headerController.focusButton("users");
+
+        // 1. Setup Filter/Sort options
         sortCombo.setItems(FXCollections.observableArrayList("Name (A-Z)", "Created Date (Newest)"));
         filterCombo.setItems(FXCollections.observableArrayList("Name", "Username", "Status"));
 
@@ -35,8 +49,40 @@ public class AdminUserViewController {
         setupColumn(colGender, data -> data.gender);
         setupColumn(colStatus, data -> data.status);
         setupColumn(colCreated, data -> data.createdAt);
-        
-        // 3. Setup Action Buttons
+
+        // 3. Setup Action buttons
+        setupActionColumn();
+
+        // 4. Add Dummy Data
+        masterData = FXCollections.observableArrayList(
+                new User("john_doe", "John Doe", "123 Street, NY", "1990-01-01", "john@example.com", "Male", "Active", "2023-01-10"),
+                new User("jane_smith", "Jane Smith", "456 Avenue, CA", "1992-05-10", "jane@test.com", "Female", "Active", "2023-02-15"),
+                new User("bobby_g", "Bob Gamer", "789 Road, TX", "1995-11-20", "bob@game.net", "Male", "Locked", "2023-03-01")
+        );
+
+        filteredData = new FilteredList<>(masterData, p -> true);
+
+        // 5. Bind filters
+        searchBarController.searchField.textProperty().addListener((obs, oldVal, newVal) -> applyFilters());
+        startDatePicker.valueProperty().addListener((obs, oldVal, newVal) -> applyFilters());
+        endDatePicker.valueProperty().addListener((obs, oldVal, newVal) -> applyFilters());
+
+        // 6. Bind sorting
+        SortedList<User> sortedList = new SortedList<>(filteredData);
+        sortedList.comparatorProperty().bind(userTable.comparatorProperty());
+        userTable.setItems(sortedList);
+
+        // 7. Sorting action from ComboBox
+        sortCombo.setOnAction(e -> applySort());
+    }
+
+    private void setupColumn(TableColumn<User, String> column, Callback<User, String> valueExtractor) {
+        column.setCellValueFactory(data -> new SimpleStringProperty(valueExtractor.call(data.getValue())));
+        column.setReorderable(false);
+        column.setSortable(false); // Disable click-to-sort
+    }
+
+    private void setupActionColumn() {
         colAction.setSortable(false);
         colAction.setReorderable(false);
         colAction.setCellFactory(new Callback<>() {
@@ -50,8 +96,8 @@ public class AdminUserViewController {
                             setGraphic(null);
                         } else {
                             HBox buttons = new HBox(10);
-                            buttons.setAlignment(Pos.CENTER_LEFT); 
-                            
+                            buttons.setAlignment(Pos.CENTER_LEFT);
+
                             Button btnUpdate = new Button("Update");
                             btnUpdate.getStyleClass().add("admin-action-button");
                             btnUpdate.setOnAction(e -> AdminSceneSwitcher.openPopup("/fxml/AdminUpdateUserView.fxml", "Update User"));
@@ -75,43 +121,38 @@ public class AdminUserViewController {
                 };
             }
         });
+    }
 
-        // 4. Add Dummy Data
-        masterData = FXCollections.observableArrayList(
-            new User("john_doe", "John Doe", "123 Street, NY", "1990-01-01", "john@example.com", "Male", "Active", "2023-01-10"),
-            new User("jane_smith", "Jane Smith", "456 Avenue, CA", "1992-05-10", "jane@test.com", "Female", "Active", "2023-02-15"),
-            new User("bobby_g", "Bob Gamer", "789 Road, TX", "1995-11-20", "bob@game.net", "Male", "Locked", "2023-03-01")
-        );
-        userTable.setItems(masterData);
+    private void applyFilters() {
+        String searchText = searchBarController.searchField.getText() != null ? searchBarController.searchField.getText().toLowerCase() : "";
+        LocalDate start = startDatePicker.getValue();
+        LocalDate end = endDatePicker.getValue();
 
-        // 5. Handle Sorting Action
-        sortCombo.setOnAction(event -> {
-            String selected = sortCombo.getValue();
-            if (selected == null) return;
+        filteredData.setPredicate(user -> {
+            boolean matchesSearch = user.fullname.toLowerCase().contains(searchText)
+                    || user.username.toLowerCase().contains(searchText)
+                    || user.status.toLowerCase().contains(searchText);
 
-            if (selected.equals("Name (A-Z)")) {
-                FXCollections.sort(masterData, Comparator.comparing(u -> u.fullname.toLowerCase()));
-            } else if (selected.equals("Created Date (Newest)")) {
-                // Assuming YYYY-MM-DD string format, simple reverse string sort works for "Newest"
-                FXCollections.sort(masterData, (u1, u2) -> u2.createdAt.compareTo(u1.createdAt));
-            }
+            LocalDate created = LocalDate.parse(user.createdAt, formatter);
+            boolean matchesDate = true;
+            if (start != null) matchesDate &= !created.isBefore(start);
+            if (end != null) matchesDate &= !created.isAfter(end);
+
+            return matchesSearch && matchesDate;
         });
     }
 
-    private void setupColumn(TableColumn<User, String> column, Callback<User, String> valueExtractor) {
-        column.setCellValueFactory(data -> new SimpleStringProperty(valueExtractor.call(data.getValue())));
-        column.setReorderable(false);
-        column.setSortable(false); // Disable click-to-sort
-    }
+    private void applySort() {
+        String selected = sortCombo.getValue();
+        if (selected == null) return;
 
-    @FXML
-    private void openPasswordRequests(ActionEvent event) {
-        AdminSceneSwitcher.openPopup("/fxml/AdminPasswordRequestsView.fxml", "Password Reset Requests");
-    }
-
-    @FXML
-    private void openAddUser(ActionEvent event) {
-        AdminSceneSwitcher.openPopup("/fxml/AdminAddUserView.fxml", "Add New User");
+        Comparator<User> comparator;
+        switch (selected) {
+            case "Name (A-Z)" -> comparator = Comparator.comparing(u -> u.fullname.toLowerCase());
+            case "Created Date (Newest)" -> comparator = (u1, u2) -> u2.createdAt.compareTo(u1.createdAt);
+            default -> { return; }
+        }
+        FXCollections.sort(masterData, comparator);
     }
 
     private void showDeleteConfirmation() {
@@ -125,6 +166,14 @@ public class AdminUserViewController {
         alert.showAndWait();
     }
 
+    @FXML private void openPasswordRequests(ActionEvent event) {
+        AdminSceneSwitcher.openPopup("/fxml/AdminPasswordRequestsView.fxml", "Password Reset Requests");
+    }
+
+    @FXML private void openAddUser(ActionEvent event) {
+        AdminSceneSwitcher.openPopup("/fxml/AdminAddUserView.fxml", "Add New User");
+    }
+
     @FXML private void goToHistory(ActionEvent event) { AdminSceneSwitcher.switchScene(event, "/fxml/AdminLoginHistoryView.fxml"); }
     @FXML private void goToGroups(ActionEvent event) { AdminSceneSwitcher.switchScene(event, "/fxml/AdminGroupView.fxml"); }
     @FXML private void goToReports(ActionEvent event) { AdminSceneSwitcher.switchScene(event, "/fxml/AdminReportView.fxml"); }
@@ -132,9 +181,9 @@ public class AdminUserViewController {
     public static class User {
         String username, fullname, address, dob, email, gender, status, createdAt;
         public User(String u, String f, String a, String d, String e, String g, String s, String c) {
-            this.username = u; this.fullname = f; 
+            this.username = u; this.fullname = f;
             this.address = a; this.dob = d;
-            this.email = e; this.gender = g; 
+            this.email = e; this.gender = g;
             this.status = s; this.createdAt = c;
         }
     }

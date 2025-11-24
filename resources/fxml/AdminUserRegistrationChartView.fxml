@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<?import javafx.scene.layout.HBox?>
+<StackPane xmlns="http://javafx.com/javafx/17"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="controllers.AdminUserRegistrationChartViewController"
+           styleClass="root"
+           stylesheets="@../css/DiscordTheme.css">
+
+    <BorderPane prefHeight="720" prefWidth="1280">
+
+        <top>
+            <fx:include fx:id="header" source="AdminHeader.fxml"/>
+        </top>
+
+        <center>
+            <VBox spacing="15">
+                <padding>
+                    <Insets top="15" right="15" bottom="15" left="15"/>
+                </padding>
+                <HBox spacing="10">
+                    <ComboBox fx:id="yearCombo" promptText="Select Year" styleClass="admin-action-button"/>
+                </HBox>
+
+                <BarChart fx:id="registrationChart" title="New Users per Month">
+                    <xAxis>
+                        <CategoryAxis label="Month"/>
+                    </xAxis>
+                    <yAxis>
+                        <NumberAxis label="Number of New Users"/>
+                    </yAxis>
+                </BarChart>
+            </VBox>
+        </center>
+
+    </BorderPane>
+</StackPane>

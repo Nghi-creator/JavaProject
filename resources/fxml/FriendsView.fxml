@@ -101,7 +101,7 @@
                                  <fx:include source="SearchBar.fxml"/>
                                  <VBox spacing="10">
                                      <!-- Changed text to "Your friends" and white color -->
-                                     <Text text="Your friends" styleClass="bold-text"/>
+                                     <Label text="Your friends" styleClass="heading1"/>
                                      <HBox alignment="CENTER_LEFT" spacing="10">
                                          <fx:include source="NameCard.fxml"/>
                                          <!-- Removed buttons for already friends -->
@@ -109,7 +109,7 @@
                                      <Separator styleClass="list-separator"/>
                                      
                                      <!-- Changed text color to white -->
-                                     <Text text="People you may know" styleClass="bold-text"/>
+                                     <Label text="People you may know" styleClass="heading1"/>
                                      <HBox alignment="CENTER_LEFT" spacing="10">
                                          <fx:include source="NameCard.fxml"/>
                                          <Region HBox.hgrow="ALWAYS"/>

@@ -11,7 +11,7 @@
 <?import javafx.geometry.Insets?>
 
 <StackPane xmlns:fx="http://javafx.com/fxml/1" BorderPane.alignment="CENTER" stylesheets="@/css/DiscordTheme.css"
-           fx:controller="controllers.HeaderController">
+           fx:controller="controllers.AdminHeaderController">
     <styleClass>
         <String fx:value="panel"/>
         <String fx:value="header-panel"/>
@@ -26,22 +26,29 @@
             </HBox>
         </left>
         <center>
-            <HBox alignment="CENTER_LEFT" spacing="20">
-                <padding>
-                    <Insets left="40.0"/>
-                </padding>
-                <Button fx:id="chatButton" text="Chat" styleClass="nav-button" onAction="#handleChatClick"/>
-                <Button fx:id="friendsButton" text="Friends" styleClass="nav-button" onAction="#handleFriendsClick"/>
-                <Button fx:id="createGroupButton" text="Create Group Chat" styleClass="nav-button" onAction="#handleCreateGroupClick"/>
-                <Button fx:id="notificationButton" text="Notifications" styleClass="nav-button" onAction="#handleNotificationClick"/>
-            </HBox>
+            <VBox spacing="5">
+                <HBox alignment="CENTER_LEFT" spacing="20">
+                    <padding><Insets left="40"/></padding>
+                    <Button fx:id="usersButton" text="Users" styleClass="nav-button" onAction="#handleUsersClick"/>
+                    <Button fx:id="friendCountButton" text="Friend Count" styleClass="nav-button" onAction="#handleFriendCountClick"/>
+                    <Button fx:id="userActivityButton" text="User Activity" styleClass="nav-button" onAction="#handleUserActivityClick"/>
+                    <Button fx:id="loginHistoryButton" text="Login History" styleClass="nav-button" onAction="#handleLoginHistoryClick"/>
+                    <Button fx:id="groupsButton" text="Groups" styleClass="nav-button" onAction="#handleGroupsClick"/>
+                    <Button fx:id="spamReportsButton" text="Spam Reports" styleClass="nav-button" onAction="#handleSpamReportClick"/>
+                </HBox>
+                <HBox alignment="CENTER_LEFT" spacing="20">
+                    <padding><Insets left="40"/></padding>
+                    <Button fx:id="userRegistrationChartButton" text="User Registration Chart" styleClass="nav-button" onAction="#handleUserRegistrationChartClick"/>
+                    <Button fx:id="activeUsersChartButton" text="Active Users Chart" styleClass="nav-button" onAction="#handleActiveUsersChartClick"/>
+                </HBox>
+            </VBox>
         </center>
         <right>
             <HBox alignment="CENTER_RIGHT" spacing="20">
                 <HBox fx:id="accountMenu" alignment="CENTER_RIGHT" spacing="20">
                     <Button text="Logout" styleClass="nav-button" onAction="#handleLogoutClick"/>
                     <Button text="Settings" styleClass="nav-button" onAction="#handleSettingsClick"/>
-<!--                    <Button text="Profile" styleClass="nav-button" onAction="#handleProfileClick"/>-->
+                    <!--                    <Button text="Profile" styleClass="nav-button" onAction="#handleProfileClick"/>-->
                 </HBox>
 
                 <Button fx:id="accountButton" styleClass="account-button" onAction="#handleAccountClick">

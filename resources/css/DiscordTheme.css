@@ -155,6 +155,7 @@
 }
 .account-button:hover {
     -fx-opacity: 0.8;
+}
 
 /* =========================================
    === ADMIN DASHBOARD STYLES ===
@@ -343,6 +344,7 @@
 .message-content { -fx-font-size: 15px; -fx-fill: #dcddde; -fx-line-spacing: 4px; }
 
 .chat-input-box { -fx-background-color: transparent; }
+
 .input-field {
     -fx-background-color: #0006;
     -fx-text-fill: #c8c8c8;
@@ -354,6 +356,38 @@
     -fx-border-width: 1px;
 }
 .input-field:focused { -fx-border-color: #3a2a4f; -fx-border-width: 1px; }
+
+.text-area.input-field {
+    -fx-background-color: #0006;
+    -fx-text-fill: #c8c8c8;
+    -fx-font-size: 15px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-prompt-text-fill: #72767d;
+    -fx-border-color: rgba(0, 0, 0, 0.3);
+    -fx-border-width: 1px;
+    -fx-padding: 6; /* gives breathing room */
+}
+
+/* Remove the default white background inside the scroll-pane */
+.text-area.input-field .scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.text-area.input-field .scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+.text-area.input-field .scroll-pane .content {
+    -fx-background-color: transparent;
+}
+
+/* Focused state */
+.text-area.input-field:focused {
+    -fx-border-color: #3a2a4f;
+    -fx-border-width: 1px;
+}
+
 .member-list { -fx-background-color: transparent; }
 .user-list-category {
     -fx-font-size: 13px;
