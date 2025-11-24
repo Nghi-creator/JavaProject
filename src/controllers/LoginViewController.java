@@ -24,4 +24,7 @@ public class LoginViewController {
     private void switchToSignup(MouseEvent event) {
         SceneSwitcher.switchScene((javafx.scene.Node) event.getSource(), "/fxml/SignupView.fxml");
     }
+
+    public void resetPassword(MouseEvent event) {
+    }
 }

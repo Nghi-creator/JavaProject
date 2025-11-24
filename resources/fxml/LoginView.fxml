@@ -43,9 +43,14 @@
                 onAction="#handleLogin"
                 styleClass="normal-button"
                 maxWidth="Infinity"/>
-        <Label text="Don't have an account? Sign up"
-               styleClass="normal-text,clickable"
-               onMouseClicked="#switchToSignup"/>
+        <VBox alignment="CENTER" spacing="6" prefWidth="260">
+            <Label text="Don't have an account? Sign up"
+                   styleClass="normal-text,clickable"
+                   onMouseClicked="#switchToSignup"/>
+            <Label text="Forgot password?"
+                   styleClass="normal-text,clickable"
+                   onMouseClicked="#resetPassword"/>
+        </VBox>
     </VBox>
 
 </VBox>
