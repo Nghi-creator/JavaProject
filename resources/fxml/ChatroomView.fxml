@@ -41,7 +41,7 @@
                             <padding>
                                 <Insets left="15" right="15" bottom="5"/> 
                             </padding>
-                            <Text fill="WHITE" styleClass="chat-header-text" text="group-chat"/>
+                            <Text fill="WHITE" styleClass="chat-header-text" style="-fx-cursor: pointer;" text="group-chat" onMouseClicked="#displayGroupInfo"/>
                             <Region HBox.hgrow="ALWAYS"/> 
                             <fx:include source="SearchBar.fxml"/>
                         </HBox>
@@ -52,17 +52,6 @@
                                 <padding>
                                     <Insets bottom="10.0" left="15.0" right="15.0" top="10.0"/>
                                 </padding>
-
-
-
-
-
-
-
-
-
-
-
 
                                 <fx:include fx:id="message1" source="Message.fxml"/>
                                 <fx:include fx:id="message2" source="Message.fxml"/>
