@@ -3,8 +3,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-
 import java.net.URL;
+
+/**
+ * Main Application Class for admins
+ * This class loads the FXML file, sets up the scene,
+ * and displays the main application window.
+ */
 
 public class AdminApp extends Application {
 

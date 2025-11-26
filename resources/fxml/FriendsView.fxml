@@ -1,13 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!--
-  *** UPDATES ***
-  - Removed title labels ("Friend List", etc.) above search bars.
-  - Changed "Matching Results" to "Your friends".
-  - Updated text colors to white/light gray for visibility.
-  - Removed "Send Request" button from "Your friends" section in Find Friends.
--->
-
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>

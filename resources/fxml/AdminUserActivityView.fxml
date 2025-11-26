@@ -41,7 +41,7 @@
                         <ComboBox fx:id="sortCombo" promptText="Sort by..." styleClass="admin-action-button"/>
                         <ComboBox fx:id="activityFilterCombo" promptText="Activity filter" styleClass="admin-action-button"/>
 
-                        <TextField fx:id="activityValueField" promptText="Value…" prefWidth="80"/>
+                        <TextField fx:id="activityValueField" promptText="Value…" prefWidth="80" styleClass="admin-input"/>
 
                         <Region HBox.hgrow="ALWAYS"/>
                     </HBox>

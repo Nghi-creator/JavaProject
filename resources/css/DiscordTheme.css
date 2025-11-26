@@ -22,8 +22,6 @@
     -fx-background-radius: 12px;
     -fx-padding: 5px 12px;
     -fx-cursor: hand;
-    /*-fx-border-color: rgba(255,255,255,0.1);*/
-    /*-fx-border-radius: 5px;*/
 }
 .normal-button:hover {
     -fx-background-color: linear-gradient(to bottom right, #544766, #3a2a4f);
@@ -97,7 +95,6 @@
 .theme-combo .list-cell {
     -fx-text-fill: c8c8c8;
     -fx-background-color: transparent;
-    /*-fx-background-color: #412f59;*/
 }
 
 /* --- GRADIENT STYLES --- */
@@ -191,7 +188,6 @@
     -fx-font-weight: 700;
     -fx-font-size: 13px;
     -fx-alignment: CENTER_LEFT;
-    /* Reverted padding to standard */
     -fx-padding: 0 0 0 5px;
 }
 
@@ -230,6 +226,24 @@
 }
 .admin-action-button:hover {
     -fx-background-color: linear-gradient(to bottom, #2a2f4b, #1a1f3b);
+}
+
+/* UPDATED: Input style matching ComboBox (Greyish) */
+.admin-input {
+    -fx-background-color: #2f3136; /* Matches combo-box background */
+    -fx-text-fill: #ffffff;
+    -fx-prompt-text-fill: #72767d;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-background-radius: 5px; /* Matches combo-box radius */
+    -fx-border-color: rgba(255,255,255,0.1); /* Matches combo-box border */
+    -fx-border-radius: 5px;
+    -fx-padding: 4px 8px;
+    -fx-border-width: 1px;
+}
+.admin-input:focused {
+    -fx-border-color: #3a2a4f;
+    -fx-border-width: 1px;
 }
 
 /* Darker Red Gradient */

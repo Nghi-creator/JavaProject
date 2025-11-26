@@ -3,15 +3,14 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-
-import java.io.File;
 import java.net.URL;
 
 /**
- * Main Application Class
+ * Main Application Class for users
  * This class loads the FXML file, sets up the scene,
  * and displays the main application window.
  */
+
 public class ChatApp extends Application {
 
     @Override

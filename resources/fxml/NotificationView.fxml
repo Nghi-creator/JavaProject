@@ -64,32 +64,6 @@
 
                             <fx:include fx:id="notification1" source="Message.fxml"/>
                             <fx:include fx:id="notification2" source="Message.fxml"/>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                     </VBox>
                 </ScrollPane>
             </StackPane>
