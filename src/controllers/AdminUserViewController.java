@@ -36,10 +36,8 @@ public class AdminUserViewController {
     public void initialize() {
         headerController.focusButton("users");
 
-
         sortCombo.setItems(FXCollections.observableArrayList("Name (A-Z)", "Created Date (Newest)"));
         filterCombo.setItems(FXCollections.observableArrayList("Name", "Username", "Status"));
-
 
         setupColumn(colUsername, data -> data.username);
         setupColumn(colFullname, data -> data.fullname);
@@ -50,9 +48,7 @@ public class AdminUserViewController {
         setupColumn(colStatus, data -> data.status);
         setupColumn(colCreated, data -> data.createdAt);
 
-
         setupActionColumn();
-
 
         masterData = FXCollections.observableArrayList(
                 new User("john_doe", "John Doe", "123 Street, NY", "1990-01-01", "john@example.com", "Male", "Active", "2023-01-10"),
@@ -62,16 +58,13 @@ public class AdminUserViewController {
 
         filteredData = new FilteredList<>(masterData, p -> true);
 
-
         searchBarController.searchField.textProperty().addListener((obs, oldVal, newVal) -> applyFilters());
         startDatePicker.valueProperty().addListener((obs, oldVal, newVal) -> applyFilters());
         endDatePicker.valueProperty().addListener((obs, oldVal, newVal) -> applyFilters());
 
-
         SortedList<User> sortedList = new SortedList<>(filteredData);
         sortedList.comparatorProperty().bind(userTable.comparatorProperty());
         userTable.setItems(sortedList);
-
 
         sortCombo.setOnAction(e -> applySort());
     }
@@ -110,11 +103,24 @@ public class AdminUserViewController {
                             btnHistory.getStyleClass().add("admin-action-button");
                             btnHistory.setOnAction(e -> AdminSceneSwitcher.openPopup("/fxml/AdminUserHistoryView.fxml", "Login History"));
 
+                            Button btnLock = new Button("Lock");
+                            btnLock.getStyleClass().add("admin-danger-button"); 
+                            btnLock.setOnAction(e -> {
+                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                                alert.setTitle("Lock User");
+                                alert.setHeaderText(null);
+                                alert.setContentText("User account locked.");
+                                DialogPane dialogPane = alert.getDialogPane();
+                                dialogPane.getStylesheets().add(getClass().getResource("/css/DiscordTheme.css").toExternalForm());
+                                dialogPane.getStyleClass().add("dialog-pane");
+                                alert.showAndWait();
+                            });
+
                             Button btnDelete = new Button("Delete");
                             btnDelete.getStyleClass().add("admin-danger-button");
                             btnDelete.setOnAction(e -> showDeleteConfirmation());
 
-                            buttons.getChildren().addAll(btnUpdate, btnFriends, btnHistory, btnDelete);
+                            buttons.getChildren().addAll(btnUpdate, btnFriends, btnHistory, btnLock, btnDelete);
                             setGraphic(buttons);
                         }
                     }

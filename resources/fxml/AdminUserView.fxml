@@ -45,7 +45,7 @@
                             <TableColumn fx:id="colEmail" text="Email" prefWidth="200" reorderable="false"/>
                             <TableColumn fx:id="colStatus" text="Status" reorderable="false"/>
                             <TableColumn fx:id="colCreated" text="Created At" prefWidth="120" reorderable="false"/>
-                            <TableColumn fx:id="colAction" text="Actions" prefWidth="380" reorderable="false"/> 
+                            <TableColumn fx:id="colAction" text="Actions" prefWidth="460" reorderable="false"/> 
                         </columns>
                         <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/></columnResizePolicy>
                     </TableView>
