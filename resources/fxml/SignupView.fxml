@@ -53,7 +53,7 @@
                    promptText="Address"
                    styleClass="input-field"
                    maxWidth="200"/>
-        <DatePicker fx:id="DOBPicker" maxWidth="200"/>
+        <DatePicker fx:id="dobPicker" maxWidth="200"/>
         <ComboBox fx:id="genderSelector" styleClass="normal-combo" maxWidth="200">
             <items>
                 <FXCollections fx:factory="observableArrayList">

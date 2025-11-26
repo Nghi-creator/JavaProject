@@ -23,12 +23,14 @@
                     <HBox spacing="10" alignment="CENTER_LEFT">
                         <fx:include fx:id="searchBar" source="SearchBar.fxml"/>
                         <Label text="From:" styleClass="normal-text"/>
-                        <DatePicker fx:id="startDatePicker"/>
+                        <DatePicker fx:id="startDatePicker" prefWidth="150"/>
                         <Label text="To:" styleClass="normal-text"/>
-                        <DatePicker fx:id="endDatePicker"/>
+                        <DatePicker fx:id="endDatePicker" prefWidth="150"/>
                         <ComboBox fx:id="sortCombo" promptText="Sort by..." styleClass="admin-action-button"/>
                         <ComboBox fx:id="filterCombo" promptText="Filter" styleClass="admin-action-button"/>
                         <Region HBox.hgrow="ALWAYS"/>
+                        <Button text="Password Requests" styleClass="admin-action-button" onAction="#openPasswordRequests"/>
+                        <Button text="+ Add User" styleClass="admin-action-button" onAction="#openAddUser"/>
                     </HBox>
                     
                     <TableView fx:id="userTable" VBox.vgrow="ALWAYS">
