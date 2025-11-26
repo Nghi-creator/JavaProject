@@ -26,9 +26,16 @@
             </HBox>
         </left>
         <center>
-            <HBox spacing="20" alignment="CENTER_LEFT">
+            <HBox spacing="40" alignment="CENTER">
+<!--                <Button fx:id="arrowButton" styleClass="clickable" style="-fx-background-color: transparent;" onAction="#handleArrowClick">-->
+<!--                    <padding><Insets left="40"/></padding>-->
+<!--                    <graphic>-->
+<!--                        <ImageView fx:id="arrowImage">-->
+<!--                            <Image url="/images/arrow.png"/>-->
+<!--                        </ImageView>-->
+<!--                    </graphic>-->
+<!--                </Button>-->
                 <HBox fx:id="firstRow" alignment="CENTER_LEFT" spacing="20">
-                    <padding><Insets left="40"/></padding>
                     <Button fx:id="usersButton" text="Users" styleClass="nav-button" onAction="#handleUsersClick"/>
                     <Button fx:id="friendCountButton" text="Friend Count" styleClass="nav-button" onAction="#handleFriendCountClick"/>
                     <Button fx:id="userActivityButton" text="User Activity" styleClass="nav-button" onAction="#handleUserActivityClick"/>
@@ -36,26 +43,20 @@
                     <Button fx:id="groupsButton" text="Groups" styleClass="nav-button" onAction="#handleGroupsClick"/>
                     <Button fx:id="spamReportsButton" text="Spam Reports" styleClass="nav-button" onAction="#handleSpamReportClick"/>
                     <Button fx:id="userRegistrationChartButton" text="User Registration Chart" styleClass="nav-button" onAction="#handleUserRegistrationChartClick"/>
-                </HBox>
-                <HBox fx:id="secondRow" alignment="CENTER_LEFT" spacing="20" visible="false" managed="false">
-                    <padding><Insets left="40"/></padding>
                     <Button fx:id="activeUsersChartButton" text="Active Users Chart" styleClass="nav-button" onAction="#handleActiveUsersChartClick"/>
                 </HBox>
-                <Button fx:id="arrowButton" styleClass="clickable" style="-fx-background-color: transparent;" onAction="#handleArrowClick">
-                    <graphic>
-                        <ImageView fx:id="arrowImage">
-                            <Image url="/images/arrow.png"/>
-                        </ImageView>
-                    </graphic>
-                </Button>
+                <HBox fx:id="secondRow" alignment="CENTER_LEFT" spacing="20" visible="false" managed="false">
+
+                </HBox>
             </HBox>
         </center>
+
         <right>
             <HBox alignment="CENTER_RIGHT" spacing="20">
                 <HBox fx:id="accountMenu" alignment="CENTER_RIGHT" spacing="20">
                     <Button text="Logout" styleClass="nav-button" onAction="#handleLogoutClick"/>
                     <Button text="Settings" styleClass="nav-button" onAction="#handleSettingsClick"/>
-                    <!--                    <Button text="Profile" styleClass="nav-button" onAction="#handleProfileClick"/>-->
+
                 </HBox>
 
                 <Button fx:id="accountButton" styleClass="account-button" onAction="#handleAccountClick">

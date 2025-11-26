@@ -34,9 +34,9 @@ public class AdminActiveUsersChartViewController {
         XYChart.Series<String, Number> series = new XYChart.Series<>();
         series.setName("Active Users " + year);
 
-        // Dummy data
+
         for (int month = 1; month <= 12; month++) {
-            int dummyCount = (int) (Math.random() * 200); // replace with real usage data
+            int dummyCount = (int) (Math.random() * 200);
             series.getData().add(new XYChart.Data<>(String.valueOf(month), dummyCount));
         }
 

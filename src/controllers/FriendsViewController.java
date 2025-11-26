@@ -24,7 +24,7 @@ public class FriendsViewController {
         headerController.focusButton("friends");
     }
 
-    // --- Main Navigation ---
+
 
     @FXML
     private void handleDashboardClick(ActionEvent event) {
@@ -45,7 +45,7 @@ public class FriendsViewController {
     private void handleAccountClick(ActionEvent actionEvent) {
     }
 
-    // --- Friends Sub-Navigation ---
+
 
     @FXML
     private void showFriendList() {
@@ -68,16 +68,16 @@ public class FriendsViewController {
     }
 
     private void updateView(VBox paneToShow, Button activeBtn) {
-        // 1. Hide all panes
+
         friendListPane.setVisible(false);
         requestsPane.setVisible(false);
         findFriendsPane.setVisible(false);
         blockedPane.setVisible(false);
 
-        // 2. Show selected pane
+
         paneToShow.setVisible(true);
 
-        // 3. Reset button styles
+
         String inactiveStyle = "friends-nav-button";
         String activeStyle = "friends-nav-button-selected";
 
@@ -93,7 +93,7 @@ public class FriendsViewController {
         btnBlocked.getStyleClass().removeAll(activeStyle, inactiveStyle);
         btnBlocked.getStyleClass().add(inactiveStyle);
 
-        // 4. Highlight active button
+
         activeBtn.getStyleClass().remove(inactiveStyle);
         activeBtn.getStyleClass().add(activeStyle);
     }

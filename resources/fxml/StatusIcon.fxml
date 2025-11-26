@@ -6,10 +6,8 @@
 <?import javafx.scene.image.Image?>
 
 <StackPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.StatusIconController">
-    <!-- Outline / Ring -->
     <Circle fx:id="statusCircle" radius="18" fill="transparent" stroke="#57f287" strokeWidth="2"/>
 
-    <!-- Avatar -->
     <ImageView fx:id="icon" fitHeight="32" fitWidth="32" preserveRatio="true">
         <clip>
             <Circle centerX="16" centerY="16" radius="16"/>

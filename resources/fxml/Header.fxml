@@ -41,7 +41,7 @@
                 <HBox fx:id="accountMenu" alignment="CENTER_RIGHT" spacing="20">
                     <Button text="Logout" styleClass="nav-button" onAction="#handleLogoutClick"/>
                     <Button text="Settings" styleClass="nav-button" onAction="#handleSettingsClick"/>
-<!--                    <Button text="Profile" styleClass="nav-button" onAction="#handleProfileClick"/>-->
+
                 </HBox>
 
                 <Button fx:id="accountButton" styleClass="account-button" onAction="#handleAccountClick">

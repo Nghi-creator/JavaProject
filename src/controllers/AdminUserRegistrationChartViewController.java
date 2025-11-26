@@ -16,14 +16,14 @@ public class AdminUserRegistrationChartViewController {
     public void initialize() {
         headerController.focusButton("userRegistrationChart");
 
-        // Example: populate last 5 years
+
         int currentYear = java.time.Year.now().getValue();
         yearCombo.setItems(FXCollections.observableArrayList(
                 currentYear, currentYear - 1, currentYear - 2, currentYear - 3, currentYear - 4
         ));
 
         yearCombo.setOnAction(e -> updateChart());
-        yearCombo.setValue(currentYear); // default
+        yearCombo.setValue(currentYear);
         updateChart();
     }
 
@@ -31,15 +31,15 @@ public class AdminUserRegistrationChartViewController {
         Integer year = yearCombo.getValue();
         if (year == null) return;
 
-        // Clear old data
+
         registrationChart.getData().clear();
 
         XYChart.Series<String, Number> series = new XYChart.Series<>();
         series.setName("New Users " + year);
 
-        // Dummy data — replace with real counts
+
         for (int month = 1; month <= 12; month++) {
-            int dummyCount = (int) (Math.random() * 100); // replace
+            int dummyCount = (int) (Math.random() * 100);
             series.getData().add(new XYChart.Data<>(String.valueOf(month), dummyCount));
         }
 

@@ -11,11 +11,11 @@
         <Insets top="5" bottom="5" left="10" right="10"/>
     </padding>
 
-    <!-- Search icon -->
+
     <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
         <Image url="/images/magnifying-glass.png"/>
     </ImageView>
 
-    <!-- Search input -->
+
     <TextField fx:id="searchField" promptText="Search..." styleClass="input-field" />
 </HBox>

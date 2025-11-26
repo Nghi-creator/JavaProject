@@ -36,11 +36,11 @@ public class AdminUserViewController {
     public void initialize() {
         headerController.focusButton("users");
 
-        // 1. Setup Filter/Sort options
+
         sortCombo.setItems(FXCollections.observableArrayList("Name (A-Z)", "Created Date (Newest)"));
         filterCombo.setItems(FXCollections.observableArrayList("Name", "Username", "Status"));
 
-        // 2. Setup Columns
+
         setupColumn(colUsername, data -> data.username);
         setupColumn(colFullname, data -> data.fullname);
         setupColumn(colAddress, data -> data.address);
@@ -50,10 +50,10 @@ public class AdminUserViewController {
         setupColumn(colStatus, data -> data.status);
         setupColumn(colCreated, data -> data.createdAt);
 
-        // 3. Setup Action buttons
+
         setupActionColumn();
 
-        // 4. Add Dummy Data
+
         masterData = FXCollections.observableArrayList(
                 new User("john_doe", "John Doe", "123 Street, NY", "1990-01-01", "john@example.com", "Male", "Active", "2023-01-10"),
                 new User("jane_smith", "Jane Smith", "456 Avenue, CA", "1992-05-10", "jane@test.com", "Female", "Active", "2023-02-15"),
@@ -62,24 +62,24 @@ public class AdminUserViewController {
 
         filteredData = new FilteredList<>(masterData, p -> true);
 
-        // 5. Bind filters
+
         searchBarController.searchField.textProperty().addListener((obs, oldVal, newVal) -> applyFilters());
         startDatePicker.valueProperty().addListener((obs, oldVal, newVal) -> applyFilters());
         endDatePicker.valueProperty().addListener((obs, oldVal, newVal) -> applyFilters());
 
-        // 6. Bind sorting
+
         SortedList<User> sortedList = new SortedList<>(filteredData);
         sortedList.comparatorProperty().bind(userTable.comparatorProperty());
         userTable.setItems(sortedList);
 
-        // 7. Sorting action from ComboBox
+
         sortCombo.setOnAction(e -> applySort());
     }
 
     private void setupColumn(TableColumn<User, String> column, Callback<User, String> valueExtractor) {
         column.setCellValueFactory(data -> new SimpleStringProperty(valueExtractor.call(data.getValue())));
         column.setReorderable(false);
-        column.setSortable(false); // Disable click-to-sort
+        column.setSortable(false);
     }
 
     private void setupActionColumn() {

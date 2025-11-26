@@ -28,14 +28,14 @@
                 <VBox spacing="15">
                     <padding><Insets top="15" right="15" bottom="15" left="15"/></padding>
 
-                    <!-- Filters -->
+
                     <HBox spacing="10" alignment="CENTER_LEFT">
                         <fx:include fx:id="searchBar" source="SearchBar.fxml"/>
 
-                        <Label text="From:"/>
+                        <Label text="From:" styleClass="normal-text"/>
                         <DatePicker fx:id="startDatePicker"/>
 
-                        <Label text="To:"/>
+                        <Label text="To:" styleClass="normal-text"/>
                         <DatePicker fx:id="endDatePicker"/>
 
                         <ComboBox fx:id="sortCombo" promptText="Sort by..." styleClass="admin-action-button"/>
@@ -46,7 +46,7 @@
                         <Region HBox.hgrow="ALWAYS"/>
                     </HBox>
 
-                    <!-- Table -->
+
                     <TableView fx:id="activeTable" VBox.vgrow="ALWAYS">
                         <columns>
                             <TableColumn fx:id="colUsername" text="Username" prefWidth="120"/>

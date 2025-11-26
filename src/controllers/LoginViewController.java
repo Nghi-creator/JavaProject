@@ -16,7 +16,7 @@ public class LoginViewController {
         String user = usernameField.getText();
         String pass = passwordField.getText();
 
-        // Replace with your real logic
+
         System.out.println("Login: " + user + " / " + pass);
     }
 

@@ -19,10 +19,14 @@
                     <padding><Insets top="15" right="15" bottom="15" left="15"/></padding>
                     
                     <HBox spacing="15" alignment="CENTER_LEFT">
-                         <Text text="Spam Reports" styleClass="suggested-header"/>
-                         <ComboBox fx:id="timeFilter" promptText="Filter by Time" styleClass="admin-action-button"/>
+                        <fx:include fx:id="searchBar" source="SearchBar.fxml"/>
+                        <Label text="From:" styleClass="normal-text"/>
+                        <DatePicker fx:id="startDatePicker"/>
+                        <Label text="To:" styleClass="normal-text"/>
+                        <DatePicker fx:id="endDatePicker"/>
+                        <ComboBox fx:id="timeFilter" promptText="Filter by Time" styleClass="admin-action-button"/>
                         <ComboBox fx:id="userFilter" promptText="Filter by User" styleClass="admin-action-button"/>
-                         <Region HBox.hgrow="ALWAYS"/>
+                        <Region HBox.hgrow="ALWAYS"/>
                     </HBox>
                     
                     <TableView fx:id="reportTable" VBox.vgrow="ALWAYS">

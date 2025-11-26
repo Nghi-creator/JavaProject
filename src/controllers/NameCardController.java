@@ -14,7 +14,7 @@ public class NameCardController {
 
     @FXML
     private void initialize() {
-        // Access the controller of the included StatusIcon.fxml
+
         Object controllerObj = statusIcon.getProperties().get("fx:controller");
         if (controllerObj instanceof StatusIconController controller) {
             statusIconController = controller;

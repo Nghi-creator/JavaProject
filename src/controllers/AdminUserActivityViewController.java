@@ -151,7 +151,7 @@ public class AdminUserActivityViewController {
         if (comp != null) FXCollections.sort(masterData, comp);
     }
 
-    // ============ ActiveUser Model =============
+
     public static class ActiveUser {
         String username, fullname, createdAt;
         int opens, people, groups;

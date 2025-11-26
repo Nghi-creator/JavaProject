@@ -1,15 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!--
-  *** FIX: Added padding to the search bar container in the chat header ***
--->
-
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
-<?import java.lang.String?>
 
 <StackPane xmlns="http://javafx.com/javafx/17"
            xmlns:fx="http://javafx.com/fxml/1"
@@ -43,10 +37,8 @@
                 </BorderPane.margin>
                 <BorderPane>
                     <top>
-                        <!-- Added padding to the right of HBox to space the search bar -->
                         <HBox alignment="CENTER_LEFT" spacing="20" prefHeight="50.0" styleClass="chat-header">
                             <padding>
-                                <!-- 5px bottom padding creates distance from the border line -->
                                 <Insets left="15" right="15" bottom="5"/> 
                             </padding>
                             <Text fill="WHITE" styleClass="chat-header-text" text="group-chat"/>
@@ -60,18 +52,18 @@
                                 <padding>
                                     <Insets bottom="10.0" left="15.0" right="15.0" top="10.0"/>
                                 </padding>
-<!--                                <HBox spacing="15.0">-->
-<!--                                    <fx:include fx:id="avatarIcon" source="StatusIcon.fxml"/>-->
-<!--                                    <VBox>-->
-<!--                                        <HBox alignment="CENTER_LEFT" spacing="10.0">-->
-<!--                                            <Text fill="#ffffff" styleClass="message-username" text="Username"/>-->
-<!--                                            <Text fill="#a3a6aa" styleClass="message-timestamp"-->
-<!--                                                  text="Today at 9:20 PM"/>-->
-<!--                                        </HBox>-->
-<!--                                        <Text fill="#dcddde" styleClass="message-content"-->
-<!--                                              text="Hey everyone! This is the first message." wrappingWidth="600.0"/>-->
-<!--                                    </VBox>-->
-<!--                                </HBox>-->
+
+
+
+
+
+
+
+
+
+
+
+
                                 <fx:include fx:id="message1" source="Message.fxml"/>
                                 <fx:include fx:id="message2" source="Message.fxml"/>
                                 <fx:include fx:id="message3" source="Message.fxml"/>

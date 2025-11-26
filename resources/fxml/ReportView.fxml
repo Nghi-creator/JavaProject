@@ -23,14 +23,14 @@
               prefWidth="400"
               alignment="TOP_CENTER">
 
-            <!-- Header -->
+
             <HBox spacing="10" alignment="CENTER_LEFT" prefWidth="400">
                 <Label text="Report" styleClass="title"/>
                 <Region HBox.hgrow="ALWAYS"/>
                 <Button text="Back" onAction="#handleBack" styleClass="normal-button"/>
             </HBox>
 
-            <!-- Report Panel -->
+
             <VBox spacing="15"
                   styleClass="panel,gradient-bg"
                   style="-fx-padding: 15;"
@@ -39,7 +39,7 @@
                 <Label text="Submit a Report" styleClass="heading1"/>
                 <Separator/>
 
-                <!-- Reported Account -->
+
                 <HBox spacing="10" alignment="CENTER_LEFT">
                     <Label text="Reporting:" styleClass="bold-text"/>
                     <Label fx:id="reportedAccountLabel"
@@ -70,7 +70,7 @@
 
             </VBox>
 
-            <!-- Spacer at the bottom -->
+
             <Region minHeight="20"/>
 
         </VBox>
