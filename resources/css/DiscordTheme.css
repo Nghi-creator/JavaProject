@@ -165,8 +165,6 @@
     -fx-control-inner-background: #202225;
     -fx-background-insets: 0;
     -fx-padding: 0;
-
-    /* NEW: Increased row height so buttons aren't cramped */
     -fx-fixed-cell-size: 50px;
 }
 
@@ -178,7 +176,6 @@
 
 .table-view .column-header, .table-view .filler {
     -fx-background-color: transparent;
-    /* Increased header height slightly to match taller rows */
     -fx-size: 45px;
     -fx-border-color: transparent;
 }
@@ -228,15 +225,14 @@
     -fx-background-color: linear-gradient(to bottom, #2a2f4b, #1a1f3b);
 }
 
-/* UPDATED: Input style matching ComboBox (Greyish) */
 .admin-input {
-    -fx-background-color: #2f3136; /* Matches combo-box background */
+    -fx-background-color: #2f3136; 
     -fx-text-fill: #ffffff;
     -fx-prompt-text-fill: #72767d;
     -fx-font-size: 12px;
     -fx-font-weight: 600;
-    -fx-background-radius: 5px; /* Matches combo-box radius */
-    -fx-border-color: rgba(255,255,255,0.1); /* Matches combo-box border */
+    -fx-background-radius: 5px; 
+    -fx-border-color: rgba(255,255,255,0.1); 
     -fx-border-radius: 5px;
     -fx-padding: 4px 8px;
     -fx-border-width: 1px;
@@ -380,7 +376,7 @@
     -fx-prompt-text-fill: #72767d;
     -fx-border-color: rgba(0, 0, 0, 0.3);
     -fx-border-width: 1px;
-    -fx-padding: 6; /* gives breathing room */
+    -fx-padding: 6; 
 }
 
 .date-picker {
@@ -395,7 +391,7 @@
     -fx-text-fill: #c8c8c8;
     -fx-font-size: 15px;
     -fx-prompt-text-fill: #72767d;
-    -fx-background-color: transparent; /* make it inherit parent bg */
+    -fx-background-color: transparent; 
     -fx-background-radius: 8px;
     -fx-border-radius: 8px;
 }
@@ -424,7 +420,7 @@
 }
 
 .date-picker .day-cell:hover {
-    -fx-background-color: #3a2a4f33; /* subtle highlight on hover */
+    -fx-background-color: #3a2a4f33;
 }
 
 .date-picker .day-cell:focused {
@@ -659,7 +655,6 @@
     -fx-background-color: #40444b;
 }
 
-/* --- Shared Form Input (For Admin Popups) --- */
 .form-input {
     -fx-background-color: #1a1a1a;
     -fx-text-fill: white;
