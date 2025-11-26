@@ -61,6 +61,10 @@
     -fx-text-fill: #999999;
 }
 
+.translucent-bg {
+    -fx-background-color: #0000003a;
+}
+
 .gradient-bg {
     -fx-background-color: linear-gradient(to bottom right, #3a2a4f, #1c1526);
 }

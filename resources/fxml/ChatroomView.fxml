@@ -41,7 +41,7 @@
                             <padding>
                                 <Insets left="15" right="15" bottom="5"/> 
                             </padding>
-                            <Text fill="WHITE" styleClass="chat-header-text" style="-fx-cursor: pointer;" text="group-chat" onMouseClicked="#displayGroupInfo"/>
+                            <Text fill="WHITE" styleClass="chat-header-text,hoverable-bg,clickable" text="group-chat" onMouseClicked="#displayGroupInfo"/>
                             <Region HBox.hgrow="ALWAYS"/> 
                             <fx:include source="SearchBar.fxml"/>
                         </HBox>
