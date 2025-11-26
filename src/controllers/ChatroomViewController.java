@@ -16,6 +16,6 @@ public class ChatroomViewController {
     }
 
     public void displayGroupInfo(MouseEvent mouseEvent) {
-        SceneSwitcher.openPopup("/fxml/UserInfoView.fxml", "User Info");
+        SceneSwitcher.openPopup("/fxml/GroupInfoView.fxml", "User Info");
     }
 }

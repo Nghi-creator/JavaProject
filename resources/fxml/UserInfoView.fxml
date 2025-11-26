@@ -5,38 +5,32 @@
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
 <?import javafx.geometry.Insets?>
+
 <StackPane xmlns="http://javafx.com/javafx"
            xmlns:fx="http://javafx.com/fxml"
            fx:id="root"
            fx:controller="controllers.UserInfoViewController"
            stylesheets="@../css/DiscordTheme.css"
-           styleClass="root">
+           styleClass="gradient-bg">
 
-    <BorderPane prefHeight="360" prefWidth="640">
-        <left>
-            <ScrollPane fx:id="mutualConnectionsPanel" fitToWidth="true" hbarPolicy="NEVER" BorderPane.alignment="CENTER" styleClass="panel,gradient-bg">
-                <VBox spacing="10">
-                    <padding>
-                        <Insets top="10" bottom="10" left="10" right="10"/>
-                    </padding>
-                    <fx:include source="NameCard.fxml"/>
-                    <fx:include source="NameCard.fxml"/>
-                </VBox>
-            </ScrollPane>
-        </left>
-        <center>
-            <VBox spacing="20" styleClass="panel,gradient-bg" style="-fx-padding: 10;">
-                <VBox spacing="10">
-                    <fx:include source="StatusIcon.fxml"/>
+    <VBox spacing="40" prefHeight="480" prefWidth="360">
+        <padding><Insets top="30" bottom="30" left="30" right="30"/></padding>
 
-                    <HBox alignment="CENTER">
-                        <Label text="Name" maxWidth="Infinity" styleClass="title"/>
-                    </HBox>
-                </VBox>
+        <VBox spacing="20" HBox.hgrow="ALWAYS" maxWidth="Infinity" BorderPane.alignment="CENTER" styleClass="panel,translucent-bg" style="-fx-padding: 20;">
 
-                <VBox spacing="10" alignment="CENTER_LEFT" maxHeight="Infinity" prefHeight="Infinity">
+            <VBox spacing="10">
+                <fx:include source="StatusIcon.fxml"/>
+
+                <HBox alignment="CENTER">
+                    <Label text="Khoa" maxWidth="Infinity" styleClass="title"/>
+                </HBox>
+            </VBox>
+
+            <Separator/>
+
+            <VBox VBox.vgrow="ALWAYS" alignment="CENTER">
+                <VBox spacing="10" alignment="CENTER_LEFT">
                     <HBox spacing="10" alignment="CENTER_LEFT">
                         <Label text="Email:" styleClass="bold-text"/>
                         <Label text="takhoa23@clc.fitus.edu.vn" styleClass="darkened-text"/>
@@ -63,7 +57,14 @@
                     </HBox>
                 </VBox>
             </VBox>
-        </center>
-    </BorderPane>
+        </VBox>
+
+        <VBox spacing="10" maxWidth="Infinity">
+            <Button fx:id="addFriendButton" text="Add Friend" onAction="#handleAddFriendClick" styleClass="normal-button,translucent-bg" maxWidth="Infinity"/>
+            <Button fx:id="addToGroup" text="Add To Group" onAction="#handleAddToGroupClick" styleClass="normal-button,translucent-bg" maxWidth="Infinity"/>
+            <Button fx:id="blockButton" text="Block User" onAction="#handleBlockClick" styleClass="normal-button,translucent-bg" maxWidth="Infinity"/>
+            <Button fx:id="reportButton" text="Report User" onAction="#handleReportClick" styleClass="normal-button,translucent-bg" maxWidth="Infinity"/>
+        </VBox>
+    </VBox>
 
 </StackPane>
