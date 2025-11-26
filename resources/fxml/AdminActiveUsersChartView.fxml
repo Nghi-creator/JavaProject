@@ -27,11 +27,11 @@
                 <padding>
                     <Insets top="15" right="15" bottom="15" left="15"/>
                 </padding>
-                <HBox spacing="10">
-                    <ComboBox fx:id="yearCombo" promptText="Select Year" styleClass="admin-action-button"/>
+                <HBox spacing="10" alignment="CENTER">
+                    <ComboBox fx:id="yearCombo" promptText="Select Year" styleClass="normal-combo"/>
                 </HBox>
 
-                <BarChart fx:id="activeChart" title="Active Users per Month">
+                <BarChart fx:id="activeChart" title="Active Users per Month" legendVisible="false">
                     <xAxis>
                         <CategoryAxis label="Month"/>
                     </xAxis>

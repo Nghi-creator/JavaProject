@@ -52,7 +52,7 @@
                 <styleClass>
                     <String fx:value="gradient-bg"/>
                     <String fx:value="panel"/>
-<!--                    <String fx:value="notification-panel"/>-->
+
                 </styleClass>
                 <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="ALWAYS" styleClass="scroll-pane">
                     <VBox prefHeight="602.0" prefWidth="728.0" spacing="20.0" styleClass="notification-list">
@@ -60,36 +60,36 @@
                             <Insets top="10.0" right="10.0" bottom="10.0" left="10.0"/>
                         </padding>
 
-                        <!-- Example notification item -->
+
 
                             <fx:include fx:id="notification1" source="Message.fxml"/>
                             <fx:include fx:id="notification2" source="Message.fxml"/>
 
-<!--                        <HBox spacing="15.0">-->
-<!--                            <fx:include fx:id="avatarIcon1" source="StatusIcon.fxml"/>-->
-<!--                            <VBox>-->
-<!--                                <HBox alignment="CENTER_LEFT" spacing="10.0">-->
-<!--                                    <Text fill="#ffffff" styleClass="notification-title" text="Friend Request"/>-->
-<!--                                    <Text fill="#a3a6aa" styleClass="notification-timestamp" text="2h ago"/>-->
-<!--                                </HBox>-->
-<!--                                <Text fill="#dcddde" styleClass="notification-content"-->
-<!--                                      text="John Doe sent you a friend request." wrappingWidth="600.0"/>-->
-<!--                            </VBox>-->
-<!--                        </HBox>-->
 
-<!--                        <HBox spacing="15.0">-->
-<!--                            <fx:include fx:id="avatarIcon2" source="StatusIcon.fxml"/>-->
-<!--                            <VBox>-->
-<!--                                <HBox alignment="CENTER_LEFT" spacing="10.0">-->
-<!--                                    <Text fill="#ffffff" styleClass="notification-title" text="Mention"/>-->
-<!--                                    <Text fill="#a3a6aa" styleClass="notification-timestamp" text="5h ago"/>-->
-<!--                                </HBox>-->
-<!--                                <Text fill="#dcddde" styleClass="notification-content"-->
-<!--                                      text="You were mentioned in #general chat." wrappingWidth="600.0"/>-->
-<!--                            </VBox>-->
-<!--                        </HBox>-->
 
-                        <!-- Add more notifications here -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                     </VBox>
                 </ScrollPane>
             </StackPane>

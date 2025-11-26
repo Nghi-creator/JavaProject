@@ -22,9 +22,9 @@
 
                     <HBox spacing="10" alignment="CENTER_LEFT">
                         <fx:include fx:id="searchBar" source="SearchBar.fxml"/>
-                        <Label text="From:"/>
+                        <Label text="From:" styleClass="normal-text"/>
                         <DatePicker fx:id="startDatePicker"/>
-                        <Label text="To:"/>
+                        <Label text="To:" styleClass="normal-text"/>
                         <DatePicker fx:id="endDatePicker"/>
                         <ComboBox fx:id="sortCombo" promptText="Sort by..." styleClass="admin-action-button"/>
                         <ComboBox fx:id="filterCombo" promptText="Filter" styleClass="admin-action-button"/>

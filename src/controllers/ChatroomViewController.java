@@ -14,23 +14,4 @@ public class ChatroomViewController {
         headerController.focusButton("chat");
     }
 
-    @FXML
-    private void handleFriendsClick(ActionEvent event) {
-        SceneSwitcher.switchScene((javafx.scene.Node) event.getSource(), "/fxml/FriendsView.fxml");
-    }
-
-    @FXML
-    private void handleCreateGroupClick(ActionEvent event) {
-        SceneSwitcher.switchScene((javafx.scene.Node) event.getSource(), "/fxml/CreateGroupView.fxml");
-    }
-
-    @FXML
-    private void handleNotificationClick(ActionEvent event) {
-        SceneSwitcher.switchScene((javafx.scene.Node) event.getSource(), "/fxml/NotificationView.fxml");
-    }
-
-    @FXML
-    private void handleAccountClick(ActionEvent actionEvent) {
-    }
-
 }

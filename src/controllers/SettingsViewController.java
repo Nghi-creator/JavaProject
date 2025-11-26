@@ -13,11 +13,11 @@ public class SettingsViewController {
     @FXML private ComboBox<String> themeSelector;
     @FXML private CheckBox notificationsCheck;
 
-    // Panels inside the VBox (initially hidden in FXML: visible="false", managed="false")
+
     @FXML private VBox accountEditPanel;
     @FXML private VBox changePasswordPanel;
 
-    // Track visibility state
+
     private boolean isAccountPanelVisible = false;
     private boolean isChangePasswordPanelVisible = false;
 
@@ -26,6 +26,8 @@ public class SettingsViewController {
     @FXML
     private void initialize() {
         themeSelector.getSelectionModel().select("Dark");
+
+        
     }
 
     @FXML
@@ -33,17 +35,16 @@ public class SettingsViewController {
         String theme = themeSelector.getValue();
         boolean notifications = notificationsCheck.isSelected();
 
-        // Replace with real save logic
+
         System.out.println("Theme: " + theme + ", Notifications: " + notifications);
     }
 
     @FXML
     private void handleBack() {
-        // Example using convenience SceneSwitcher
         SceneSwitcher.switchScene((javafx.scene.Node) themeSelector, "/fxml/ChatroomView.fxml");
     }
 
-    // -------------------- Account Info Panel --------------------
+
 
     @FXML
     public void handleUpdateAccountInfo(ActionEvent actionEvent) {
@@ -59,14 +60,14 @@ public class SettingsViewController {
 
     @FXML
     public void handleSaveAccount(ActionEvent actionEvent) {
-        // Handle saving account info
+
         System.out.println("Account info saved");
-        // Optionally collapse panel after save
+
         collapsePanel(accountEditPanel);
         isAccountPanelVisible = false;
     }
 
-    // -------------------- Panel Animation Helpers --------------------
+
 
     /**
      * Toggle a panel: expand if hidden, collapse if visible.
@@ -83,12 +84,12 @@ public class SettingsViewController {
         panel.setVisible(true);
         panel.setManaged(true);
 
-        // Measure target height
+
         panel.setPrefHeight(0);
         panel.applyCss();
         panel.layout();
 
-        double targetHeight = panel.prefHeight(-1); // calculates height based on children
+        double targetHeight = panel.prefHeight(-1);
 
         Timeline timeline = new Timeline(
                 new KeyFrame(ANIMATION_DURATION,
@@ -96,7 +97,7 @@ public class SettingsViewController {
                 )
         );
 
-        // Optional fade-in
+
         panel.setOpacity(0);
         FadeTransition fade = new FadeTransition(ANIMATION_DURATION, panel);
         fade.setFromValue(0);
@@ -115,7 +116,7 @@ public class SettingsViewController {
                 )
         );
 
-        // Optional fade-out
+
         FadeTransition fade = new FadeTransition(ANIMATION_DURATION, panel);
         fade.setFromValue(panel.getOpacity());
         fade.setToValue(0);

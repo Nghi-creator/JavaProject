@@ -10,7 +10,7 @@ public class AdminUpdateUserViewController {
 
     @FXML
     private void closeWindow() {
-        // Get the stage from the button's scene and close it
+
         Stage stage = (Stage) btnCancel.getScene().getWindow();
         stage.close();
     }

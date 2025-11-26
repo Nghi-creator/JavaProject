@@ -56,19 +56,19 @@
                     <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="ALWAYS" styleClass="scroll-pane" VBox.vgrow="ALWAYS">
                          <VBox spacing="5" styleClass="suggested-list-vbox">
                             
-                            <!-- User 1 - Using HBox to bring button closer -->
+
                             <HBox alignment="CENTER_LEFT" spacing="10">
                                 <fx:include source="NameCard.fxml"/>
                                 <Button text="+" styleClass="add-friend-button"/>
                             </HBox>
                             
-                            <!-- User 2 -->
+
                             <HBox alignment="CENTER_LEFT" spacing="10">
                                 <fx:include source="NameCard.fxml"/>
                                 <Button text="+" styleClass="add-friend-button"/>
                             </HBox>
                             
-                            <!-- User 3 -->
+
                             <HBox alignment="CENTER_LEFT" spacing="10">
                                 <fx:include source="NameCard.fxml"/>
                                 <Button text="+" styleClass="add-friend-button"/>

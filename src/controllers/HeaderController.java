@@ -29,7 +29,7 @@ public class HeaderController {
     public void initialize() {
         accountMenu.setOpacity(0);
         accountMenu.setVisible(false);
-        accountMenu.setManaged(false); // so layout doesn’t reserve space
+        accountMenu.setManaged(false);
     }
 
     public void focusButton(String buttonStr) {
@@ -48,7 +48,7 @@ public class HeaderController {
     private void showMenu() {
         accountMenu.setVisible(true);
         accountMenu.setManaged(true);
-        accountMenu.setTranslateX(10); // slightly shifted for effect
+        accountMenu.setTranslateX(10);
 
         FadeTransition fade = new FadeTransition(Duration.millis(200), accountMenu);
         fade.setFromValue(0);

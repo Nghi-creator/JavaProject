@@ -51,7 +51,7 @@ public class AdminGroupViewController {
         );
         groupTable.setItems(masterData);
 
-        // Sorting Logic
+
         sortCombo.setOnAction(event -> {
             String selected = sortCombo.getValue();
             if (selected == null) return;
@@ -67,7 +67,7 @@ public class AdminGroupViewController {
     private void setupColumn(TableColumn<Group, String> column, Callback<Group, String> valueExtractor) {
         column.setCellValueFactory(data -> new SimpleStringProperty(valueExtractor.call(data.getValue())));
         column.setReorderable(false); 
-        column.setSortable(false); // Disable click-to-sort
+        column.setSortable(false);
     }
 
     @FXML private void goToUsers(ActionEvent event) { AdminSceneSwitcher.switchScene(event, "/fxml/AdminUserView.fxml"); }

@@ -33,7 +33,7 @@
     -fx-cursor: hand;
 }
 
-.title {
+.title, .chart-title {
     -fx-font-size: 24px;
     -fx-font-weight: 700;
     -fx-text-fill: #c8c8c8;
@@ -45,7 +45,7 @@
     -fx-text-fill: #c8c8c8;
 }
 
-.normal-text {
+.normal-text, .axis .axis-label, .chart-axis .tick-label {
     -fx-font-size: 14px;
     -fx-font-weight: 600;
     -fx-text-fill: #c8c8c8;
@@ -369,7 +369,100 @@
     -fx-padding: 6; /* gives breathing room */
 }
 
-/* Remove the default white background inside the scroll-pane */
+.date-picker {
+    -fx-background-color: #0006;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-border-color: rgba(0, 0, 0, 0.3);
+    -fx-border-width: 1px;
+}
+
+.date-picker .text-field {
+    -fx-text-fill: #c8c8c8;
+    -fx-font-size: 15px;
+    -fx-prompt-text-fill: #72767d;
+    -fx-background-color: transparent; /* make it inherit parent bg */
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+}
+
+.date-picker:focused, .date-picker .text-field:focused {
+    -fx-border-color: #3a2a4f;
+    -fx-border-width: 1px;
+}
+
+.date-picker .arrow-button {
+    -fx-background-color: transparent;
+    -fx-border-radius: 8px;
+}
+
+.date-picker .date-picker-popup {
+    -fx-background-color: #0006;
+    -fx-border-color: rgba(0, 0, 0, 0.3);
+    -fx-border-width: 1px;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+}
+
+.date-picker .day-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #c8c8c8;
+}
+
+.date-picker .day-cell:hover {
+    -fx-background-color: #3a2a4f33; /* subtle highlight on hover */
+}
+
+.date-picker .day-cell:focused {
+    -fx-background-color: #3a2a4f66;
+    -fx-text-fill: #fff;
+}
+
+.date-picker .month-year-pane {
+    -fx-background-color: #0006;
+    -fx-text-fill: #c8c8c8;
+}
+
+.normal-combo {
+    -fx-background-color: #0006;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-border-color: rgba(0, 0, 0, 0.3);
+    -fx-border-width: 1px;
+    -fx-font-size: 15px;
+    -fx-text-fill: #c8c8c8;
+    -fx-prompt-text-fill: #72767d;
+}
+
+.normal-combo .combo-box-base .text-field {
+    -fx-background-color: transparent;
+    -fx-text-fill: #c8c8c8;
+    -fx-prompt-text-fill: #72767d;
+    -fx-font-size: 15px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+}
+
+.normal-combo:focused, .normal-combo .combo-box-base:focused {
+    -fx-border-color: #3a2a4f;
+    -fx-border-width: 1px;
+}
+
+.normal-combo .arrow-button {
+    -fx-background-color: transparent;
+    -fx-border-radius: 8px;
+}
+
+.normal-combo .list-cell {
+    -fx-background-color: #0006;
+    -fx-text-fill: #c8c8c8;
+}
+.normal-combo .list-view {
+    -fx-background-color: #0006;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+}
+
 .text-area.input-field .scroll-pane {
     -fx-background-color: transparent;
 }

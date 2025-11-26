@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:id="root"
+           fx:controller="controllers.UserInfoViewController"
+           stylesheets="@../css/DiscordTheme.css"
+           styleClass="root">
+
+    <BorderPane prefHeight="360" prefWidth="640">
+        <left>
+            <StackPane fx:id="mutualConnectionsPanel" BorderPane.alignment="CENTER" styleClass="panel,gradient-bg" BorderPane.margin="0,0,0,0">
+                <VBox/>
+            </StackPane>
+        </left>
+    </BorderPane>
+
+</StackPane>

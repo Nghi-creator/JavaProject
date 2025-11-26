@@ -25,11 +25,11 @@ public class AdminFriendCountViewController {
     public void initialize() {
         headerController.focusButton("friendCount");
 
-        // 1. Setup Filter/Sort
+
         sortCombo.setItems(FXCollections.observableArrayList("Name (A-Z)", "Most Friends"));
         filterCombo.setItems(FXCollections.observableArrayList("Name", "Username", "Status"));
 
-        // 2. Setup Columns
+
         setupColumn(colUsername, data -> data.username);
         setupColumn(colFullname, data -> data.fullname);
         setupColumn(colAddress, data -> data.address);
@@ -37,7 +37,7 @@ public class AdminFriendCountViewController {
         setupColumn(colFriends, data -> String.valueOf(data.friends));
         setupColumn(colFriendsOfFriends, data -> String.valueOf(data.friendsOfFriends));
 
-        // 3. Setup Action Buttons
+
         colAction.setSortable(false);
         colAction.setReorderable(false);
         colAction.setCellFactory(new Callback<>() {
@@ -69,7 +69,7 @@ public class AdminFriendCountViewController {
             }
         });
 
-        // 4. Add Dummy Data
+
         masterData = FXCollections.observableArrayList(
                 new User("john_doe", "John Doe", "123 Street, NY", "1990-01-01", 5, 12),
                 new User("jane_smith", "Jane Smith", "456 Avenue, CA", "1992-05-10", 8, 20),
@@ -77,7 +77,7 @@ public class AdminFriendCountViewController {
         );
         userTable.setItems(masterData);
 
-        // 5. Sorting action
+
         sortCombo.setOnAction(event -> {
             String selected = sortCombo.getValue();
             if (selected == null) return;

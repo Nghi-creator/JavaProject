@@ -15,6 +15,7 @@
 <?import javafx.collections.FXCollections?>
 <?import java.lang.String?>
 
+<?import javafx.scene.control.DatePicker?>
 <StackPane xmlns="http://javafx.com/javafx/17"
            xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="controllers.SettingsViewController"
@@ -26,25 +27,48 @@
               prefWidth="400"
               prefHeight="500">
 
-            <!-- Header -->
+
             <HBox spacing="10" alignment="CENTER_LEFT">
                 <Label text="Settings" styleClass="title"/>
                 <Region HBox.hgrow="ALWAYS"/>
                 <Button text="Back" onAction="#handleBack" styleClass="normal-button"/>
             </HBox>
 
-            <!-- Account Section -->
+
             <VBox spacing="10" styleClass="panel,gradient-bg" style="-fx-padding: 10;">
                 <Label text="Account" styleClass="heading1"/>
                 <Separator/>
+
                 <HBox spacing="10" alignment="CENTER_LEFT">
                     <Label text="Username:" styleClass="bold-text"/>
                     <Label text="khoa" styleClass="darkened-text"/>
                 </HBox>
+
                 <HBox spacing="10" alignment="CENTER_LEFT">
                     <Label text="Email:" styleClass="bold-text"/>
                     <Label text="takhoa23@clc.fitus.edu.vn" styleClass="darkened-text"/>
                 </HBox>
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Full Name:" styleClass="bold-text"/>
+                    <Label text="Khoa Tran" styleClass="darkened-text"/>
+                </HBox>
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Address:" styleClass="bold-text"/>
+                    <Label text="123 Nguyen Trai, Hanoi" styleClass="darkened-text"/>
+                </HBox>
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Date of Birth:" styleClass="bold-text"/>
+                    <Label text="01/01/2000" styleClass="darkened-text"/>
+                </HBox>
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Gender:" styleClass="bold-text"/>
+                    <Label text="Male" styleClass="darkened-text"/>
+                </HBox>
+
                 <HBox spacing="10" alignment="CENTER_LEFT">
                     <Button text="Update Account Information" onAction="#handleUpdateAccountInfo"
                             styleClass="normal-button" style="-fx-background-color: #544766;"/>
@@ -53,24 +77,55 @@
                 </HBox>
             </VBox>
 
-            <!-- Account Edit Panel -->
             <VBox fx:id="accountEditPanel" spacing="10" styleClass="panel,gradient-bg" style="-fx-padding: 10;"
                   visible="false" managed="false">
                 <Label text="Edit Account" styleClass="heading1"/>
                 <Separator/>
+
                 <HBox spacing="10" alignment="CENTER_LEFT">
                     <Label text="Username:" styleClass="bold-text"/>
                     <TextField fx:id="usernameField" styleClass="input-field,darkened-gradient-bg"/>
                 </HBox>
+
                 <HBox spacing="10" alignment="CENTER_LEFT">
                     <Label text="Email:" styleClass="bold-text"/>
                     <TextField fx:id="emailField" styleClass="input-field,darkened-gradient-bg"/>
                 </HBox>
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Full Name:" styleClass="bold-text"/>
+                    <TextField fx:id="fullNameField" styleClass="input-field,darkened-gradient-bg"/>
+                </HBox>
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Address:" styleClass="bold-text"/>
+                    <TextField fx:id="addressField" styleClass="input-field,darkened-gradient-bg"/>
+                </HBox>
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Date of Birth:" styleClass="bold-text"/>
+                    <DatePicker fx:id="dobPicker" styleClass="date-picker"/>
+                </HBox>
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Gender:" styleClass="bold-text"/>
+                    <ComboBox fx:id="genderCombo" styleClass="normal-combo">
+                        <items>
+                            <FXCollections fx:factory="observableArrayList">
+                                <String fx:value="Male"/>
+                                <String fx:value="Female"/>
+                                <String fx:value="Other"/>
+                            </FXCollections>
+                        </items>
+                    </ComboBox>
+                </HBox>
+
                 <Button text="Save" onAction="#handleSaveAccount" styleClass="normal-button"
                         style="-fx-background-color: #544766;"/>
             </VBox>
 
-            <!-- Change Password Panel -->
+
+
             <VBox fx:id="changePasswordPanel" spacing="10"
                   styleClass="panel,gradient-bg"
                   style="-fx-padding: 10;"
@@ -96,7 +151,7 @@
                 </HBox>
             </VBox>
 
-            <!-- Appearance Section -->
+
             <VBox spacing="10" styleClass="panel,gradient-bg" style="-fx-padding: 10;">
                 <Label text="Appearance" styleClass="heading1"/>
                 <Separator/>
@@ -114,14 +169,14 @@
                 </HBox>
             </VBox>
 
-            <!-- Notifications Section -->
+
             <VBox spacing="10" styleClass="panel,gradient-bg" style="-fx-padding: 10;">
                 <Label text="Notifications" styleClass="heading1"/>
                 <Separator/>
                 <CheckBox fx:id="notificationsCheck" text="Enable Notifications" styleClass="normal-text"/>
             </VBox>
 
-            <!-- Save Button -->
+
             <Button text="Save Changes" onAction="#handleSave"
                     styleClass="normal-button"
                     maxWidth="150"/>

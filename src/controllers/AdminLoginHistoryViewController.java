@@ -30,7 +30,7 @@ public class AdminLoginHistoryViewController {
     private void setupColumn(TableColumn<History, String> column, javafx.util.Callback<History, String> valueExtractor) {
         column.setCellValueFactory(data -> new SimpleStringProperty(valueExtractor.call(data.getValue())));
         column.setReorderable(false);
-        column.setSortable(false); // Disable click-to-sort
+        column.setSortable(false);
     }
 
     @FXML private void goToUsers(ActionEvent event) { AdminSceneSwitcher.switchScene(event, "/fxml/AdminUserView.fxml"); }

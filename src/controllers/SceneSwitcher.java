@@ -27,11 +27,11 @@ public class SceneSwitcher {
 
             Scene scene = stage.getScene();
             if (scene == null) {
-                // First load — no scene exists yet
+
                 scene = new Scene(root);
                 stage.setScene(scene);
             } else {
-                // Later loads — reuse existing scene
+
                 scene.setRoot(root);
             }
 
@@ -41,12 +41,6 @@ public class SceneSwitcher {
         }
     }
 
-
-    /**
-     * Convenience method to switch scene from any node (button, label, etc.)
-     * @param sourceNode Any node in the current scene.
-     * @param fxmlPath Path to FXML resource.
-     */
     public static void switchScene(javafx.scene.Node sourceNode, String fxmlPath) {
         Stage stage = (Stage) sourceNode.getScene().getWindow();
         switchScene(stage, fxmlPath);

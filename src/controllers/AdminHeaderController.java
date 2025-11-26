@@ -33,7 +33,6 @@ public class AdminHeaderController {
     @FXML private HBox accountMenu;
 
     private List<Button> navButtons;
-
     private boolean menuVisible = false;
 
     @FXML
@@ -42,15 +41,19 @@ public class AdminHeaderController {
         accountMenu.setVisible(false);
         accountMenu.setManaged(false);
 
-        // collect all nav buttons into a list for easy focus management
         navButtons = List.of(
-                usersButton, friendCountButton, userActivityButton, loginHistoryButton,
-                groupsButton, spamReportsButton, userRegistrationChartButton, activeUsersChartButton
+                usersButton,
+                friendCountButton,
+                userActivityButton,
+                loginHistoryButton,
+                groupsButton,
+                spamReportsButton,
+                userRegistrationChartButton,
+                activeUsersChartButton
         );
     }
 
     public void focusButton(String buttonStr) {
-        // first, remove focus style from all
         navButtons.forEach(btn -> {
             btn.getStyleClass().remove("nav-button-selected");
             if (!btn.getStyleClass().contains("nav-button")) {
@@ -58,7 +61,6 @@ public class AdminHeaderController {
             }
         });
 
-        // then, find the one to focus
         Button buttonToFocus = switch (buttonStr) {
             case "users" -> usersButton;
             case "friendCount" -> friendCountButton;
@@ -80,7 +82,7 @@ public class AdminHeaderController {
     private void showMenu() {
         accountMenu.setVisible(true);
         accountMenu.setManaged(true);
-        accountMenu.setTranslateX(10); // slightly shifted for effect
+        accountMenu.setTranslateX(10);
 
         FadeTransition fade = new FadeTransition(Duration.millis(200), accountMenu);
         fade.setFromValue(0);
@@ -108,36 +110,38 @@ public class AdminHeaderController {
             accountMenu.setVisible(false);
             accountMenu.setManaged(false);
         });
+
         anim.play();
     }
 
     @FXML
     private void handleUsersClick(ActionEvent event) {
-        SceneSwitcher.switchScene((javafx.scene.Node) event.getSource(), "/fxml/AdminUserView.fxml");
+        SceneSwitcher.switchScene((Node) event.getSource(), "/fxml/AdminUserView.fxml");
     }
 
     @FXML
     private void handleFriendCountClick(ActionEvent event) {
-        SceneSwitcher.switchScene((javafx.scene.Node) event.getSource(), "/fxml/AdminFriendCountView.fxml");
+        SceneSwitcher.switchScene((Node) event.getSource(), "/fxml/AdminFriendCountView.fxml");
     }
 
-    @FXML void handleUserActivityClick(ActionEvent event) {
-        SceneSwitcher.switchScene((javafx.scene.Node) event.getSource(), "/fxml/AdminUserActivityView.fxml");
+    @FXML
+    void handleUserActivityClick(ActionEvent event) {
+        SceneSwitcher.switchScene((Node) event.getSource(), "/fxml/AdminUserActivityView.fxml");
     }
 
     @FXML
     private void handleLoginHistoryClick(ActionEvent event) {
-        SceneSwitcher.switchScene((javafx.scene.Node) event.getSource(), "/fxml/AdminLoginHistoryView.fxml");
+        SceneSwitcher.switchScene((Node) event.getSource(), "/fxml/AdminLoginHistoryView.fxml");
     }
 
     @FXML
     private void handleGroupsClick(ActionEvent event) {
-        SceneSwitcher.switchScene((javafx.scene.Node) event.getSource(), "/fxml/AdminGroupView.fxml");
+        SceneSwitcher.switchScene((Node) event.getSource(), "/fxml/AdminGroupView.fxml");
     }
 
     @FXML
     private void handleSpamReportClick(ActionEvent event) {
-        SceneSwitcher.switchScene((javafx.scene.Node) event.getSource(), "/fxml/AdminReportView.fxml");
+        SceneSwitcher.switchScene((Node) event.getSource(), "/fxml/AdminReportView.fxml");
     }
 
     @FXML
@@ -152,32 +156,29 @@ public class AdminHeaderController {
 
     @FXML
     private void handleSettingsClick(ActionEvent event) {
-        SceneSwitcher.switchScene((javafx.scene.Node) event.getSource(), "/fxml/SettingsView.fxml");
+        SceneSwitcher.switchScene((Node) event.getSource(), "/fxml/SettingsView.fxml");
     }
 
     @FXML
     private void handleLogoutClick(ActionEvent event) {
-        SceneSwitcher.switchScene((javafx.scene.Node) event.getSource(), "/fxml/LoginView.fxml");
+        SceneSwitcher.switchScene((Node) event.getSource(), "/fxml/LoginView.fxml");
     }
 
     public void handleUserRegistrationChartClick(ActionEvent event) {
-        SceneSwitcher.switchScene((javafx.scene.Node) event.getSource(), "/fxml/AdminUserRegistrationChartView.fxml");
+        SceneSwitcher.switchScene((Node) event.getSource(), "/fxml/AdminUserRegistrationChartView.fxml");
     }
 
     public void handleActiveUsersChartClick(ActionEvent event) {
-        SceneSwitcher.switchScene((javafx.scene.Node) event.getSource(), "/fxml/AdminActiveUsersChartView.fxml");
+        SceneSwitcher.switchScene((Node) event.getSource(), "/fxml/AdminActiveUsersChartView.fxml");
     }
 
     @FXML
     private void handleArrowClick() {
         boolean showingFirst = firstRow.isVisible();
-
         firstRow.setVisible(!showingFirst);
         firstRow.setManaged(!showingFirst);
-
         secondRow.setVisible(showingFirst);
         secondRow.setManaged(showingFirst);
-
         arrowImage.setRotate(180 - arrowImage.getRotate());
     }
 }
