@@ -16,7 +16,7 @@ public class ChatApp extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
-            URL fxmlUrl = getClass().getResource("/fxml/ChatroomView.fxml");
+            URL fxmlUrl = getClass().getResource("/user/ui/fxml/ChatroomView.fxml");
 
             if (fxmlUrl == null) {
                 System.err.println("Cannot find FXML file. Make sure 'ChatroomView.fxml' is in the 'src' directory.");
@@ -26,7 +26,7 @@ public class ChatApp extends Application {
 
             Scene scene = new Scene(root, 1280, 720);
 
-            URL cssUrl = getClass().getResource("/css/DiscordTheme.css");
+            URL cssUrl = getClass().getResource("/shared/ui/css/DiscordTheme.css");
             if (cssUrl != null) {
                 scene.getStylesheets().add(cssUrl.toExternalForm());
             } else {
