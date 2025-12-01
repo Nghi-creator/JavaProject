@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+
+<HBox xmlns:fx="http://javafx.com/fxml/1" spacing="8" alignment="CENTER_LEFT" styleClass="search-bar" stylesheets="/shared/ui/css/SearchBar.css" fx:controller="core.shared.controllers.SearchBarController">
+    <padding>
+        <Insets top="5" bottom="5" left="10" right="10"/>
+    </padding>
+
+
+    <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
+        <Image url="/shared/images/magnifying-glass.png"/>
+    </ImageView>
+
+
+    <TextField fx:id="searchField" promptText="Search..." styleClass="input-field" />
+</HBox>

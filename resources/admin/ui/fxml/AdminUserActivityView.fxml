@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import java.lang.String?>
+
+<StackPane xmlns="http://javafx.com/javafx/17"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="admin.controllers.AdminUserActivityViewController"
+           styleClass="root"
+           stylesheets="@../../../shared/ui/css/DiscordTheme.css">
+
+    <BorderPane prefHeight="720" prefWidth="1280">
+
+        <top>
+            <fx:include fx:id="header" source="AdminHeader.fxml"/>
+        </top>
+
+        <center>
+            <StackPane>
+                <BorderPane.margin><Insets top="10"/></BorderPane.margin>
+                <styleClass>
+                    <String fx:value="panel"/>
+                    <String fx:value="chat-area-panel"/>
+                </styleClass>
+
+                <VBox spacing="15">
+                    <padding><Insets top="15" right="15" bottom="15" left="15"/></padding>
+
+
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <fx:include fx:id="searchBar" source="../../../user/ui/fxml/SearchBar.fxml"/>
+
+                        <Label text="From:" styleClass="normal-text"/>
+                        <DatePicker fx:id="startDatePicker"/>
+
+                        <Label text="To:" styleClass="normal-text"/>
+                        <DatePicker fx:id="endDatePicker"/>
+
+                        <ComboBox fx:id="sortCombo" promptText="Sort by..." styleClass="admin-action-button"/>
+                        <ComboBox fx:id="activityFilterCombo" promptText="Activity filter" styleClass="admin-action-button"/>
+
+                        <TextField fx:id="activityValueField" promptText="Value…" prefWidth="80" styleClass="admin-input"/>
+
+                        <Region HBox.hgrow="ALWAYS"/>
+                    </HBox>
+
+
+                    <TableView fx:id="activeTable" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn fx:id="colUsername" text="Username" prefWidth="120"/>
+                            <TableColumn fx:id="colFullname" text="Full Name" prefWidth="150"/>
+                            <TableColumn fx:id="colOpens" text="App Opens" prefWidth="100"/>
+                            <TableColumn fx:id="colPeople" text="People Chatted" prefWidth="130"/>
+                            <TableColumn fx:id="colGroups" text="Groups Chatted" prefWidth="130"/>
+                            <TableColumn fx:id="colCreated" text="Created At" prefWidth="120"/>
+                        </columns>
+
+                        <columnResizePolicy>
+                            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                        </columnResizePolicy>
+                    </TableView>
+                </VBox>
+            </StackPane>
+        </center>
+    </BorderPane>
+</StackPane>
