@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:id="root"
+           fx:controller="com.example.user.controllers.UserInfoViewController"
+           stylesheets="@../../../shared/ui/css/DiscordTheme.css"
+           styleClass="gradient-bg">
+
+    <VBox spacing="40" prefHeight="480" prefWidth="360">
+        <padding><Insets top="30" bottom="30" left="30" right="30"/></padding>
+
+        <VBox spacing="20" HBox.hgrow="ALWAYS" maxWidth="Infinity" BorderPane.alignment="CENTER" styleClass="panel,translucent-bg" style="-fx-padding: 20;">
+
+            <VBox spacing="10">
+                <fx:include source="../../../shared/ui/fxml/StatusIcon.fxml"/>
+
+                <HBox alignment="CENTER">
+                    <Label text="Khoa" maxWidth="Infinity" styleClass="title"/>
+                </HBox>
+            </VBox>
+
+            <Separator/>
+
+            <VBox VBox.vgrow="ALWAYS" alignment="CENTER">
+                <VBox spacing="10" alignment="CENTER_LEFT">
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="Email:" styleClass="bold-text"/>
+                        <Label text="takhoa23@clc.fitus.edu.vn" styleClass="darkened-text"/>
+                    </HBox>
+
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="Full Name:" styleClass="bold-text"/>
+                        <Label text="Khoa Tran" styleClass="darkened-text"/>
+                    </HBox>
+
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="Address:" styleClass="bold-text"/>
+                        <Label text="123 Nguyen Trai, Hanoi" styleClass="darkened-text"/>
+                    </HBox>
+
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="Date of Birth:" styleClass="bold-text"/>
+                        <Label text="01/01/2000" styleClass="darkened-text"/>
+                    </HBox>
+
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="Gender:" styleClass="bold-text"/>
+                        <Label text="Male" styleClass="darkened-text"/>
+                    </HBox>
+                </VBox>
+            </VBox>
+        </VBox>
+
+        <VBox spacing="10" maxWidth="Infinity">
+            <Button fx:id="addFriendButton" text="Add Friend" onAction="#handleAddFriendClick" styleClass="normal-button,translucent-bg" maxWidth="Infinity"/>
+            <Button fx:id="addToGroup" text="Add To Group" onAction="#handleAddToGroupClick" styleClass="normal-button,translucent-bg" maxWidth="Infinity"/>
+            <Button fx:id="blockButton" text="Block User" onAction="#handleBlockClick" styleClass="normal-button,translucent-bg" maxWidth="Infinity"/>
+            <Button fx:id="reportButton" text="Report User" onAction="#handleReportClick" styleClass="normal-button,translucent-bg" maxWidth="Infinity"/>
+        </VBox>
+    </VBox>
+
+</StackPane>

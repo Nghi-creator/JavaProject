@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+
+<VBox spacing="20" style="-fx-background-color: #202225; -fx-padding: 30;"
+ xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" 
+ fx:controller="com.example.admin.controllers.AdminUpdateUserViewController"
+ stylesheets="@../../../shared/ui/css/DiscordTheme.css">
+ <Text text="Add New User" style="-fx-fill: white; -fx-font-size: 20px; -fx-font-weight: 700;"/>
+    
+    <GridPane vgap="15" hgap="20">
+        <Label text="First Name" styleClass="form-label" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+        <TextField styleClass="form-input" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+        
+        <Label text="Last Name" styleClass="form-label" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+        <TextField styleClass="form-input" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        
+        <Label text="Username" styleClass="form-label" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+        <TextField styleClass="form-input" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+        
+        <Label text="Email" styleClass="form-label" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+        <TextField styleClass="form-input" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+        
+        <Label text="Address" styleClass="form-label" GridPane.columnIndex="0" GridPane.rowIndex="4" GridPane.columnSpan="2"/>
+        <TextField styleClass="form-input" GridPane.columnIndex="0" GridPane.rowIndex="5" GridPane.columnSpan="2"/>
+    </GridPane>
+    
+    <HBox alignment="CENTER_RIGHT" spacing="15">
+        <Button fx:id="btnCancel" text="Cancel" styleClass="admin-action-button" 
+        style="-fx-background-color: #40444b;" onAction="#closeWindow"/>
+        <Button text="Confirm Add" styleClass="admin-action-button" onAction="#closeWindow"/>
+    </HBox>
+</VBox>
