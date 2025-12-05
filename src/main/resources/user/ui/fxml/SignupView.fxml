@@ -1,27 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.image.Image?>
-
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.collections.FXCollections?>
-<?import java.lang.String?>
 <?import javafx.scene.control.DatePicker?>
+<?import java.lang.String?>
+
 <VBox xmlns="http://javafx.com/javafx/17"
       xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.example.user.controllers.SignupViewController"
+      fx:controller="com.example.chatroom.user.controllers.SignupViewController"
       alignment="CENTER"
       spacing="20"
       prefWidth="360"
       prefHeight="600"
       fillWidth="false"
       stylesheets="@/shared/ui/css/DiscordTheme.css">
-
 
     <VBox alignment="CENTER" spacing="10">
         <ImageView fx:id="logoImage"
@@ -35,42 +36,125 @@
                styleClass="title"/>
     </VBox>
 
-
     <VBox alignment="CENTER" spacing="12" prefWidth="260">
-        <TextField fx:id="usernameField"
-                   promptText="Username"
-                   styleClass="input-field"
-                   maxWidth="200"/>
-        <TextField fx:id="emailField"
-                   promptText="Email"
-                   styleClass="input-field"
-                   maxWidth="200"/>
-        <TextField fx:id="fullNameField"
-                   promptText="Full Name"
-                   styleClass="input-field"
-                   maxWidth="200"/>
-        <TextField fx:id="addressField"
-                   promptText="Address"
-                   styleClass="input-field"
-                   maxWidth="200"/>
-        <DatePicker fx:id="dobPicker" maxWidth="200"/>
-        <ComboBox fx:id="genderSelector" styleClass="normal-combo" maxWidth="200">
-            <items>
-                <FXCollections fx:factory="observableArrayList">
-                    <String fx:value="Male"/>
-                    <String fx:value="Female"/>
-                    <String fx:value="Other"/>
-                </FXCollections>
-            </items>
-        </ComboBox>
-        <PasswordField fx:id="passwordField"
-                       promptText="Password"
-                       styleClass="input-field"
-                       maxWidth="200"/>
-        <PasswordField fx:id="confirmPasswordField"
-                       promptText="Confirm Password"
-                       styleClass="input-field"
-                       maxWidth="200"/>
+
+        <HBox alignment="CENTER" spacing="5">
+            <StackPane>
+                <TextField fx:id="usernameField"
+                           promptText="Username"
+                           styleClass="input-field"
+                           maxWidth="200"/>
+                <Label fx:id="usernameError"
+                       text=""
+                       style="-fx-text-fill: red;"
+                       translateX="210"
+                       visible="false"/>
+            </StackPane>
+        </HBox>
+
+        <HBox alignment="CENTER" spacing="5">
+            <StackPane>
+                <TextField fx:id="emailField"
+                           promptText="Email"
+                           styleClass="input-field"
+                           maxWidth="200"/>
+                <Label fx:id="emailError"
+                       text=""
+                       style="-fx-text-fill: red;"
+                       translateX="210"
+                       visible="false"/>
+            </StackPane>
+        </HBox>
+
+        <HBox alignment="CENTER" spacing="5">
+            <StackPane>
+                <TextField fx:id="fullNameField"
+                           promptText="Full Name"
+                           styleClass="input-field"
+                           maxWidth="200"/>
+                <Label fx:id="fullNameError"
+                       text=""
+                       style="-fx-text-fill: red;"
+                       translateX="210"
+                       visible="false"/>
+            </StackPane>
+        </HBox>
+
+        <HBox alignment="CENTER" spacing="5">
+            <StackPane>
+                <TextField fx:id="addressField"
+                           promptText="Address"
+                           styleClass="input-field"
+                           maxWidth="200"/>
+                <Label fx:id="addressError"
+                       text=""
+                       style="-fx-text-fill: red;"
+                       translateX="210"
+                       visible="false"/>
+            </StackPane>
+        </HBox>
+
+        <HBox alignment="CENTER" spacing="5">
+            <StackPane>
+                <DatePicker fx:id="dobPicker"
+                            maxWidth="200" prefWidth="190"/>
+                <Label fx:id="dobError"
+                       text=""
+                       style="-fx-text-fill: red;"
+                       translateX="210"
+                       visible="false"/>
+            </StackPane>
+        </HBox>
+
+        <HBox alignment="CENTER" spacing="5">
+            <StackPane>
+                <ComboBox fx:id="genderSelector"
+                          styleClass="normal-combo"
+                          maxWidth="200" prefWidth="190">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="Male"/>
+                            <String fx:value="Female"/>
+                            <String fx:value="Other"/>
+                        </FXCollections>
+                    </items>
+                </ComboBox>
+                <Label fx:id="genderError"
+                       text=""
+                       style="-fx-text-fill: red;"
+                       translateX="210"
+                       visible="false"/>
+            </StackPane>
+        </HBox>
+
+        <HBox alignment="CENTER" spacing="5">
+            <StackPane>
+                <PasswordField fx:id="passwordField"
+                               promptText="Password"
+                               styleClass="input-field"
+                               maxWidth="200"/>
+                <Label fx:id="passwordError"
+                       text=""
+                       style="-fx-text-fill: red;"
+                       translateX="210"
+                       visible="false"/>
+            </StackPane>
+        </HBox>
+
+        <HBox alignment="CENTER" spacing="5">
+            <StackPane>
+                <PasswordField fx:id="confirmPasswordField"
+                               promptText="Confirm Password"
+                               styleClass="input-field"
+                               maxWidth="200"/>
+                <Label fx:id="confirmPasswordError"
+                       text=""
+                       style="-fx-text-fill: red;"
+                       translateX="210"
+                       visible="false"/>
+            </StackPane>
+        </HBox>
+
         <Button text="Sign Up"
                 onAction="#handleSignup"
                 styleClass="normal-button"

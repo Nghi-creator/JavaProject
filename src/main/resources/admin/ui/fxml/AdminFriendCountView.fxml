@@ -6,7 +6,7 @@
 <?import javafx.scene.text.Text?>
 <?import java.lang.String?>
 
-<StackPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.admin.controllers.AdminFriendCountViewController" styleClass="root" stylesheets="@../../../shared/ui/css/DiscordTheme.css">
+<StackPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.chatroom.admin.controllers.AdminFriendCountViewController" styleClass="root" stylesheets="@../../../shared/ui/css/DiscordTheme.css">
     <BorderPane prefHeight="720.0" prefWidth="1280.0">
         <top>
             <fx:include fx:id="header" source="AdminHeader.fxml"/>
