@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.HBox?>
 <StackPane xmlns="http://javafx.com/javafx/17"
            xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="com.example.admin.controllers.AdminActiveUsersChartViewController"
+           fx:controller="com.example.chatroom.admin.controllers.AdminActiveUsersChartViewController"
            styleClass="root"
            stylesheets="@../../../shared/ui/css/DiscordTheme.css">
 

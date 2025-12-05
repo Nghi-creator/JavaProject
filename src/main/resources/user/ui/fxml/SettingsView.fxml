@@ -18,7 +18,7 @@
 <?import javafx.scene.control.DatePicker?>
 <StackPane xmlns="http://javafx.com/javafx/17"
            xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="com.example.core.shared.controllers.SettingsViewController"
+           fx:controller="com.example.chatroom.core.shared.controllers.SettingsViewController"
            stylesheets="/shared/ui/css/DiscordTheme.css">
 
     <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED">

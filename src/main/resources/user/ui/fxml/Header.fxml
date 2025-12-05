@@ -11,7 +11,7 @@
 <?import javafx.geometry.Insets?>
 
 <StackPane xmlns:fx="http://javafx.com/fxml/1" BorderPane.alignment="CENTER" stylesheets="@/shared/ui/css/DiscordTheme.css"
-           fx:controller="com.example.core.shared.controllers.HeaderController">
+           fx:controller="com.example.chatroom.core.shared.controllers.HeaderController">
     <styleClass>
         <String fx:value="panel"/>
         <String fx:value="header-panel"/>

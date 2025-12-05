@@ -13,7 +13,7 @@
 
 <StackPane xmlns="http://javafx.com/javafx/17"
            xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="com.example.user.controllers.ReportViewController"
+           fx:controller="com.example.chatroom.user.controllers.ReportViewController"
            stylesheets="/shared/ui/css/DiscordTheme.css">
 
     <ScrollPane fitToWidth="true"

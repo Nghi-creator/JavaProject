@@ -8,7 +8,7 @@
 <?import javafx.scene.text.Text?>
 
 <HBox xmlns:fx="http://javafx.com/fxml/1" spacing="15" styleClass="hoverable-bg" stylesheets="@/shared/ui/css/DiscordTheme.css"
-      fx:controller="com.example.core.shared.controllers.MessageController">
+      fx:controller="com.example.chatroom.core.shared.controllers.MessageController">
     <fx:include fx:id="statusIcon" source="StatusIcon.fxml"/>
     <VBox>
         <HBox alignment="CENTER_LEFT" spacing="10.0">
