@@ -1,5 +1,6 @@
 package com.example.chatroom.user;
 
+import com.example.chatroom.core.shared.controllers.ConfigController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -7,17 +8,13 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import java.net.URL;
 
-/**
- * Main Application Class for users
- * This class loads the FXML file, sets up the scene,
- * and displays the main application window.
- */
-
 public class ChatApp extends Application {
 
     @Override
     public void start(Stage primaryStage) {
         try {
+            ConfigController.loadServerIp();
+
             URL fxmlUrl = getClass().getResource("/user/ui/fxml/LoginView.fxml");
 
             if (fxmlUrl == null) {
