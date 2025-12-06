@@ -1,5 +1,6 @@
 package com.example.chatroom.user.controllers;
 
+import com.example.chatroom.core.shared.controllers.ConfigController;
 import com.example.chatroom.core.shared.controllers.SceneSwitcher;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -61,8 +62,9 @@ public class SignupViewController {
         );
 
         try {
+            String serverIp = ConfigController.getServerIp();
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI("http://localhost:8080/api/users/register"))
+                    .uri(new URI("http://" + serverIp + ":8080/api/users/register"))
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
                     .build();

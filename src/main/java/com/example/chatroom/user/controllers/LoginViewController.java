@@ -1,5 +1,6 @@
 package com.example.chatroom.user.controllers;
 
+import com.example.chatroom.core.shared.controllers.ConfigController;
 import com.example.chatroom.core.shared.controllers.SceneSwitcher;
 import javafx.fxml.FXML;
 import javafx.scene.control.PasswordField;
@@ -23,8 +24,9 @@ public class LoginViewController {
         String jsonPayload = String.format("{\"username\":\"%s\",\"password\":\"%s\"}", username, password);
 
         try {
+            String serverIp = ConfigController.getServerIp();
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI("http://localhost:8080/api/users/login"))
+                    .uri(new URI("http://" + serverIp + ":8080/api/users/login"))
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
                     .build();
