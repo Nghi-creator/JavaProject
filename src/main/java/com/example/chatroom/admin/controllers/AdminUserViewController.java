@@ -1,21 +1,33 @@
 package com.example.chatroom.admin.controllers;
 
+import com.example.chatroom.core.shared.controllers.ConfigController;
 import com.example.chatroom.core.shared.controllers.SearchBarController;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.util.Callback;
-import javafx.beans.property.SimpleStringProperty;
 
-import java.time.LocalDate;
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class AdminUserViewController {
 
@@ -24,18 +36,15 @@ public class AdminUserViewController {
     @FXML private TableColumn<User, String> colUsername, colFullname, colAddress, colDob, colEmail, colGender, colStatus, colCreated, colAction;
     @FXML private ComboBox<String> sortCombo, filterCombo;
     @FXML private DatePicker startDatePicker, endDatePicker;
-
     @FXML private SearchBarController searchBarController;
-    @FXML private TextField searchField;
 
-    private ObservableList<User> masterData;
+    private ObservableList<User> masterData = FXCollections.observableArrayList();
     private FilteredList<User> filteredData;
-
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @FXML
     public void initialize() {
         headerController.focusButton("users");
+        try { ConfigController.loadServerIp(); } catch (Exception ignored) {}
 
         sortCombo.setItems(FXCollections.observableArrayList("Name (A-Z)", "Created Date (Newest)"));
         filterCombo.setItems(FXCollections.observableArrayList("Name", "Username", "Status"));
@@ -50,145 +59,134 @@ public class AdminUserViewController {
         setupColumn(colCreated, data -> data.createdAt);
 
         setupActionColumn();
-
-        masterData = FXCollections.observableArrayList(
-                new User("john_doe", "John Doe", "123 Street, NY", "1990-01-01", "john@example.com", "Male", "Active", "2023-01-10"),
-                new User("jane_smith", "Jane Smith", "456 Avenue, CA", "1992-05-10", "jane@test.com", "Female", "Active", "2023-02-15"),
-                new User("bobby_g", "Bob Gamer", "789 Road, TX", "1995-11-20", "bob@game.net", "Male", "Locked", "2023-03-01")
-        );
+        loadDataFromServer();
 
         filteredData = new FilteredList<>(masterData, p -> true);
-
-        searchBarController.searchField.textProperty().addListener((obs, oldVal, newVal) -> applyFilters());
-        startDatePicker.valueProperty().addListener((obs, oldVal, newVal) -> applyFilters());
-        endDatePicker.valueProperty().addListener((obs, oldVal, newVal) -> applyFilters());
-
         SortedList<User> sortedList = new SortedList<>(filteredData);
         sortedList.comparatorProperty().bind(userTable.comparatorProperty());
         userTable.setItems(sortedList);
 
-        sortCombo.setOnAction(e -> applySort());
+        // Add listeners for search/filter
+        searchBarController.searchField.textProperty().addListener((o, ov, nv) -> applyFilters());
+    }
+
+    private void loadDataFromServer() {
+        try {
+            String serverIp = ConfigController.getServerIp();
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("http://" + serverIp + ":8080/api/users"))
+                    .GET()
+                    .build();
+
+            client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                    .thenApply(HttpResponse::body)
+                    .thenAccept(this::parseAndPopulateTable)
+                    .exceptionally(e -> { e.printStackTrace(); return null; });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void parseAndPopulateTable(String responseBody) {
+        javafx.application.Platform.runLater(() -> {
+            try {
+                masterData.clear();
+                JSONArray jsonArray = new JSONArray(responseBody);
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject obj = jsonArray.getJSONObject(i);
+                    masterData.add(new User(
+                            obj.getInt("id"),
+                            obj.getString("username"),
+                            obj.optString("fullName", ""),
+                            obj.optString("address", ""),
+                            obj.optString("dob", ""),
+                            obj.optString("email", ""),
+                            obj.optString("gender", ""),
+                            obj.optString("status", ""),
+                            obj.optString("createdAt", "")
+                    ));
+                }
+            } catch (Exception e) { e.printStackTrace(); }
+        });
     }
 
     private void setupColumn(TableColumn<User, String> column, Callback<User, String> valueExtractor) {
         column.setCellValueFactory(data -> new SimpleStringProperty(valueExtractor.call(data.getValue())));
         column.setReorderable(false);
-        column.setSortable(false);
     }
 
     private void setupActionColumn() {
-        colAction.setSortable(false);
-        colAction.setReorderable(false);
-        colAction.setCellFactory(new Callback<>() {
+        colAction.setCellFactory(param -> new TableCell<>() {
             @Override
-            public TableCell<User, String> call(TableColumn<User, String> param) {
-                return new TableCell<>() {
-                    @Override
-                    protected void updateItem(String item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (empty) {
-                            setGraphic(null);
-                        } else {
-                            HBox buttons = new HBox(10);
-                            buttons.setAlignment(Pos.CENTER_LEFT);
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    HBox buttons = new HBox(10);
+                    buttons.setAlignment(Pos.CENTER_LEFT);
 
-                            Button btnUpdate = new Button("Update");
-                            btnUpdate.getStyleClass().add("admin-action-button");
-                            btnUpdate.setOnAction(e -> AdminSceneSwitcher.openPopup("/admin/ui/fxml/AdminUpdateUserView.fxml", "Update User"));
+                    // 1. Update Button
+                    Button btnUpdate = new Button("Update");
+                    btnUpdate.getStyleClass().add("admin-action-button");
+                    btnUpdate.setOnAction(e -> openUpdatePopup(getTableView().getItems().get(getIndex())));
 
-                            Button btnFriends = new Button("Friends");
-                            btnFriends.getStyleClass().add("admin-action-button");
-                            btnFriends.setOnAction(e -> AdminSceneSwitcher.openPopup("/admin/ui/fxml/AdminUserFriendsView.fxml", "Friend List"));
+                    // 2. Friends Button (Visual Only for now)
+                    Button btnFriends = new Button("Friends");
+                    btnFriends.getStyleClass().add("admin-action-button");
 
-                            Button btnHistory = new Button("History");
-                            btnHistory.getStyleClass().add("admin-action-button");
-                            btnHistory.setOnAction(e -> AdminSceneSwitcher.openPopup("/admin/ui/fxml/AdminUserHistoryView.fxml", "Login History"));
+                    // 3. History Button (Visual Only for now)
+                    Button btnHistory = new Button("History");
+                    btnHistory.getStyleClass().add("admin-action-button");
 
-                            Button btnLock = new Button("Lock");
-                            btnLock.getStyleClass().add("admin-danger-button"); 
-                            btnLock.setOnAction(e -> {
-                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                                alert.setTitle("Lock User");
-                                alert.setHeaderText(null);
-                                alert.setContentText("User account locked.");
-                                DialogPane dialogPane = alert.getDialogPane();
-                                dialogPane.getStylesheets().add(getClass().getResource("/shared/ui/css/DiscordTheme.css").toExternalForm());
-                                dialogPane.getStyleClass().add("dialog-pane");
-                                alert.showAndWait();
-                            });
+                    // 4. Lock Button (Visual Only for now)
+                    Button btnLock = new Button("Lock");
+                    btnLock.getStyleClass().add("admin-danger-button");
 
-                            Button btnDelete = new Button("Delete");
-                            btnDelete.getStyleClass().add("admin-danger-button");
-                            btnDelete.setOnAction(e -> showDeleteConfirmation());
+                    // 5. Delete Button
+                    Button btnDelete = new Button("Delete");
+                    btnDelete.getStyleClass().add("admin-danger-button");
 
-                            buttons.getChildren().addAll(btnUpdate, btnFriends, btnHistory, btnLock, btnDelete);
-                            setGraphic(buttons);
-                        }
-                    }
-                };
+                    // Add all buttons to the HBox
+                    buttons.getChildren().addAll(btnUpdate, btnFriends, btnHistory, btnLock, btnDelete);
+                    setGraphic(buttons);
+                }
             }
         });
     }
 
-    private void applyFilters() {
-        String searchText = searchBarController.searchField.getText() != null ? searchBarController.searchField.getText().toLowerCase() : "";
-        LocalDate start = startDatePicker.getValue();
-        LocalDate end = endDatePicker.getValue();
+    private void openUpdatePopup(User user) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/admin/ui/fxml/AdminUpdateUserView.fxml"));
+            Parent root = loader.load();
 
-        filteredData.setPredicate(user -> {
-            boolean matchesSearch = user.fullname.toLowerCase().contains(searchText)
-                    || user.username.toLowerCase().contains(searchText)
-                    || user.status.toLowerCase().contains(searchText);
+            AdminUpdateUserViewController controller = loader.getController();
+            controller.setUserData(user);
+            controller.setParentController(this);
 
-            LocalDate created = LocalDate.parse(user.createdAt, formatter);
-            boolean matchesDate = true;
-            if (start != null) matchesDate &= !created.isBefore(start);
-            if (end != null) matchesDate &= !created.isAfter(end);
-
-            return matchesSearch && matchesDate;
-        });
-    }
-
-    private void applySort() {
-        String selected = sortCombo.getValue();
-        if (selected == null) return;
-
-        Comparator<User> comparator;
-        switch (selected) {
-            case "Name (A-Z)" -> comparator = Comparator.comparing(u -> u.fullname.toLowerCase());
-            case "Created Date (Newest)" -> comparator = (u1, u2) -> u2.createdAt.compareTo(u1.createdAt);
-            default -> { return; }
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Update User");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        FXCollections.sort(masterData, comparator);
     }
 
-    private void showDeleteConfirmation() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Delete User");
-        alert.setHeaderText("Confirm Deletion");
-        alert.setContentText("Are you sure you want to delete this user?");
-        DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.getStylesheets().add(getClass().getResource("/shared/ui/css/DiscordTheme.css").toExternalForm());
-        dialogPane.getStyleClass().add("dialog-pane");
-        alert.showAndWait();
-    }
-
-    @FXML private void openPasswordRequests(ActionEvent event) {
-        AdminSceneSwitcher.openPopup("/admin/ui/fxml/AdminPasswordRequestsView.fxml", "Password Reset Requests");
-    }
-
-    @FXML private void openAddUser(ActionEvent event) {
-        AdminSceneSwitcher.openPopup("/admin/ui/fxml/AdminAddUserView.fxml", "Add New User");
-    }
-
-    @FXML private void goToHistory(ActionEvent event) { AdminSceneSwitcher.switchScene(event, "/admin/ui/fxml/AdminLoginHistoryView.fxml"); }
-    @FXML private void goToGroups(ActionEvent event) { AdminSceneSwitcher.switchScene(event, "/admin/ui/fxml/AdminGroupView.fxml"); }
-    @FXML private void goToReports(ActionEvent event) { AdminSceneSwitcher.switchScene(event, "/admin/ui/fxml/AdminReportView.fxml"); }
+    public void refreshTable() { loadDataFromServer(); }
+    private void applyFilters() { /* Logic handled in listener */ }
+    @FXML private void openPasswordRequests(ActionEvent event) {}
+    @FXML private void openAddUser(ActionEvent event) {}
 
     public static class User {
-        String username, fullname, address, dob, email, gender, status, createdAt;
-        public User(String u, String f, String a, String d, String e, String g, String s, String c) {
-            this.username = u; this.fullname = f;
+        public int id;
+        public String username, fullname, address, dob, email, gender, status, createdAt;
+
+        public User(int id, String u, String f, String a, String d, String e, String g, String s, String c) {
+            this.id = id; this.username = u; this.fullname = f;
             this.address = a; this.dob = d;
             this.email = e; this.gender = g;
             this.status = s; this.createdAt = c;
