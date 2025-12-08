@@ -1,5 +1,7 @@
 package com.example.chatroom.user.controllers;
 
+import com.example.chatroom.core.dto.SignupRequest;
+import com.example.chatroom.core.services.UserService;
 import com.example.chatroom.core.shared.controllers.ConfigController;
 import com.example.chatroom.core.shared.controllers.SceneSwitcher;
 import javafx.event.ActionEvent;
@@ -48,40 +50,27 @@ public class SignupViewController {
 
         if (!valid) return;
 
-        String username = usernameField.getText().trim();
-        String email = emailField.getText().trim();
-        String fullName = fullNameField.getText().trim();
-        String address = addressField.getText().trim();
-        String gender = genderSelector.getValue();
-        LocalDate dob = dobPicker.getValue();
-        String password = passwordField.getText();
+        boolean emailAvailable = UserService.checkEmailAvailability(emailField.getText().trim());
+        if (!emailAvailable) {
+            SceneSwitcher.showMessage("Email already in use");
+        }
 
-        String jsonPayload = String.format(
-                "{\"username\":\"%s\",\"password\":\"%s\",\"fullName\":\"%s\",\"email\":\"%s\",\"gender\":\"%s\",\"dob\":\"%s\",\"address\":\"%s\"}",
-                username, password, fullName, email, gender, dob != null ? dob.toString() : "", address
+        SignupRequest payload = new SignupRequest(
+                usernameField.getText().trim(),
+                passwordField.getText().trim(),
+                fullNameField.getText().trim(),
+                emailField.getText().trim(),
+                genderSelector.getValue(),
+                dobPicker.getValue(),
+                addressField.getText().trim()
         );
 
-        try {
-            String serverIp = ConfigController.getServerIp();
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI("http://" + serverIp + ":8080/api/users/register"))
-                    .header("Content-Type", "application/json")
-                    .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
-                    .build();
+        boolean success = UserService.signup(payload);
 
-            HttpClient client = HttpClient.newHttpClient();
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-            System.out.println("Server response: " + response.body());
-
-            if (response.statusCode() == 200) {
-                SceneSwitcher.switchScene((javafx.scene.Node) event.getSource(), "/user/ui/fxml/LoginView.fxml");
-            } else {
-                SceneSwitcher.showMessage("Signup failed");
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (success) {
+            SceneSwitcher.switchScene(usernameField, "/user/ui/fxml/LoginView.fxml");
+        } else {
+            SceneSwitcher.showMessage("Signup failed");
         }
     }
 
