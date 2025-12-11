@@ -303,8 +303,22 @@
 /* --- OTHER COMPONENTS --- */
 .combo-box { -fx-background-color: #2f3136; -fx-border-color: rgba(255,255,255,0.1); -fx-border-radius: 5px; }
 .combo-box .list-cell { -fx-text-fill: white; -fx-background-color: #2f3136; }
-.combo-box-popup .list-view { -fx-background-color: #2f3136; }
-.combo-box-popup .list-cell:filled:hover { -fx-background-color: #40444b; }
+.combo-box-popup .list-view {
+    -fx-background-color: #2f3136;
+    -fx-border-color: #202225;
+}
+
+.combo-box-popup .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #dcddde;
+    -fx-padding: 5 10 5 10;
+}
+
+.combo-box-popup .list-cell:filled:selected,
+.combo-box-popup .list-cell:filled:hover {
+    -fx-background-color: #40444b;
+    -fx-text-fill: white;
+}
 .combo-box .arrow-button .arrow { -fx-background-color: white; }
 
 .scroll-pane { -fx-background-color: transparent; }
@@ -395,13 +409,13 @@
     -fx-text-fill: #c8c8c8;
     -fx-font-size: 15px;
     -fx-prompt-text-fill: #72767d;
-    -fx-background-color: transparent; 
+    -fx-background-color: transparent;
     -fx-background-radius: 8px;
     -fx-border-radius: 8px;
 }
 
 .date-picker:focused, .date-picker .text-field:focused {
-    -fx-border-color: #3a2a4f;
+    -fx-border-color: #5865F2; /* Changed to Discord Blue for focus */
     -fx-border-width: 1px;
 }
 
@@ -410,31 +424,40 @@
     -fx-border-radius: 8px;
 }
 
-.date-picker .date-picker-popup {
-    -fx-background-color: #0006;
-    -fx-border-color: rgba(0, 0, 0, 0.3);
-    -fx-border-width: 1px;
-    -fx-background-radius: 8px;
-    -fx-border-radius: 8px;
+.date-picker .arrow-button .arrow {
+    -fx-background-color: #b9bbbe;
 }
 
-.date-picker .day-cell {
-    -fx-background-color: transparent;
-    -fx-text-fill: #c8c8c8;
+.date-picker-popup {
+    -fx-background-color: #2f3136;
+    -fx-border-color: #202225;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 10, 0, 0, 2);
 }
 
-.date-picker .day-cell:hover {
-    -fx-background-color: #3a2a4f33;
+.date-picker-popup .month-year-pane {
+    -fx-background-color: #2f3136;
 }
 
-.date-picker .day-cell:focused {
-    -fx-background-color: #3a2a4f66;
-    -fx-text-fill: #fff;
+.date-picker-popup .month-year-pane .label {
+    -fx-text-fill: white;
 }
 
-.date-picker .month-year-pane {
-    -fx-background-color: #0006;
-    -fx-text-fill: #c8c8c8;
+.date-picker-popup .week-number-cell {
+    -fx-text-fill: #b9bbbe;
+}
+
+.date-picker-popup .day-cell {
+    -fx-background-color: #2f3136;
+    -fx-text-fill: white;
+}
+
+.date-picker-popup .day-cell:hover {
+    -fx-background-color: #40444b;
+}
+
+.date-picker-popup .day-cell:selected {
+    -fx-background-color: #5865F2;
+    -fx-text-fill: white;
 }
 
 .normal-combo {

@@ -13,52 +13,21 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
-public class AdminUpdateUserViewController {
+public class AdminAddUserViewController {
 
     @FXML private TextField firstNameField, lastNameField, usernameField, emailField, addressField;
     @FXML private ComboBox<String> genderCombo;
     @FXML private DatePicker dobPicker;
     @FXML private Button btnCancel;
 
-    private AdminUserViewController.User currentUser;
     private AdminUserViewController parentController;
 
     @FXML
     public void initialize() {
+        // Initialize Gender options
         genderCombo.setItems(FXCollections.observableArrayList("MALE", "FEMALE", "OTHER"));
-    }
-
-    public void setUserData(AdminUserViewController.User user) {
-        this.currentUser = user;
-        usernameField.setText(user.username);
-        emailField.setText(user.email);
-        addressField.setText(user.address);
-        usernameField.setDisable(true);
-
-        String[] names = user.fullname.split(" ", 2);
-        firstNameField.setText(names.length > 0 ? names[0] : "");
-        lastNameField.setText(names.length > 1 ? names[1] : "");
-
-        // Set Gender
-        if (user.gender != null && !user.gender.isEmpty()) {
-            genderCombo.getSelectionModel().select(user.gender);
-        } else {
-            genderCombo.getSelectionModel().select("OTHER");
-        }
-
-        // Set DOB (Parse string to LocalDate)
-        if (user.dob != null && !user.dob.isEmpty()) {
-            try {
-                // Assuming server sends ISO format (yyyy-MM-dd) or standard string
-                // If your table displays raw LocalDateTime string (e.g. 2000-01-01T00:00), we need to split it
-                String datePart = user.dob.split("T")[0];
-                dobPicker.setValue(LocalDate.parse(datePart));
-            } catch (Exception e) {
-                System.err.println("Could not parse DOB: " + user.dob);
-            }
-        }
+        genderCombo.getSelectionModel().select("OTHER"); // Default
     }
 
     public void setParentController(AdminUserViewController parent) {
@@ -66,54 +35,65 @@ public class AdminUpdateUserViewController {
     }
 
     @FXML
-    private void handleConfirmUpdate() {
-        String fullName = (firstNameField.getText() + " " + lastNameField.getText()).trim();
+    private void handleConfirmAdd() {
+        if (usernameField.getText().isEmpty() || emailField.getText().isEmpty()) {
+            showAlert("Error", "Username and Email are required.");
+            return;
+        }
 
-        JSONObject json = new JSONObject();
-        json.put("fullName", fullName);
-        json.put("email", emailField.getText());
-        json.put("address", addressField.getText());
-        json.put("username", currentUser.username);
+        if (dobPicker.getValue() != null && dobPicker.getValue().isAfter(LocalDate.now())) {
+            showAlert("Error", "Date of Birth cannot be in the future.");
+            return;
+        }
 
         if (!isValidEmail(emailField.getText())) {
             showAlert("Error", "Invalid email format (e.g., name@example.com).");
             return;
         }
 
+        String fullName = (firstNameField.getText() + " " + lastNameField.getText()).trim();
+
+        JSONObject json = new JSONObject();
+        json.put("username", usernameField.getText());
+        json.put("fullName", fullName);
+        json.put("email", emailField.getText());
+        json.put("address", addressField.getText());
+        json.put("password", "123456");
+        json.put("status", "ACTIVE");
+
         // Add Gender & DOB
         json.put("gender", genderCombo.getValue());
         if (dobPicker.getValue() != null) {
-            json.put("dob", dobPicker.getValue().toString());
+            json.put("dob", dobPicker.getValue().toString()); // Sends "YYYY-MM-DD"
         }
 
+        sendPostRequest(json);
+    }
+
+    private void sendPostRequest(JSONObject json) {
         try {
             String serverIp = ConfigController.getServerIp();
             HttpClient client = HttpClient.newHttpClient();
-
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://" + serverIp + ":8080/api/users/" + currentUser.id))
+                    .uri(URI.create("http://" + serverIp + ":8080/api/users"))
                     .header("Content-Type", "application/json")
-                    .PUT(HttpRequest.BodyPublishers.ofString(json.toString()))
+                    .POST(HttpRequest.BodyPublishers.ofString(json.toString()))
                     .build();
 
             client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                     .thenAccept(response -> Platform.runLater(() -> {
-                        if (response.statusCode() == 200) {
+                        if (response.statusCode() == 200 || response.statusCode() == 201) {
                             if (parentController != null) parentController.refreshTable();
                             closeWindow();
                         } else {
-                            showAlert("Update Failed", "Server returned code: " + response.statusCode());
+                            showAlert("Error", "Failed. Code: " + response.statusCode());
                         }
                     }))
                     .exceptionally(e -> {
-                        Platform.runLater(() -> showAlert("Error", "Connection failed: " + e.getMessage()));
+                        Platform.runLater(() -> showAlert("Connection Error", e.getMessage()));
                         return null;
                     });
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            showAlert("Error", "An unexpected error occurred.");
-        }
+        } catch (Exception e) { e.printStackTrace(); }
     }
 
     private void showAlert(String title, String content) {

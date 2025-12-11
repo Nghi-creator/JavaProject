@@ -4,33 +4,41 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
+<?import java.lang.String?>
 
 <VBox spacing="20" style="-fx-background-color: #202225; -fx-padding: 30;"
- xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" 
- fx:controller="com.example.chatroom.admin.controllers.AdminUpdateUserViewController"
- stylesheets="@../../../shared/ui/css/DiscordTheme.css">
- <Text text="Add New User" style="-fx-fill: white; -fx-font-size: 20px; -fx-font-weight: 700;"/>
-    
+      xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.chatroom.admin.controllers.AdminAddUserViewController"
+      stylesheets="@../../../shared/ui/css/DiscordTheme.css">
+
+    <Text text="Add New User" style="-fx-fill: white; -fx-font-size: 20px; -fx-font-weight: 700;"/>
+
     <GridPane vgap="15" hgap="20">
         <Label text="First Name" styleClass="form-label" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-        <TextField styleClass="form-input" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-        
+        <TextField fx:id="firstNameField" styleClass="form-input" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+
         <Label text="Last Name" styleClass="form-label" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
-        <TextField styleClass="form-input" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-        
-        <Label text="Username" styleClass="form-label" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-        <TextField styleClass="form-input" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-        
-        <Label text="Email" styleClass="form-label" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-        <TextField styleClass="form-input" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
-        
-        <Label text="Address" styleClass="form-label" GridPane.columnIndex="0" GridPane.rowIndex="4" GridPane.columnSpan="2"/>
-        <TextField styleClass="form-input" GridPane.columnIndex="0" GridPane.rowIndex="5" GridPane.columnSpan="2"/>
+        <TextField fx:id="lastNameField" styleClass="form-input" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+        <Label text="Gender" styleClass="form-label" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+        <ComboBox fx:id="genderCombo" styleClass="form-input" prefWidth="250" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+
+        <Label text="Date of Birth" styleClass="form-label" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+        <DatePicker fx:id="dobPicker" styleClass="form-input" prefWidth="250" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+
+        <Label text="Username" styleClass="form-label" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+        <TextField fx:id="usernameField" styleClass="form-input" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+
+        <Label text="Email" styleClass="form-label" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+        <TextField fx:id="emailField" styleClass="form-input" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+
+        <Label text="Address" styleClass="form-label" GridPane.columnIndex="0" GridPane.rowIndex="6" GridPane.columnSpan="2"/>
+        <TextField fx:id="addressField" styleClass="form-input" GridPane.columnIndex="0" GridPane.rowIndex="7" GridPane.columnSpan="2"/>
     </GridPane>
-    
+
     <HBox alignment="CENTER_RIGHT" spacing="15">
-        <Button fx:id="btnCancel" text="Cancel" styleClass="admin-action-button" 
-        style="-fx-background-color: #40444b;" onAction="#closeWindow"/>
-        <Button text="Confirm Add" styleClass="admin-action-button" onAction="#closeWindow"/>
+        <Button fx:id="btnCancel" text="Cancel" styleClass="admin-action-button"
+                style="-fx-background-color: #40444b;" onAction="#closeWindow"/>
+        <Button text="Confirm Add" styleClass="admin-action-button" onAction="#handleConfirmAdd"/>
     </HBox>
 </VBox>
