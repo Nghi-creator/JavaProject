@@ -138,6 +138,7 @@ public class AdminUserViewController {
 
                     Button btnHistory = new Button("History");
                     btnHistory.getStyleClass().add("admin-action-button");
+                    btnHistory.setOnAction(e -> openHistoryPopup(user));
 
                     Button btnLock = new Button();
                     if ("LOCKED".equalsIgnoreCase(user.status)) {
@@ -268,6 +269,24 @@ public class AdminUserViewController {
         alert.showAndWait();
     }
 
+    private void openHistoryPopup(User user) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/admin/ui/fxml/AdminUserHistoryView.fxml"));
+            Parent root = loader.load();
+
+            AdminUserHistoryViewController controller = loader.getController();
+            controller.loadData(user.username);
+
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Login History: " + user.username);
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert("Error", "Could not load history window.");
+        }
+    }
     public static class User {
         public int id;
         public String username, fullname, address, dob, email, gender, status, createdAt;

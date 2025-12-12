@@ -300,12 +300,37 @@
     -fx-background-color: linear-gradient(to bottom, #2a2f4b, #1a1f3b);
 }
 
-/* --- OTHER COMPONENTS --- */
-.combo-box { -fx-background-color: #2f3136; -fx-border-color: rgba(255,255,255,0.1); -fx-border-radius: 5px; }
-.combo-box .list-cell { -fx-text-fill: white; -fx-background-color: #2f3136; }
+.combo-box {
+    -fx-background-color: #2f3136; /* Dark background matching text fields */
+    -fx-border-color: rgba(0, 0, 0, 0.3);
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+}
+
+.combo-box .list-cell {
+    -fx-text-fill: #dcddde;
+    -fx-background-color: transparent; /* Important so it doesn't cover the border */
+    -fx-padding: 5 10 5 10;
+}
+
+.combo-box .arrow-button {
+    -fx-background-color: transparent;
+}
+
+.combo-box .arrow {
+    -fx-background-color: #b9bbbe;
+}
+
+.combo-box:hover {
+    -fx-border-color: #000;
+    -fx-background-color: #40444b;
+}
+
 .combo-box-popup .list-view {
     -fx-background-color: #2f3136;
     -fx-border-color: #202225;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 10, 0, 0, 2);
 }
 
 .combo-box-popup .list-cell {
@@ -319,7 +344,6 @@
     -fx-background-color: #40444b;
     -fx-text-fill: white;
 }
-.combo-box .arrow-button .arrow { -fx-background-color: white; }
 
 .scroll-pane { -fx-background-color: transparent; }
 .scroll-pane .viewport { -fx-background-color: transparent; }
