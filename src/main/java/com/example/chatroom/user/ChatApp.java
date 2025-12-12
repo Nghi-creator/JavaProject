@@ -1,6 +1,7 @@
 package com.example.chatroom.user;
 
 import com.example.chatroom.core.shared.controllers.ConfigController;
+import com.example.chatroom.core.dto.UserDto; // <--- ADD THIS IMPORT
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -10,6 +11,9 @@ import java.net.URL;
 
 public class ChatApp extends Application {
 
+    public static UserDto currentUser;
+    public static int currentUserId;
+
     @Override
     public void start(Stage primaryStage) {
         try {
@@ -18,7 +22,7 @@ public class ChatApp extends Application {
             URL fxmlUrl = getClass().getResource("/user/ui/fxml/LoginView.fxml");
 
             if (fxmlUrl == null) {
-                System.err.println("Cannot find FXML file. Make sure 'ChatroomView.fxml' is in the 'src' directory.");
+                System.err.println("Cannot find FXML file.");
                 return;
             }
             Parent root = FXMLLoader.load(fxmlUrl);
@@ -28,8 +32,6 @@ public class ChatApp extends Application {
             URL cssUrl = getClass().getResource("/shared/ui/css/DiscordTheme.css");
             if (cssUrl != null) {
                 scene.getStylesheets().add(cssUrl.toExternalForm());
-            } else {
-                System.err.println("Cannot find CSS file. Make sure 'DiscordTheme.css' is in the 'src' directory.");
             }
 
             primaryStage.setTitle("Chatroom");

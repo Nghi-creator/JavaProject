@@ -1,5 +1,6 @@
 package com.example.chatroom.core.shared.controllers;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -11,6 +12,17 @@ import java.io.IOException;
 import java.net.URL;
 
 public class SceneSwitcher {
+
+    public static void switchTo(Class<?> originClass, ActionEvent event, String fxmlPath) {
+        try {
+            Node source = (Node) event.getSource();
+            Stage stage = (Stage) source.getScene().getWindow();
+            switchScene(stage, fxmlPath);
+        } catch (Exception e) {
+            System.err.println("Failed to switch to: " + fxmlPath);
+            e.printStackTrace();
+        }
+    }
 
     public static void switchScene(Stage stage, String fxmlPath) {
         try {
@@ -29,6 +41,7 @@ public class SceneSwitcher {
             } else {
                 scene.setRoot(root);
             }
+            stage.show();
 
         } catch (IOException e) {
             System.err.println("Failed to switch scene to " + fxmlPath);
@@ -41,6 +54,7 @@ public class SceneSwitcher {
         switchScene(stage, fxmlPath);
     }
 
+    // --- 3. Popup Logic ---
     public static void openPopup(String fxmlPath, String title) {
         try {
             URL fxmlUrl = SceneSwitcher.class.getResource(fxmlPath);
@@ -80,5 +94,4 @@ public class SceneSwitcher {
             e.printStackTrace();
         }
     }
-
 }

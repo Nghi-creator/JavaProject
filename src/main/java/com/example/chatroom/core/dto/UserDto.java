@@ -10,6 +10,7 @@ public class UserDto {
     private String email;
     private String gender;
     private LocalDate dob;
+    private String address;
 
     public UserDto() {}
 
@@ -51,5 +52,13 @@ public class UserDto {
     }
     public void setDob(LocalDate dob) {
         this.dob = dob;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 }
