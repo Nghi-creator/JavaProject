@@ -111,7 +111,7 @@ public class LoginViewController {
 
     @FXML
     private void resetPassword(MouseEvent event) {
-        SceneSwitcher.showMessage("Password has been reset (not really)");
+        SceneSwitcher.switchScene((javafx.scene.Node) event.getSource(), "/user/ui/fxml/ForgotPasswordView.fxml");
     }
 
     private void showAlert(String title, String content) {

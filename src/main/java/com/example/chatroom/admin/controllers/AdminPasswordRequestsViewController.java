@@ -1,18 +1,25 @@
 package com.example.chatroom.admin.controllers;
 
+import com.example.chatroom.core.shared.controllers.ConfigController;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 
 public class AdminPasswordRequestsViewController {
 
     @FXML private TableView<PasswordRequest> requestTable;
     @FXML private TableColumn<PasswordRequest, String> colUsername;
+    @FXML private TableColumn<PasswordRequest, String> colNewPassword; // <--- NEW COLUMN
     @FXML private TableColumn<PasswordRequest, String> colDate;
     @FXML private TableColumn<PasswordRequest, Void> colAction;
 
@@ -20,60 +27,93 @@ public class AdminPasswordRequestsViewController {
 
     @FXML
     public void initialize() {
-        // Setup Columns
         colUsername.setCellValueFactory(new PropertyValueFactory<>("username"));
+        colNewPassword.setCellValueFactory(new PropertyValueFactory<>("newPassword")); // <--- NEW
         colDate.setCellValueFactory(new PropertyValueFactory<>("requestDate"));
 
-        // Setup Action Button (Reset)
         colAction.setCellFactory(param -> new TableCell<>() {
-            private final Button btnReset = new Button("Approve Reset");
-
+            private final Button btnReset = new Button("Approve");
             {
                 btnReset.getStyleClass().add("admin-action-button");
                 btnReset.setOnAction(event -> {
                     PasswordRequest req = getTableView().getItems().get(getIndex());
-                    handleResetAction(req);
+                    handleApproveAction(req);
                 });
             }
-
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
-                if (empty) {
-                    setGraphic(null);
-                } else {
-                    setGraphic(btnReset);
-                }
+                setGraphic(empty ? null : btnReset);
             }
         });
 
         requestTable.setItems(requests);
-        loadDummyData(); // Placeholder until backend is ready
+        fetchRequests(); // <--- Fetch real data
     }
 
-    private void loadDummyData() {
-        // Temporary data to test the UI
-        requests.add(new PasswordRequest("john_doe", "2023-10-25"));
-        requests.add(new PasswordRequest("jane_smith", "2023-10-26"));
+    private void fetchRequests() {
+        try {
+            String serverIp = ConfigController.getServerIp();
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("http://" + serverIp + ":8080/api/users/password-requests"))
+                    .GET()
+                    .build();
+
+            client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                    .thenAccept(response -> Platform.runLater(() -> {
+                        if (response.statusCode() == 200) {
+                            requests.clear();
+                            JSONArray arr = new JSONArray(response.body());
+                            for (int i = 0; i < arr.length(); i++) {
+                                JSONObject obj = arr.getJSONObject(i);
+                                requests.add(new PasswordRequest(
+                                        obj.getInt("id"),
+                                        obj.getString("username"),
+                                        obj.getString("newPassword"), // <--- Read password
+                                        obj.getString("requestDate")
+                                ));
+                            }
+                        }
+                    }));
+        } catch (Exception e) { e.printStackTrace(); }
     }
 
-    private void handleResetAction(PasswordRequest req) {
-        System.out.println("Approved reset for: " + req.getUsername());
-        requests.remove(req); // Remove from list after approval
-        // TODO: Call API to actually reset password
+    private void handleApproveAction(PasswordRequest req) {
+        try {
+            String serverIp = ConfigController.getServerIp();
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("http://" + serverIp + ":8080/api/users/password-requests/" + req.getId() + "/approve"))
+                    .POST(HttpRequest.BodyPublishers.noBody())
+                    .build();
+
+            client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                    .thenAccept(response -> Platform.runLater(() -> {
+                        if (response.statusCode() == 200) {
+                            requests.remove(req);
+                        }
+                    }));
+        } catch (Exception e) { e.printStackTrace(); }
     }
 
-    // Helper Class for the Table
+    // Helper Class
     public static class PasswordRequest {
+        private int id;
         private String username;
+        private String newPassword;
         private String requestDate;
 
-        public PasswordRequest(String username, String requestDate) {
+        public PasswordRequest(int id, String username, String newPassword, String requestDate) {
+            this.id = id;
             this.username = username;
+            this.newPassword = newPassword;
             this.requestDate = requestDate;
         }
 
+        public int getId() { return id; }
         public String getUsername() { return username; }
+        public String getNewPassword() { return newPassword; }
         public String getRequestDate() { return requestDate; }
     }
 }
