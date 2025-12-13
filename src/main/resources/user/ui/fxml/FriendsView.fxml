@@ -13,7 +13,9 @@
         <center>
             <StackPane BorderPane.alignment="CENTER">
                 <BorderPane.margin><Insets top="10" left="10" right="10"/></BorderPane.margin>
+
                 <styleClass><String fx:value="panel"/><String fx:value="chat-area-panel"/></styleClass>
+
                 <BorderPane>
                     <padding><Insets top="10" left="10" right="10" bottom="10"/></padding>
 
@@ -60,7 +62,12 @@
 
                             <VBox fx:id="blockedPane" spacing="15" visible="false">
                                 <Label text="Blocked Users" styleClass="heading1"/>
+                                <Separator styleClass="list-separator"/>
+                                <ScrollPane fitToWidth="true" style="-fx-background-color:transparent;">
+                                    <VBox fx:id="blockedListContainer" spacing="10" styleClass="suggested-list-vbox"/>
+                                </ScrollPane>
                             </VBox>
+
                         </StackPane>
                     </center>
                 </BorderPane>
