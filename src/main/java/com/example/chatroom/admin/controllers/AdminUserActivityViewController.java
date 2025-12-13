@@ -89,7 +89,9 @@ public class AdminUserActivityViewController {
     }
 
     private void bindFilters() {
-        searchBarController.searchField.textProperty().addListener((o, oldV, newV) -> applyFilters());
+        // FIXED: Use getSearchField() instead of direct access
+        searchBarController.getSearchField().textProperty().addListener((o, oldV, newV) -> applyFilters());
+
         startDatePicker.valueProperty().addListener((o, oldV, newV) -> applyFilters());
         endDatePicker.valueProperty().addListener((o, oldV, newV) -> applyFilters());
         activityFilterCombo.setOnAction(e -> applyFilters());
@@ -98,8 +100,9 @@ public class AdminUserActivityViewController {
     }
 
     private void applyFilters() {
-        String search = searchBarController.searchField.getText() != null ?
-                searchBarController.searchField.getText().toLowerCase() : "";
+        // FIXED: Use getSearchField()
+        String search = searchBarController.getSearchField().getText() != null ?
+                searchBarController.getSearchField().getText().toLowerCase() : "";
 
         LocalDate start = startDatePicker.getValue();
         LocalDate end = endDatePicker.getValue();
@@ -151,7 +154,6 @@ public class AdminUserActivityViewController {
 
         if (comp != null) FXCollections.sort(masterData, comp);
     }
-
 
     public static class ActiveUser {
         String username, fullname, createdAt;

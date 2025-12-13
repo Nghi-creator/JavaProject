@@ -14,7 +14,6 @@ public class NameCardController {
 
     @FXML
     private void initialize() {
-
         Object controllerObj = statusIcon.getProperties().get("fx:controller");
         if (controllerObj instanceof StatusIconController controller) {
             statusIconController = controller;
@@ -22,19 +21,22 @@ public class NameCardController {
         }
     }
 
-    public void setName(String name) {
-        nameLabel.setText(name);
+    // --- FIXED: Added this method ---
+    public void setData(String username, String fullName) {
+        if (fullName != null && !fullName.isEmpty()) {
+            nameLabel.setText(fullName + " (@" + username + ")");
+        } else {
+            nameLabel.setText(username);
+        }
     }
 
+    public void setName(String name) { nameLabel.setText(name); }
+
     public void setStatus(StatusIconController.Status status) {
-        if (statusIconController != null) {
-            statusIconController.setStatusOnline(status);
-        }
+        if (statusIconController != null) statusIconController.setStatusOnline(status);
     }
 
     public void setIcon(Image image) {
-        if (statusIconController != null) {
-            statusIconController.setIcon(image);
-        }
+        if (statusIconController != null) statusIconController.setIcon(image);
     }
 }

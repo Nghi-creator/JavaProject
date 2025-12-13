@@ -25,7 +25,6 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.Optional;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -67,7 +66,9 @@ public class AdminUserViewController {
         sortedList.comparatorProperty().bind(userTable.comparatorProperty());
         userTable.setItems(sortedList);
 
-        searchBarController.searchField.textProperty().addListener((o, ov, nv) -> applyFilters());
+        if (searchBarController != null) {
+            searchBarController.getSearchField().textProperty().addListener((o, ov, nv) -> applyFilters());
+        }
     }
 
     private void loadDataFromServer() {
@@ -161,7 +162,7 @@ public class AdminUserViewController {
         });
     }
 
-    // --- POPUP HANDLERS (New Implementation) ---
+    // --- POPUP HANDLERS ---
 
     @FXML
     private void openAddUser(ActionEvent event) {
@@ -169,7 +170,6 @@ public class AdminUserViewController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/admin/ui/fxml/AdminAddUserView.fxml"));
             Parent root = loader.load();
 
-            // Get controller and pass 'this' so it can refresh the table on success
             AdminAddUserViewController controller = loader.getController();
             controller.setParentController(this);
 
