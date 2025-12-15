@@ -134,8 +134,10 @@ public class AdminUserViewController {
                     btnUpdate.getStyleClass().add("admin-action-button");
                     btnUpdate.setOnAction(e -> openUpdatePopup(user));
 
+                    // --- CONNECTED FRIENDS BUTTON ---
                     Button btnFriends = new Button("Friends");
                     btnFriends.getStyleClass().add("admin-action-button");
+                    btnFriends.setOnAction(e -> openFriendsPopup(user));
 
                     Button btnHistory = new Button("History");
                     btnHistory.getStyleClass().add("admin-action-button");
@@ -163,6 +165,26 @@ public class AdminUserViewController {
     }
 
     // --- POPUP HANDLERS ---
+
+    // --- NEW METHOD FOR FRIENDS POPUP ---
+    private void openFriendsPopup(User user) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/admin/ui/fxml/AdminUserFriendsView.fxml"));
+            Parent root = loader.load();
+
+            AdminUserFriendsViewController controller = loader.getController();
+            controller.loadFriends(user.id, user.username);
+
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Friends of " + user.username);
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert("Error", "Could not load friends window.");
+        }
+    }
 
     @FXML
     private void openAddUser(ActionEvent event) {
