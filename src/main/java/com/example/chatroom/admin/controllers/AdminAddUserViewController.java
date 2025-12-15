@@ -17,6 +17,7 @@ import java.time.LocalDate;
 public class AdminAddUserViewController {
 
     @FXML private TextField firstNameField, lastNameField, usernameField, emailField, addressField;
+    @FXML private PasswordField passwordField; // <--- NEW FIELD
     @FXML private ComboBox<String> genderCombo;
     @FXML private DatePicker dobPicker;
     @FXML private Button btnCancel;
@@ -25,9 +26,8 @@ public class AdminAddUserViewController {
 
     @FXML
     public void initialize() {
-        // Initialize Gender options
         genderCombo.setItems(FXCollections.observableArrayList("MALE", "FEMALE", "OTHER"));
-        genderCombo.getSelectionModel().select("OTHER"); // Default
+        genderCombo.getSelectionModel().select("OTHER");
     }
 
     public void setParentController(AdminUserViewController parent) {
@@ -36,8 +36,8 @@ public class AdminAddUserViewController {
 
     @FXML
     private void handleConfirmAdd() {
-        if (usernameField.getText().isEmpty() || emailField.getText().isEmpty()) {
-            showAlert("Error", "Username and Email are required.");
+        if (usernameField.getText().isEmpty() || emailField.getText().isEmpty() || passwordField.getText().isEmpty()) {
+            showAlert("Error", "Username, Email, and Password are required.");
             return;
         }
 
@@ -47,7 +47,7 @@ public class AdminAddUserViewController {
         }
 
         if (!isValidEmail(emailField.getText())) {
-            showAlert("Error", "Invalid email format (e.g., name@example.com).");
+            showAlert("Error", "Invalid email format.");
             return;
         }
 
@@ -58,13 +58,15 @@ public class AdminAddUserViewController {
         json.put("fullName", fullName);
         json.put("email", emailField.getText());
         json.put("address", addressField.getText());
-        json.put("password", "123456");
-        json.put("status", "ACTIVE");
 
-        // Add Gender & DOB
+        // USE INPUT PASSWORD INSTEAD OF "123456"
+        json.put("password", passwordField.getText());
+
+        json.put("status", "ACTIVE");
         json.put("gender", genderCombo.getValue());
+
         if (dobPicker.getValue() != null) {
-            json.put("dob", dobPicker.getValue().toString()); // Sends "YYYY-MM-DD"
+            json.put("dob", dobPicker.getValue().toString());
         }
 
         sendPostRequest(json);
@@ -99,7 +101,6 @@ public class AdminAddUserViewController {
     private void showAlert(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
-        alert.setHeaderText(null);
         alert.setContentText(content);
         alert.showAndWait();
     }

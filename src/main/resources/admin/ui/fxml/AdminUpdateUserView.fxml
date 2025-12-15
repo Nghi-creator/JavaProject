@@ -31,16 +31,16 @@
         <Label text="Email" styleClass="form-label" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
         <TextField fx:id="emailField" styleClass="form-input" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
 
-        <Label text="Address" styleClass="form-label" GridPane.columnIndex="0" GridPane.rowIndex="6" GridPane.columnSpan="2"/>
-        <TextField fx:id="addressField" styleClass="form-input" GridPane.columnIndex="0" GridPane.rowIndex="7" GridPane.columnSpan="2"/>
+        <Label text="New Password (Leave empty to keep current)" styleClass="form-label" GridPane.columnIndex="0" GridPane.rowIndex="6" GridPane.columnSpan="2"/>
+        <PasswordField fx:id="passwordField" promptText="Enter new password to reset..." styleClass="form-input" GridPane.columnIndex="0" GridPane.rowIndex="7" GridPane.columnSpan="2"/>
+
+        <Label text="Address" styleClass="form-label" GridPane.columnIndex="0" GridPane.rowIndex="8" GridPane.columnSpan="2"/>
+        <TextField fx:id="addressField" styleClass="form-input" GridPane.columnIndex="0" GridPane.rowIndex="9" GridPane.columnSpan="2"/>
     </GridPane>
 
     <HBox alignment="CENTER_RIGHT" spacing="15">
         <Button fx:id="btnCancel" text="Cancel" styleClass="admin-action-button"
-                style="-fx-background-color: #40444b;"
-                onAction="#closeWindow"/>
-
-        <Button text="Confirm Update" styleClass="admin-action-button"
-                onAction="#handleConfirmUpdate"/>
+                style="-fx-background-color: #40444b;" onAction="#closeWindow"/>
+        <Button text="Confirm Update" styleClass="admin-action-button" onAction="#handleConfirmUpdate"/>
     </HBox>
 </VBox>

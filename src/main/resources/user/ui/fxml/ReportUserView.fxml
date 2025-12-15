@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+
+<VBox spacing="15" style="-fx-background-color: #202225; -fx-padding: 20;"
+      xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.chatroom.user.controllers.ReportUserViewController"
+      stylesheets="@../../../shared/ui/css/DiscordTheme.css" prefWidth="400">
+
+    <Text fx:id="titleText" text="Report User" style="-fx-fill: white; -fx-font-size: 18px; -fx-font-weight: 700;"/>
+
+    <Label text="Reason for reporting:" styleClass="form-label"/>
+
+    <TextArea fx:id="reasonArea" promptText="Please describe the spam behavior..."
+              prefRowCount="5" wrapText="true"
+              styleClass="input-field" style="-fx-background-color: #40444b;"/>
+
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button text="Cancel" onAction="#handleCancel"
+                styleClass="normal-button" style="-fx-background-color: #4f545c;"/>
+        <Button text="Submit Report" onAction="#handleSubmit"
+                styleClass="admin-danger-button"/>
+    </HBox>
+
+</VBox>

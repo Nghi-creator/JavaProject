@@ -13,11 +13,11 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 public class AdminUpdateUserViewController {
 
     @FXML private TextField firstNameField, lastNameField, usernameField, emailField, addressField;
+    @FXML private PasswordField passwordField; // <--- NEW FIELD
     @FXML private ComboBox<String> genderCombo;
     @FXML private DatePicker dobPicker;
     @FXML private Button btnCancel;
@@ -35,24 +35,20 @@ public class AdminUpdateUserViewController {
         usernameField.setText(user.username);
         emailField.setText(user.email);
         addressField.setText(user.address);
-        usernameField.setDisable(true);
+        usernameField.setDisable(true); // Username cannot be changed
 
         String[] names = user.fullname.split(" ", 2);
         firstNameField.setText(names.length > 0 ? names[0] : "");
         lastNameField.setText(names.length > 1 ? names[1] : "");
 
-        // Set Gender
         if (user.gender != null && !user.gender.isEmpty()) {
             genderCombo.getSelectionModel().select(user.gender);
         } else {
             genderCombo.getSelectionModel().select("OTHER");
         }
 
-        // Set DOB (Parse string to LocalDate)
         if (user.dob != null && !user.dob.isEmpty()) {
             try {
-                // Assuming server sends ISO format (yyyy-MM-dd) or standard string
-                // If your table displays raw LocalDateTime string (e.g. 2000-01-01T00:00), we need to split it
                 String datePart = user.dob.split("T")[0];
                 dobPicker.setValue(LocalDate.parse(datePart));
             } catch (Exception e) {
@@ -69,18 +65,23 @@ public class AdminUpdateUserViewController {
     private void handleConfirmUpdate() {
         String fullName = (firstNameField.getText() + " " + lastNameField.getText()).trim();
 
+        if (!isValidEmail(emailField.getText())) {
+            showAlert("Error", "Invalid email format.");
+            return;
+        }
+
         JSONObject json = new JSONObject();
         json.put("fullName", fullName);
         json.put("email", emailField.getText());
         json.put("address", addressField.getText());
         json.put("username", currentUser.username);
 
-        if (!isValidEmail(emailField.getText())) {
-            showAlert("Error", "Invalid email format (e.g., name@example.com).");
-            return;
+        // ONLY SEND PASSWORD IF NOT EMPTY
+        String newPass = passwordField.getText();
+        if (newPass != null && !newPass.isEmpty()) {
+            json.put("password", newPass);
         }
 
-        // Add Gender & DOB
         json.put("gender", genderCombo.getValue());
         if (dobPicker.getValue() != null) {
             json.put("dob", dobPicker.getValue().toString());
