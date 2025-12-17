@@ -2,7 +2,6 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
 <?import java.lang.String?>
@@ -20,9 +19,7 @@
 
         <center>
             <StackPane BorderPane.alignment="CENTER">
-                <BorderPane.margin>
-                    <Insets top="10" left="10" right="10"/>
-                </BorderPane.margin>
+                <BorderPane.margin><Insets top="10" left="10" right="10"/></BorderPane.margin>
 
                 <styleClass>
                     <String fx:value="panel"/>
@@ -30,52 +27,32 @@
                 </styleClass>
 
                 <VBox spacing="15">
-                    <padding>
-                        <Insets top="15" left="15" right="15" bottom="15"/>
-                    </padding>
-                    
+                    <padding><Insets top="15" left="15" right="15" bottom="15"/></padding>
+
                     <VBox spacing="5">
                         <Text text="Group name" styleClass="form-label"/>
-                        <TextField promptText="Enter group name..." styleClass="form-input-field"/>
+                        <TextField fx:id="groupNameField" promptText="Enter group name..." styleClass="form-input-field"/>
                     </VBox>
-                    
+
                     <VBox spacing="5">
-                         <Text text="Search friends" styleClass="form-label"/>
-                         <fx:include fx:id="memberSearch" source="SearchBar.fxml"/>
+                        <Text text="Search friends" styleClass="form-label"/>
+                        <fx:include fx:id="memberSearch" source="SearchBar.fxml"/>
                     </VBox>
-                    
+
                     <Separator styleClass="list-separator"/>
-                    
-                    <Text text="Suggested" styleClass="suggested-header"/>
-                    
+
+                    <Text text="Search Results" styleClass="suggested-header"/>
+
                     <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="ALWAYS" styleClass="scroll-pane" VBox.vgrow="ALWAYS">
-                         <VBox spacing="5" styleClass="suggested-list-vbox">
-                            
-
-                            <HBox alignment="CENTER_LEFT" spacing="10">
-                                <fx:include source="../../../shared/ui/fxml/NameCard.fxml"/>
-                                <Button text="+" styleClass="add-friend-button"/>
-                            </HBox>
-                            
-
-                            <HBox alignment="CENTER_LEFT" spacing="10">
-                                <fx:include source="../../../shared/ui/fxml/NameCard.fxml"/>
-                                <Button text="+" styleClass="add-friend-button"/>
-                            </HBox>
-                            
-
-                            <HBox alignment="CENTER_LEFT" spacing="10">
-                                <fx:include source="../../../shared/ui/fxml/NameCard.fxml"/>
-                                <Button text="+" styleClass="add-friend-button"/>
-                            </HBox>
-                            
-                         </VBox>
+                        <VBox fx:id="resultContainer" spacing="5" styleClass="suggested-list-vbox">
+                        </VBox>
                     </ScrollPane>
-                    
-                    <HBox alignment="CENTER_RIGHT">
-                        <Button text="Create Group" styleClass="create-group-button"/>
+
+                    <HBox alignment="CENTER_RIGHT" spacing="10">
+                        <Button text="Cancel" onAction="#handleCancel" styleClass="admin-action-button"/>
+                        <Button text="Create Group" onAction="#handleCreateGroup" styleClass="create-group-button"/>
                     </HBox>
-                    
+
                 </VBox>
             </StackPane>
         </center>
