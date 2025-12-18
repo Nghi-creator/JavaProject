@@ -110,7 +110,7 @@ public class FriendsViewController {
             if (actionType.equals("ADD")) {
                 Button btn = new Button("Add Friend");
                 btn.getStyleClass().add("friend-action-button");
-                btn.setOnAction(e -> sendAction("/api/friends/request?senderId=" + ChatApp.currentUserId + "&receiverId=" + user.getId(), btn));
+                btn.setOnAction(e -> sendAction("/api/friends/requests?senderId=" + ChatApp.currentUserId + "&receiverId=" + user.getId(), btn));
                 row.getChildren().add(btn);
             } else if (actionType.equals("REQUEST_ACTIONS")) {
                 Button btnAccept = new Button("Accept");

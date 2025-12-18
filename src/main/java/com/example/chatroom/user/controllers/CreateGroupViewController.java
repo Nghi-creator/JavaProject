@@ -22,6 +22,8 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -39,7 +41,9 @@ public class CreateGroupViewController {
 
     @FXML
     public void initialize() {
-        headerController.focusButton("createGroup");
+        if (headerController != null) {
+            headerController.focusButton("createGroup");
+        }
 
         if (memberSearchController != null) {
             memberSearchController.setOnSearchListener(this::performSearch);
@@ -55,8 +59,13 @@ public class CreateGroupViewController {
         try {
             String serverIp = ConfigController.getServerIp();
             HttpClient client = HttpClient.newHttpClient();
+            // Search users to add to group
+            String url = "http://" + serverIp + ":8080/api/users/search?q=" +
+                    URLEncoder.encode(query, StandardCharsets.UTF_8) +
+                    "&userId=" + ChatApp.currentUserId;
+
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://" + serverIp + ":8080/api/users/search?q=" + query.replace(" ", "%20") + "&userId=" + ChatApp.currentUserId))
+                    .uri(URI.create(url))
                     .GET()
                     .build();
 
@@ -110,6 +119,8 @@ public class CreateGroupViewController {
     @FXML
     private void handleCreateGroup() {
         String groupName = groupNameField.getText().trim();
+
+        // 1. Validate Input
         if (groupName.isEmpty()) {
             showAlert("Error", "Group name is required.");
             return;
@@ -119,41 +130,57 @@ public class CreateGroupViewController {
             return;
         }
 
-        JSONObject json = new JSONObject();
-        json.put("adminId", ChatApp.currentUserId);
-        json.put("name", groupName);
-        json.put("memberIds", selectedUserIds);
-
-        sendCreateRequest(json);
-    }
-
-    private void sendCreateRequest(JSONObject json) {
         try {
+            // 2. Format Data for @RequestParam (URL Query Params)
             String serverIp = ConfigController.getServerIp();
+
+            // Build comma-separated list of IDs: "1,2,5"
+            StringBuilder memberIdsStr = new StringBuilder();
+            for (int i = 0; i < selectedUserIds.size(); i++) {
+                memberIdsStr.append(selectedUserIds.get(i));
+                if (i < selectedUserIds.size() - 1) memberIdsStr.append(",");
+            }
+
+            String encodedName = URLEncoder.encode(groupName, StandardCharsets.UTF_8);
+
+            // Construct the exact URL your Server Controller expects
+            String url = String.format("http://%s:8080/api/conversations/group?creatorId=%d&groupName=%s&memberIds=%s",
+                    serverIp,
+                    ChatApp.currentUserId,
+                    encodedName,
+                    memberIdsStr.toString()
+            );
+
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://" + serverIp + ":8080/api/groups"))
-                    .header("Content-Type", "application/json")
-                    .POST(HttpRequest.BodyPublishers.ofString(json.toString()))
+                    .uri(URI.create(url))
+                    .POST(HttpRequest.BodyPublishers.noBody()) // Empty Body, data is in URL
                     .build();
 
+            // 3. Send Request
             client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                     .thenAccept(response -> Platform.runLater(() -> {
                         if (response.statusCode() == 200) {
-                            showAlert("Success", "Group '" + groupNameField.getText() + "' created!");
-
-                            // --- FIX: Use SceneSwitcher directly instead of HeaderController ---
+                            showAlert("Success", "Group '" + groupName + "' created!");
+                            // Navigate back to Chatroom
                             SceneSwitcher.switchScene(groupNameField, "/user/ui/fxml/ChatroomView.fxml");
                         } else {
-                            showAlert("Error", "Failed to create group.");
+                            showAlert("Error", "Failed to create group. Server Code: " + response.statusCode());
                         }
-                    }));
-        } catch (Exception e) { e.printStackTrace(); }
+                    }))
+                    .exceptionally(e -> {
+                        Platform.runLater(() -> showAlert("Connection Error", e.getMessage()));
+                        return null;
+                    });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert("Error", "An error occurred: " + e.getMessage());
+        }
     }
 
     @FXML
     private void handleCancel(ActionEvent event) {
-        // Go back to dashboard
         SceneSwitcher.switchScene((Node) event.getSource(), "/user/ui/fxml/ChatroomView.fxml");
     }
 

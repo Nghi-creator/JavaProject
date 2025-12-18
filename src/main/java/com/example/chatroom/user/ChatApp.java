@@ -1,7 +1,7 @@
 package com.example.chatroom.user;
 
 import com.example.chatroom.core.shared.controllers.ConfigController;
-import com.example.chatroom.core.dto.UserDto; // <--- ADD THIS IMPORT
+import com.example.chatroom.core.dto.UserDto;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

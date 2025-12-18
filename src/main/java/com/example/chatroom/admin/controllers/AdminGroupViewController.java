@@ -30,7 +30,6 @@ public class AdminGroupViewController {
     @FXML private TableColumn<Group, String> colGroupName, colCreated, colAction;
     @FXML private ComboBox<String> sortCombo;
 
-    // Right Side Lists
     @FXML private ListView<String> adminListView;
     @FXML private ListView<String> memberListView;
 
@@ -39,7 +38,7 @@ public class AdminGroupViewController {
 
     @FXML
     public void initialize() {
-        headerController.focusButton("groups");
+        if (headerController != null) headerController.focusButton("groups");
         sortCombo.setItems(FXCollections.observableArrayList("Name (A-Z)", "Created Date (Newest)"));
 
         setupColumn(colGroupName, d -> d.name);
@@ -81,8 +80,10 @@ public class AdminGroupViewController {
         try {
             String serverIp = ConfigController.getServerIp();
             HttpClient client = HttpClient.newHttpClient();
+
+            // --- FIX: CORRECT API ENDPOINT ---
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://" + serverIp + ":8080/api/groups"))
+                    .uri(URI.create("http://" + serverIp + ":8080/api/conversations/groups/all"))
                     .GET()
                     .build();
 
@@ -105,20 +106,22 @@ public class AdminGroupViewController {
                                         members
                                 ));
                             }
+                        } else {
+                            System.err.println("Load Failed: " + response.statusCode());
                         }
                     }));
         } catch (Exception e) { e.printStackTrace(); }
     }
 
     private void showDetails(Group group) {
-        adminListView.getItems().clear();
-        memberListView.getItems().clear();
-
-        // 1. Set Admin
-        adminListView.getItems().add(group.adminUsername);
-
-        // 2. Set Members
-        memberListView.getItems().addAll(group.members);
+        if(adminListView != null) {
+            adminListView.getItems().clear();
+            adminListView.getItems().add(group.adminUsername);
+        }
+        if(memberListView != null) {
+            memberListView.getItems().clear();
+            memberListView.getItems().addAll(group.members);
+        }
     }
 
     private void handleSearch(String query) {
