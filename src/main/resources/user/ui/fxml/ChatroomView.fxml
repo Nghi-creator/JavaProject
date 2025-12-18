@@ -18,15 +18,16 @@
                 <BorderPane.margin>
                     <Insets top="10"/>
                 </BorderPane.margin>
-                <VBox prefWidth="240.0" spacing="5" styleClass="chat-list" stylesheets="@../../../shared/ui/css/SearchBar.css">
+                <VBox prefWidth="240.0" spacing="10" styleClass="chat-list" stylesheets="@../../../shared/ui/css/SearchBar.css">
                     <StackPane.margin>
                         <Insets top="10" right="10" bottom="10" left="10"/>
                     </StackPane.margin>
                     <Text fill="WHITE" styleClass="chat-list-title" text="CHATS"/>
                     <fx:include fx:id="chatSearch" source="SearchBar.fxml"/>
                     <Separator/>
-                    <fx:include fx:id="userOneCard" source="../../../shared/ui/fxml/NameCard.fxml"/>
-                    <fx:include fx:id="userTwo" source="../../../shared/ui/fxml/NameCard.fxml"/>
+                    <VBox fx:id="chatListVBox" spacing="5"/>
+<!--                    <fx:include fx:id="userOneCard" source="../../../shared/ui/fxml/NameCard.fxml"/>-->
+<!--                    <fx:include fx:id="userTwo" source="../../../shared/ui/fxml/NameCard.fxml"/>-->
                 </VBox>
             </StackPane>
         </left>
@@ -41,21 +42,20 @@
                             <padding>
                                 <Insets left="15" right="15" bottom="5"/> 
                             </padding>
-                            <Text fill="WHITE" styleClass="chat-header-text,hoverable-bg,clickable" text="group-chat" onMouseClicked="#displayGroupInfo"/>
+                            <Text fx:id="chatHeading" fill="WHITE" styleClass="chat-header-text,hoverable-bg,clickable" text="group-chat" onMouseClicked="#displayGroupInfo"/>
                             <Region HBox.hgrow="ALWAYS"/> 
                             <fx:include source="SearchBar.fxml"/>
                         </HBox>
                     </top>
                     <center>
                         <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="ALWAYS" styleClass="scroll-pane">
-                            <VBox prefHeight="602.0" prefWidth="728.0" spacing="10.0" styleClass="chat-messages-area">
+                            <VBox fx:id="messagesVBox" prefHeight="602.0" prefWidth="728.0" spacing="10.0" styleClass="chat-messages-area">
                                 <padding>
                                     <Insets bottom="10.0" left="15.0" right="15.0" top="10.0"/>
                                 </padding>
-
-                                <fx:include fx:id="message1" source="../../../shared/ui/fxml/Message.fxml"/>
-                                <fx:include fx:id="message2" source="../../../shared/ui/fxml/Message.fxml"/>
-                                <fx:include fx:id="message3" source="../../../shared/ui/fxml/Message.fxml"/>
+<!--                                <fx:include fx:id="message1" source="../../../shared/ui/fxml/Message.fxml"/>-->
+<!--                                <fx:include fx:id="message2" source="../../../shared/ui/fxml/Message.fxml"/>-->
+<!--                                <fx:include fx:id="message3" source="../../../shared/ui/fxml/Message.fxml"/>-->
                             </VBox>
                         </ScrollPane>
                     </center>
@@ -83,9 +83,9 @@
                     <Text fill="#8e9297" styleClass="user-list-category" text="MEMBERS (3 ONLINE)"/>
                     <fx:include fx:id="memberSearch" source="SearchBar.fxml"/>
                     <Separator/>
-                    <fx:include fx:id="userCard1" source="../../../shared/ui/fxml/NameCard.fxml"/>
-                    <fx:include fx:id="userCard2" source="../../../shared/ui/fxml/NameCard.fxml"/>
-                    <fx:include fx:id="userCard3" source="../../../shared/ui/fxml/NameCard.fxml"/>
+<!--                    <fx:include fx:id="userCard1" source="../../../shared/ui/fxml/NameCard.fxml"/>-->
+<!--                    <fx:include fx:id="userCard2" source="../../../shared/ui/fxml/NameCard.fxml"/>-->
+<!--                    <fx:include fx:id="userCard3" source="../../../shared/ui/fxml/NameCard.fxml"/>-->
                 </VBox>
             </StackPane>
         </right>

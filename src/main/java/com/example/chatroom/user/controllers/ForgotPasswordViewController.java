@@ -62,7 +62,7 @@ public class ForgotPasswordViewController {
                     .thenAccept(response -> Platform.runLater(() -> {
                         if (response.statusCode() == 200) {
                             showAlert("Success", "Request sent! Please wait for Admin approval.");
-                            SceneSwitcher.switchTo(getClass(), event, "/user/ui/fxml/LoginView.fxml");
+                            SceneSwitcher.switchScene((javafx.scene.Node) event.getSource(), "/user/ui/fxml/LoginView.fxml");
                         } else {
                             showAlert("Error", "Failed: " + response.body());
                         }
@@ -72,7 +72,7 @@ public class ForgotPasswordViewController {
 
     @FXML
     private void handleBack(ActionEvent event) {
-        SceneSwitcher.switchTo(getClass(), event, "/user/ui/fxml/LoginView.fxml");
+        SceneSwitcher.switchScene((javafx.scene.Node) event.getSource(), "/user/ui/fxml/LoginView.fxml");
     }
 
     private void showAlert(String title, String content) {
