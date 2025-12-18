@@ -3,7 +3,6 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.Text?>
 <?import java.lang.String?>
 
 <StackPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.chatroom.admin.controllers.AdminFriendCountViewController" styleClass="root" stylesheets="@../../../shared/ui/css/DiscordTheme.css">
@@ -22,18 +21,24 @@
 
                     <HBox spacing="15" alignment="CENTER_LEFT">
                         <fx:include fx:id="searchBar" source="../../../user/ui/fxml/SearchBar.fxml"/>
-                        <ComboBox fx:id="sortCombo" promptText="Sort by..." styleClass="admin-action-button"/>
+
+                        <ComboBox fx:id="filterCountCombo" prefWidth="120" styleClass="admin-action-button"/>
+
+                        <TextField fx:id="filterCountField" promptText="0" prefWidth="60"
+                                   style="-fx-background-color: #202225; -fx-text-fill: white; -fx-background-radius: 5;"
+                                   styleClass="search-field"/>
+
                         <Region HBox.hgrow="ALWAYS"/>
+
+                        <ComboBox fx:id="sortCombo" promptText="Sort by..." styleClass="admin-action-button"/>
                     </HBox>
 
                     <TableView fx:id="userTable" VBox.vgrow="ALWAYS">
                         <columns>
                             <TableColumn fx:id="colUsername" text="Username" prefWidth="120" reorderable="false"/>
                             <TableColumn fx:id="colFullname" text="Full Name" prefWidth="150" reorderable="false"/>
-
                             <TableColumn fx:id="colEmail" text="Email" prefWidth="180" reorderable="false"/>
                             <TableColumn fx:id="colGender" text="Gender" prefWidth="80" reorderable="false"/>
-
                             <TableColumn fx:id="colAddress" text="Address" prefWidth="150" reorderable="false"/>
                             <TableColumn fx:id="colDob" text="Date of Birth" prefWidth="100" reorderable="false"/>
                             <TableColumn fx:id="colFriends" text="Friends" prefWidth="80" reorderable="false"/>

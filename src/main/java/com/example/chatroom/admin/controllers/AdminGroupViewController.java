@@ -2,12 +2,11 @@ package com.example.chatroom.admin.controllers;
 
 import com.example.chatroom.core.shared.controllers.ConfigController;
 import com.example.chatroom.core.shared.controllers.SearchBarController;
+import com.example.chatroom.core.utils.TableDataManager; // <--- Using Shared Helper
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
-import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.util.Callback;
@@ -34,13 +33,13 @@ public class AdminGroupViewController {
     @FXML private ListView<String> memberListView;
 
     private ObservableList<Group> masterData = FXCollections.observableArrayList();
-    private FilteredList<Group> filteredData;
+    private TableDataManager<Group> tableManager;
 
     @FXML
     public void initialize() {
         if (headerController != null) headerController.focusButton("groups");
-        sortCombo.setItems(FXCollections.observableArrayList("Name (A-Z)", "Created Date (Newest)"));
 
+        // 1. Setup Columns
         setupColumn(colGroupName, d -> d.name);
         setupColumn(colCreated, d -> d.created);
 
@@ -62,16 +61,28 @@ public class AdminGroupViewController {
             }
         });
 
-        filteredData = new FilteredList<>(masterData, p -> true);
-        SortedList<Group> sortedList = new SortedList<>(filteredData);
-        sortedList.comparatorProperty().bind(groupTable.comparatorProperty());
-        groupTable.setItems(sortedList);
+        // 2. Initialize Table Manager
+        tableManager = new TableDataManager<>(groupTable, masterData);
 
+        // 3. Search Logic (Name Only)
+        tableManager.setFilterPredicate(group -> {
+            String query = searchBarController != null ? searchBarController.getSearchField().getText().toLowerCase() : "";
+            if (query.isEmpty()) return true;
+            return group.name.toLowerCase().contains(query);
+        });
+
+        // 4. Sort Logic
+        tableManager.addSortOption("Name (A-Z)", Comparator.comparing(g -> g.name.toLowerCase()));
+        tableManager.addSortOption("Created Date (Newest)", (g1, g2) -> g2.created.compareTo(g1.created));
+        tableManager.setupSortController(sortCombo);
+
+        // 5. Connect Search Bar
         if (searchBarController != null) {
-            searchBarController.setOnSearchListener(this::handleSearch);
+            searchBarController.getSearchField().textProperty().addListener((o, ov, nv) ->
+                    // Re-trigger the predicate defined in step 3
+                    tableManager.setFilterPredicate(group -> group.name.toLowerCase().contains(nv.toLowerCase()))
+            );
         }
-
-        sortCombo.setOnAction(e -> applySort());
 
         loadData();
     }
@@ -80,8 +91,6 @@ public class AdminGroupViewController {
         try {
             String serverIp = ConfigController.getServerIp();
             HttpClient client = HttpClient.newHttpClient();
-
-            // --- FIX: CORRECT API ENDPOINT ---
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create("http://" + serverIp + ":8080/api/conversations/groups/all"))
                     .GET()
@@ -94,7 +103,6 @@ public class AdminGroupViewController {
                             JSONArray arr = new JSONArray(response.body());
                             for (int i = 0; i < arr.length(); i++) {
                                 JSONObject obj = arr.getJSONObject(i);
-
                                 List<String> members = new ArrayList<>();
                                 JSONArray mArr = obj.getJSONArray("memberUsernames");
                                 for(int j=0; j<mArr.length(); j++) members.add(mArr.getString(j));
@@ -106,8 +114,6 @@ public class AdminGroupViewController {
                                         members
                                 ));
                             }
-                        } else {
-                            System.err.println("Load Failed: " + response.statusCode());
                         }
                     }));
         } catch (Exception e) { e.printStackTrace(); }
@@ -124,24 +130,6 @@ public class AdminGroupViewController {
         }
     }
 
-    private void handleSearch(String query) {
-        String lowerCaseQuery = query.toLowerCase();
-        filteredData.setPredicate(group -> {
-            if (query.isEmpty()) return true;
-            return group.name.toLowerCase().contains(lowerCaseQuery);
-        });
-    }
-
-    private void applySort() {
-        String selected = sortCombo.getValue();
-        if (selected == null) return;
-        if (selected.equals("Name (A-Z)")) {
-            FXCollections.sort(masterData, Comparator.comparing(g -> g.name.toLowerCase()));
-        } else if (selected.equals("Created Date (Newest)")) {
-            FXCollections.sort(masterData, (g1, g2) -> g2.created.compareTo(g1.created));
-        }
-    }
-
     private void setupColumn(TableColumn<Group, String> column, Callback<Group, String> valueExtractor) {
         column.setCellValueFactory(data -> new SimpleStringProperty(valueExtractor.call(data.getValue())));
         column.setReorderable(false);
@@ -151,12 +139,8 @@ public class AdminGroupViewController {
     public static class Group {
         String name, created, adminUsername;
         List<String> members;
-
         public Group(String n, String c, String admin, List<String> m) {
-            this.name = n;
-            this.created = c;
-            this.adminUsername = admin;
-            this.members = m;
+            this.name = n; this.created = c; this.adminUsername = admin; this.members = m;
         }
     }
 }

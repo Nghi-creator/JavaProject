@@ -31,13 +31,13 @@
 
                     <center>
                         <StackPane>
-                            <BorderPane.margin>
-                                <Insets left="30"/>
-                            </BorderPane.margin>
+                            <BorderPane.margin><Insets left="30"/></BorderPane.margin>
 
                             <VBox fx:id="friendListPane" spacing="15" visible="true">
                                 <Label text="All Friends" styleClass="heading1"/>
+                                <fx:include fx:id="friendSearchBar" source="SearchBar.fxml"/>
                                 <Separator styleClass="list-separator"/>
+
                                 <ScrollPane fitToWidth="true" style="-fx-background-color:transparent;">
                                     <VBox fx:id="friendListContainer" spacing="10" styleClass="suggested-list-vbox"/>
                                 </ScrollPane>
@@ -45,7 +45,9 @@
 
                             <VBox fx:id="requestsPane" spacing="15" visible="false">
                                 <Label text="Friend Requests" styleClass="heading1"/>
+                                <fx:include fx:id="requestSearchBar" source="SearchBar.fxml"/>
                                 <Separator styleClass="list-separator"/>
+
                                 <ScrollPane fitToWidth="true" style="-fx-background-color:transparent;">
                                     <VBox fx:id="requestsListContainer" spacing="10" styleClass="suggested-list-vbox"/>
                                 </ScrollPane>
