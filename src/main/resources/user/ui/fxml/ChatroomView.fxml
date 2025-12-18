@@ -64,8 +64,8 @@
                             <BorderPane.margin>
                                 <Insets left="10" right="10"/>
                             </BorderPane.margin>
-                            <TextField prefHeight="44.0" prefWidth="690.0" promptText="Enter message..."
-                                       styleClass="input-field"/>
+                            <TextField fx:id="messageInput" prefHeight="44.0" prefWidth="690.0" promptText="Enter message..."
+                                       styleClass="input-field" onAction="#sendMessage"/>
                         </HBox>
                     </bottom>
                 </BorderPane>
@@ -83,6 +83,7 @@
                     <Text fill="#8e9297" styleClass="user-list-category" text="MEMBERS (3 ONLINE)"/>
                     <fx:include fx:id="memberSearch" source="SearchBar.fxml"/>
                     <Separator/>
+                    <VBox fx:id="memberListVBox" spacing="5"/>
 <!--                    <fx:include fx:id="userCard1" source="../../../shared/ui/fxml/NameCard.fxml"/>-->
 <!--                    <fx:include fx:id="userCard2" source="../../../shared/ui/fxml/NameCard.fxml"/>-->
 <!--                    <fx:include fx:id="userCard3" source="../../../shared/ui/fxml/NameCard.fxml"/>-->

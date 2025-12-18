@@ -4,6 +4,7 @@ import com.example.chatroom.core.dto.UserDto;
 import com.example.chatroom.core.shared.controllers.ConfigController;
 import com.example.chatroom.core.shared.controllers.SceneSwitcher;
 import com.example.chatroom.user.ChatApp;
+import com.example.chatroom.user.PresenceWebSocketManager;
 import com.example.chatroom.user.WebSocketManager; // <-- added
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -80,8 +81,8 @@ public class LoginViewController {
                                 ChatApp.currentUser = user;
 
                                 // 5. Connect WebSocket AFTER HTTP login
-                                String wsUri = "ws://" + serverIp + ":8080/chat";
-                                WebSocketManager.getInstance().connect(wsUri);
+                                PresenceWebSocketManager.getInstance().connect(serverIp);
+
 
                                 // 6. Switch Scene with controller consumer to set currentUserId
                                 SceneSwitcher.switchScene(
