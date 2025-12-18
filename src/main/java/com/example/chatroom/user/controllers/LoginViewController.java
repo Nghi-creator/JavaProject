@@ -4,6 +4,7 @@ import com.example.chatroom.core.dto.UserDto;
 import com.example.chatroom.core.shared.controllers.ConfigController;
 import com.example.chatroom.core.shared.controllers.SceneSwitcher;
 import com.example.chatroom.user.ChatApp;
+import com.example.chatroom.user.WebSocketManager; // <-- added
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -39,7 +40,6 @@ public class LoginViewController {
         json.put("username", username);
         json.put("password", password);
 
-        // Send Request
         try {
             String serverIp = ConfigController.getServerIp();
             HttpClient client = HttpClient.newHttpClient();
@@ -51,11 +51,9 @@ public class LoginViewController {
 
             client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                     .thenAccept(response -> Platform.runLater(() -> {
-                        // --- YOUR LOGIC GOES HERE ---
                         if (response.statusCode() == 200) {
                             try {
                                 String responseBody = response.body();
-                                // The server now returns the User object directly
                                 JSONObject userJson = new JSONObject(responseBody);
 
                                 // 1. Save ID
@@ -72,8 +70,6 @@ public class LoginViewController {
                                 // 3. Handle Date Safely
                                 String dobStr = userJson.optString("dob", null);
                                 if (dobStr != null && !dobStr.isEmpty()) {
-                                    // Server might send "2000-01-01T00:00:00" or "2000-01-01"
-                                    // We only need the date part
                                     if (dobStr.contains("T")) {
                                         dobStr = dobStr.split("T")[0];
                                     }
@@ -83,8 +79,19 @@ public class LoginViewController {
                                 // 4. Save to Global Session
                                 ChatApp.currentUser = user;
 
-                                // 5. Switch Scene
-                                SceneSwitcher.switchTo(getClass(), event, "/user/ui/fxml/ChatroomView.fxml");
+                                // 5. Connect WebSocket AFTER HTTP login
+                                String wsUri = "ws://" + serverIp + ":8080/chat";
+                                WebSocketManager.getInstance().connect(wsUri);
+
+                                // 6. Switch Scene with controller consumer to set currentUserId
+                                SceneSwitcher.switchScene(
+                                        (javafx.scene.Node) event.getSource(),
+                                        "/user/ui/fxml/ChatroomView.fxml",
+                                        (com.example.chatroom.user.controllers.ChatroomViewController controller) -> {
+                                            controller.setCurrentUserId(ChatApp.currentUserId);
+                                        }
+                                );
+
 
                             } catch (Exception e) {
                                 e.printStackTrace();

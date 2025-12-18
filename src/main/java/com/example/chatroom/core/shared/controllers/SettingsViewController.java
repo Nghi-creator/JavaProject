@@ -241,7 +241,7 @@ public class SettingsViewController {
 
     @FXML
     private void handleBack(ActionEvent event) {
-        SceneSwitcher.switchTo(getClass(), event, "/user/ui/fxml/ChatroomView.fxml");
+        SceneSwitcher.switchScene((javafx.scene.Node) event.getSource(), "/user/ui/fxml/ChatroomView.fxml");
     }
 
     @FXML

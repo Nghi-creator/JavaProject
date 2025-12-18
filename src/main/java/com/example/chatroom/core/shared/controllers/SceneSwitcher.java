@@ -1,6 +1,5 @@
 package com.example.chatroom.core.shared.controllers;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -10,29 +9,20 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.function.Consumer;
 
 public class SceneSwitcher {
 
-    public static void switchTo(Class<?> originClass, ActionEvent event, String fxmlPath) {
+    // --- Stage Scene Switching ---
+    public static <T> void switchScene(Stage stage, String fxmlPath, Consumer<T> controllerConsumer) {
         try {
-            Node source = (Node) event.getSource();
-            Stage stage = (Stage) source.getScene().getWindow();
-            switchScene(stage, fxmlPath);
-        } catch (Exception e) {
-            System.err.println("Failed to switch to: " + fxmlPath);
-            e.printStackTrace();
-        }
-    }
+            FXMLLoader loader = loadFXML(fxmlPath);
+            Parent root = loader.load();
 
-    public static void switchScene(Stage stage, String fxmlPath) {
-        try {
-            URL fxmlUrl = SceneSwitcher.class.getResource(fxmlPath);
-            if (fxmlUrl == null) {
-                System.err.println("Cannot find FXML file: " + fxmlPath);
-                return;
+            T controller = loader.getController();
+            if (controllerConsumer != null && controller != null) {
+                controllerConsumer.accept(controller);
             }
-
-            Parent root = FXMLLoader.load(fxmlUrl);
 
             Scene scene = stage.getScene();
             if (scene == null) {
@@ -42,56 +32,64 @@ public class SceneSwitcher {
                 scene.setRoot(root);
             }
             stage.show();
-
         } catch (IOException e) {
             System.err.println("Failed to switch scene to " + fxmlPath);
             e.printStackTrace();
         }
     }
 
-    public static void switchScene(Node sourceNode, String fxmlPath) {
-        Stage stage = (Stage) sourceNode.getScene().getWindow();
-        switchScene(stage, fxmlPath);
+    // Overload without Consumer
+    public static void switchScene(Stage stage, String fxmlPath) {
+        switchScene(stage, fxmlPath, null);
     }
 
-    // --- 3. Popup Logic ---
-    public static void openPopup(String fxmlPath, String title) {
+    public static <T> void switchScene(Node sourceNode, String fxmlPath, Consumer<T> controllerConsumer) {
+        Stage stage = (Stage) sourceNode.getScene().getWindow();
+        switchScene(stage, fxmlPath, controllerConsumer);
+    }
+
+    public static void switchScene(Node sourceNode, String fxmlPath) {
+        switchScene(sourceNode, fxmlPath, null);
+    }
+
+    // --- Popups ---
+    public static <T> void openPopup(String fxmlPath, String title, Consumer<T> controllerConsumer) {
         try {
-            URL fxmlUrl = SceneSwitcher.class.getResource(fxmlPath);
-            if (fxmlUrl == null) {
-                System.err.println("Cannot find Popup FXML: " + fxmlPath);
-                return;
+            FXMLLoader loader = loadFXML(fxmlPath);
+            Parent root = loader.load();
+
+            T controller = loader.getController();
+            if (controllerConsumer != null && controller != null) {
+                controllerConsumer.accept(controller);
             }
 
-            Parent root = FXMLLoader.load(fxmlUrl);
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.setTitle(title);
             stage.setScene(new Scene(root));
             stage.showAndWait();
-
         } catch (IOException e) {
             System.err.println("Failed to open popup: " + fxmlPath);
             e.printStackTrace();
         }
     }
 
+    public static void openPopup(String fxmlPath, String title) {
+        openPopup(fxmlPath, title, null);
+    }
+
     public static void showMessage(String msg) {
-        try {
-            FXMLLoader loader = new FXMLLoader(SceneSwitcher.class.getResource("/shared/ui/fxml/MessagePopup.fxml"));
-            Parent root = loader.load();
-
-            MessagePopupController controller = loader.getController();
-            Stage stage = new Stage();
-            controller.setStage(stage);
+        openPopup("/shared/ui/fxml/MessagePopup.fxml", "Message", (MessagePopupController controller) -> {
             controller.setMessage(msg);
+        });
+    }
 
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setTitle("Message");
-            stage.setScene(new Scene(root));
-            stage.showAndWait();
-        } catch (IOException e) {
-            e.printStackTrace();
+    // --- Helper to load FXML ---
+    private static FXMLLoader loadFXML(String fxmlPath) throws IOException {
+        URL fxmlUrl = SceneSwitcher.class.getResource(fxmlPath);
+        if (fxmlUrl == null) {
+            throw new IOException("Cannot find FXML file: " + fxmlPath);
         }
+        return new FXMLLoader(fxmlUrl);
     }
 }
