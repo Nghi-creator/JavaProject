@@ -13,6 +13,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
+import org.java_websocket.client.WebSocketClient;
 import org.json.JSONObject;
 
 import java.net.URI;
@@ -20,6 +21,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDate;
+
+import static com.example.chatroom.user.ChatApp.currentUserId;
 
 public class LoginViewController {
 
@@ -58,7 +61,7 @@ public class LoginViewController {
                                 JSONObject userJson = new JSONObject(responseBody);
 
                                 // 1. Save ID
-                                ChatApp.currentUserId = userJson.getInt("id");
+                                currentUserId = userJson.getInt("id");
 
                                 // 2. Save User Details
                                 UserDto user = new UserDto();
@@ -81,7 +84,19 @@ public class LoginViewController {
                                 ChatApp.currentUser = user;
 
                                 // 5. Connect WebSocket AFTER HTTP login
-                                PresenceWebSocketManager.getInstance().connect(serverIp);
+//                                PresenceWebSocketManager.getInstance().connect(serverIp);
+
+//                                WebSocketClient client = new StandardWebSocketClient();
+//                                StompClient stompClient = new StompClient(client);
+//
+//                                StompHeaders headers = new StompHeaders();
+//                                headers.add("userId", String.valueOf(currentUserId));
+//
+//                                stompClient.connect(
+//                                        "ws://localhost:8080/ws",
+//                                        headers,
+//                                        new StompSessionHandlerAdapter() {}
+//                                );
 
 
                                 // 6. Switch Scene with controller consumer to set currentUserId
@@ -89,7 +104,7 @@ public class LoginViewController {
                                         (javafx.scene.Node) event.getSource(),
                                         "/user/ui/fxml/ChatroomView.fxml",
                                         (com.example.chatroom.user.controllers.ChatroomViewController controller) -> {
-                                            controller.setCurrentUserId(ChatApp.currentUserId);
+                                            controller.setCurrentUserId(currentUserId);
                                         }
                                 );
 
@@ -119,7 +134,7 @@ public class LoginViewController {
 
     @FXML
     private void resetPassword(MouseEvent event) {
-        SceneSwitcher.switchScene((javafx.scene.Node) event.getSource(), "/user/ui/fxml/ForgotPasswordView.fxml");
+        SceneSwitcher.openPopup("/user/ui/fxml/ForgotPasswordPopup.fxml", "Reset Password");
     }
 
     private void showAlert(String title, String content) {

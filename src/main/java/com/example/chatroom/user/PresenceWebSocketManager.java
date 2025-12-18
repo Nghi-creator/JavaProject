@@ -1,50 +1,76 @@
 package com.example.chatroom.user;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import javafx.application.Platform;
 import org.java_websocket.client.WebSocketClient;
-import org.java_websocket.handshake.ServerHandshake;
 
 import java.net.URI;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
 public class PresenceWebSocketManager {
 
     private static PresenceWebSocketManager instance;
-    private WebSocketClient client;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private Timer heartbeatTimer;
+    private WebSocketClient client;
 
-    private PresenceWebSocketManager() { }
+    private final Set<String> onlineUsers = ConcurrentHashMap.newKeySet();
+    private final Set<Consumer<Set<String>>> listeners = ConcurrentHashMap.newKeySet();
+
+    private PresenceWebSocketManager() {}
 
     public static PresenceWebSocketManager getInstance() {
         if (instance == null) instance = new PresenceWebSocketManager();
         return instance;
     }
 
+    public void addListener(Consumer<Set<String>> listener) {
+        listeners.add(listener);
+        listener.accept(Set.copyOf(onlineUsers));
+    }
+
+    private void notifyListeners() {
+        Set<String> snapshot = Set.copyOf(onlineUsers);
+        listeners.forEach(l -> l.accept(snapshot));
+    }
+
     public void connect(String serverIp) {
         if (ChatApp.currentUser == null) throw new IllegalStateException("No logged-in user found.");
-
-        disconnect(); // close previous session if any
+        disconnect();
 
         try {
             String uri = "ws://" + serverIp + ":8080/presence";
             client = new WebSocketClient(new URI(uri)) {
                 @Override
-                public void onOpen(ServerHandshake handshakedata) {
-                    System.out.println("Presence WebSocket connected for " + ChatApp.currentUser.getUsername());
+                public void onOpen(org.java_websocket.handshake.ServerHandshake handshakedata) {
+                    System.out.println("Presence WS connected for " + ChatApp.currentUser.getUsername());
                     startHeartbeat();
                 }
 
                 @Override
                 public void onMessage(String message) {
-                    // Optional: handle server acks
+                    try {
+                        JsonNode node = objectMapper.readTree(message);
+                        String type = node.get("type").asText();
+
+                        if ("online_users".equals(type)) {
+                            onlineUsers.clear();
+                            node.get("users").forEach(u -> onlineUsers.add(u.asText()));
+                            Platform.runLater(PresenceWebSocketManager.this::notifyListeners);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 @Override
                 public void onClose(int code, String reason, boolean remote) {
-                    System.out.println("Presence WebSocket disconnected: " + reason);
                     stopHeartbeat();
                 }
 
@@ -53,11 +79,36 @@ public class PresenceWebSocketManager {
                     ex.printStackTrace();
                 }
             };
-
             client.connect();
-
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void startHeartbeat() {
+        if (heartbeatTimer != null) return;
+        heartbeatTimer = new Timer(true);
+        heartbeatTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                if (client != null && client.isOpen()) {
+                    try {
+                        ObjectNode heartbeat = objectMapper.createObjectNode();
+                        heartbeat.put("type", "heartbeat");
+                        heartbeat.put("username", ChatApp.currentUser.getUsername());
+                        client.send(heartbeat.toString());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }, 0, 5000);
+    }
+
+    private void stopHeartbeat() {
+        if (heartbeatTimer != null) {
+            heartbeatTimer.cancel();
+            heartbeatTimer = null;
         }
     }
 
@@ -69,28 +120,7 @@ public class PresenceWebSocketManager {
         }
     }
 
-    private void startHeartbeat() {
-        if (heartbeatTimer != null) return;
-
-        heartbeatTimer = new Timer(true);
-        heartbeatTimer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                if (client != null && client.isOpen()) {
-                    ObjectNode heartbeat = objectMapper.createObjectNode();
-                    heartbeat.put("type", "heartbeat");
-                    heartbeat.put("username", ChatApp.currentUser.getUsername());
-                    client.send(heartbeat.toString());
-                    System.out.println("Presence heartbeat sent at " + System.currentTimeMillis());
-                }
-            }
-        }, 0, 5000);
-    }
-
-    private void stopHeartbeat() {
-        if (heartbeatTimer != null) {
-            heartbeatTimer.cancel();
-            heartbeatTimer = null;
-        }
+    public Set<String> getOnlineUsers() {
+        return Set.copyOf(onlineUsers);
     }
 }

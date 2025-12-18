@@ -3,6 +3,7 @@ package com.example.chatroom.user.controllers;
 import com.example.chatroom.core.shared.controllers.*;
 import com.example.chatroom.core.dto.ConversationDto;
 import com.example.chatroom.core.dto.MessageDto;
+import com.example.chatroom.user.PresenceWebSocketManager;
 import com.example.chatroom.user.WebSocketManager;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -51,6 +52,25 @@ public class ChatroomViewController {
     @FXML
     private void initialize() {
         headerController.focusButton("chat");
+
+        // Subscribe to online users updates
+        PresenceWebSocketManager.getInstance().addListener(users -> {
+            Platform.runLater(() -> {
+                memberListVBox.getChildren().clear();
+                for (String username : users) {
+                    // Load NameCard FXML dynamically for each user
+                    try {
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/shared/ui/fxml/NameCard.fxml"));
+                        Node node = loader.load();
+                        NameCardController controller = loader.getController();
+                        controller.setData(username, null);
+                        memberListVBox.getChildren().add(node);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        });
     }
 
     /**
