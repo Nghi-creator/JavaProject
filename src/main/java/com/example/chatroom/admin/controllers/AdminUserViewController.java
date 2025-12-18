@@ -43,7 +43,7 @@ public class AdminUserViewController {
 
     @FXML
     public void initialize() {
-        headerController.focusButton("users");
+        if (headerController != null) headerController.focusButton("users");
         try { ConfigController.loadServerIp(); } catch (Exception ignored) {}
 
         sortCombo.setItems(FXCollections.observableArrayList("Name (A-Z)", "Created Date (Newest)"));
@@ -93,6 +93,12 @@ public class AdminUserViewController {
     private void parseAndPopulateTable(String responseBody) {
         javafx.application.Platform.runLater(() -> {
             try {
+                // Safety check for empty or error responses
+                if (responseBody == null || !responseBody.trim().startsWith("[")) {
+                    System.err.println("Invalid response from server: " + responseBody);
+                    return;
+                }
+
                 masterData.clear();
                 JSONArray jsonArray = new JSONArray(responseBody);
                 for (int i = 0; i < jsonArray.length(); i++) {
@@ -166,7 +172,6 @@ public class AdminUserViewController {
 
     // --- POPUP HANDLERS ---
 
-    // --- NEW METHOD FOR FRIENDS POPUP ---
     private void openFriendsPopup(User user) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/admin/ui/fxml/AdminUserFriendsView.fxml"));
@@ -250,13 +255,13 @@ public class AdminUserViewController {
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create("http://" + serverIp + ":8080/api/users/" + user.id + "/lock"))
-                    .PUT(HttpRequest.BodyPublishers.noBody())
+                    .POST(HttpRequest.BodyPublishers.noBody())
                     .build();
 
             client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                     .thenAccept(response -> Platform.runLater(() -> {
                         if (response.statusCode() == 200) refreshTable();
-                        else showAlert("Error", "Status update failed.");
+                        else showAlert("Error", "Status update failed. Code: " + response.statusCode());
                     }));
         } catch (Exception e) { e.printStackTrace(); }
     }
