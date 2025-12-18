@@ -3,12 +3,14 @@ package com.example.chatroom.user.controllers;
 import com.example.chatroom.core.shared.controllers.*;
 import com.example.chatroom.core.dto.ConversationDto;
 import com.example.chatroom.core.dto.MessageDto;
+import com.example.chatroom.user.WebSocketManager;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -23,6 +25,8 @@ import java.net.http.HttpResponse;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 public class ChatroomViewController {
 
@@ -30,6 +34,8 @@ public class ChatroomViewController {
     @FXML private VBox chatListVBox;      // Left panel VBox
     @FXML private VBox messagesVBox;      // Center chat messages VBox
     @FXML private Text chatHeading;
+    @FXML private TextField messageInput;
+    @FXML private VBox memberListVBox;
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
@@ -118,7 +124,16 @@ public class ChatroomViewController {
     private void selectConversation(ConversationDto convo, String heading) {
         this.selectedConversation = convo;
         chatHeading.setText(heading);
+        populateMemberList(convo.getMembers());
         loadMessages(convo.getId());
+
+        // Connect WebSocket for this conversation
+        WebSocketManager.getInstance().connect(
+                ConfigController.getServerIp(),
+                convo.getId(),
+                messagesVBox,
+                msg -> addMessageToVBox(msg) // callback to add message node
+        );
     }
 
     /**
@@ -201,4 +216,75 @@ public class ChatroomViewController {
         this.currentUserId = userId;
         loadUserConversations();
     }
+
+    private void populateMemberList(List<ConversationDto.MemberDto> members) {
+        Platform.runLater(() -> {
+            memberListVBox.getChildren().clear();
+
+            for (var member : members) {
+                try {
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/shared/ui/fxml/NameCard.fxml"));
+                    Node memberNode = loader.load();
+                    NameCardController controller = loader.getController();
+
+                    // Set display name
+                    String displayName = member.getFullName() != null ? member.getFullName() : member.getUsername();
+                    controller.setData(displayName, null);
+
+                    // Optional: click handler
+                    memberNode.setOnMouseClicked(event -> {
+                        System.out.println("Clicked on member: " + displayName);
+                        // You can open a profile popup here
+                    });
+
+                    memberListVBox.getChildren().add(memberNode);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    @FXML
+    private void sendMessage() {
+        if (messageInput.getText().isBlank() || selectedConversation == null) return;
+
+        String content = messageInput.getText();
+        String encodedContent = URLEncoder.encode(content, StandardCharsets.UTF_8);
+        messageInput.clear();
+
+        String serverIp = ConfigController.getServerIp();
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://" + serverIp + ":8080/api/messages" +
+                        "?conversationId=" + selectedConversation.getId() +
+                        "&senderId=" + currentUserId +
+                        "&content=" + encodedContent))
+                .POST(HttpRequest.BodyPublishers.noBody())
+                .build();
+
+        httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenRun(() -> loadMessages(selectedConversation.getId())) // refresh messages
+                .exceptionally(e -> { e.printStackTrace(); return null; });
+    }
+
+    @FXML
+    private void onSendMessage(String text) {
+        WebSocketManager.getInstance().sendMessage(text);
+    }
+
+    private void addMessageToVBox(MessageDto msg) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/shared/ui/fxml/Message.fxml"));
+            Node msgNode = loader.load();
+            MessageController controller = loader.getController();
+            controller.setTitle(msg.getSenderName() != null ? msg.getSenderName() : msg.getSenderId().toString());
+            controller.setContent(msg.getContent());
+            controller.setTimeStamp(msg.getSentAt().format(formatter));
+            messagesVBox.getChildren().add(msgNode);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

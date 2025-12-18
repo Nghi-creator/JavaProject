@@ -1,20 +1,28 @@
 package com.example.chatroom.user;
 
+import com.example.chatroom.core.dto.MessageDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import javafx.application.Platform;
+import javafx.scene.layout.VBox;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
 import java.net.URI;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.function.Consumer;
 
 public class WebSocketManager {
 
     private static WebSocketManager instance;
     private WebSocketClient client;
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private Timer heartbeatTimer;
+
+    // Current conversation context
+    private Integer conversationId;
+    private VBox messagesVBox;
+    private Consumer<MessageDto> onMessageReceived;
 
     private WebSocketManager() { }
 
@@ -24,33 +32,46 @@ public class WebSocketManager {
     }
 
     /**
-     * Connects to the server using the already-logged-in user.
+     * Connects to a specific conversation
      */
-    public void connect(String uri) {
-        if (ChatApp.currentUser == null) {
-            throw new IllegalStateException("No logged-in user found.");
-        }
+    public void connect(String serverIp, int conversationId, VBox messagesVBox, Consumer<MessageDto> onMessageReceived) {
+        if (ChatApp.currentUser == null) throw new IllegalStateException("No logged-in user found.");
+
+        disconnect(); // close previous session if any
+
+        this.conversationId = conversationId;
+        this.messagesVBox = messagesVBox;
+        this.onMessageReceived = onMessageReceived;
 
         try {
+            String uri = "ws://" + serverIp + ":8080/chat/" + conversationId;
             client = new WebSocketClient(new URI(uri)) {
                 @Override
                 public void onOpen(ServerHandshake handshakedata) {
-                    System.out.println("Connected to server: " + ChatApp.currentUser.getUsername());
-
-                    // Immediately start heartbeat
-                    startHeartbeat();
+                    System.out.println("Connected to conversation " + conversationId);
                 }
 
                 @Override
                 public void onMessage(String message) {
-                    // Handle server responses if needed
-                    System.out.println("Received from server: " + message);
+                    try {
+                        // Assume server sends full MessageDto JSON
+                        MessageDto msg = objectMapper.readValue(message, MessageDto.class);
+
+                        // Dispatch to JavaFX UI thread
+                        Platform.runLater(() -> {
+                            if (messagesVBox != null) {
+                                onMessageReceived.accept(msg); // call controller callback
+                            }
+                        });
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 @Override
                 public void onClose(int code, String reason, boolean remote) {
                     System.out.println("Disconnected: " + reason);
-                    stopHeartbeat();
                 }
 
                 @Override
@@ -67,49 +88,21 @@ public class WebSocketManager {
     }
 
     public void disconnect() {
-        stopHeartbeat();
         if (client != null) {
-            try {
-                client.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                client = null;
-            }
+            try { client.close(); } catch (Exception e) { e.printStackTrace(); }
+            finally { client = null; }
         }
     }
 
-
-    private void startHeartbeat() {
-        if (heartbeatTimer != null) return;
-
-        heartbeatTimer = new Timer(true);
-        heartbeatTimer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                if (client != null && client.isOpen()) {
-                    ObjectNode heartbeat = objectMapper.createObjectNode();
-                    heartbeat.put("type", "heartbeat");
-                    heartbeat.put("username", ChatApp.currentUser.getUsername()); // send username so server knows who
-                    client.send(heartbeat.toString());
-                    System.out.println("Heartbeat sent at " + System.currentTimeMillis());
-                }
-            }
-        }, 0, 5000); // every 5 seconds
-    }
-
-    private void stopHeartbeat() {
-        if (heartbeatTimer != null) {
-            heartbeatTimer.cancel();
-            heartbeatTimer = null;
-        }
-    }
-
+    /**
+     * Sends a chat message to the current conversation
+     */
     public void sendMessage(String message) {
         if (client != null && client.isOpen()) {
             ObjectNode json = objectMapper.createObjectNode();
             json.put("type", "chat");
             json.put("username", ChatApp.currentUser.getUsername());
+            json.put("userId", ChatApp.currentUser.getId());
             json.put("message", message);
             client.send(json.toString());
         }
