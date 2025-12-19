@@ -40,12 +40,10 @@ public class NameCardController {
 
     private void showContextMenu(double x, double y) {
         ContextMenu contextMenu = new ContextMenu();
-        // Tag this specific menu so we can target it in CSS
         contextMenu.getStyleClass().add("transparent-context-menu");
 
-        // Create a real Button (not a menu item text)
-        javafx.scene.control.Button reportBtn = new javafx.scene.control.Button("Report " + (username != null ? username : "User"));
-        reportBtn.getStyleClass().add("report-context-button"); // We will style this button
+        javafx.scene.control.Button reportBtn = new javafx.scene.control.Button("Report " + (username != null ? username : ""));
+        reportBtn.getStyleClass().add("report-context-button");
 
         // Handle click
         reportBtn.setOnAction(e -> {
@@ -53,13 +51,23 @@ public class NameCardController {
             openReportWindow();
         });
 
-        // Wrap the Button in a CustomMenuItem
         javafx.scene.control.CustomMenuItem item = new javafx.scene.control.CustomMenuItem(reportBtn);
         item.setHideOnClick(true);
-        // Remove the default hover color from the item container
         item.getStyleClass().add("transparent-menu-item");
 
         contextMenu.getItems().add(item);
+
+        contextMenu.setOnShown(e -> {
+            javafx.scene.Scene scene = contextMenu.getScene();
+            if (scene != null && scene.getRoot() != null) {
+                scene.getRoot().setStyle(
+                        "-fx-background-color: transparent;" +
+                                "-fx-padding: 0;" +
+                                "-fx-effect: null;"
+                );
+            }
+        });
+
         contextMenu.show(statusIcon, x, y);
     }
 

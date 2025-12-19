@@ -752,48 +752,48 @@
     -fx-padding: 8px;
 }
 
-/* --- FINAL FIX FOR REPORT BUTTON --- */
+/* --- FIX FOR REPORT CONTEXT MENU --- */
 
-/* 1. Make the main Window completely invisible */
 .transparent-context-menu {
     -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-background-insets: 0;
     -fx-background-radius: 0;
+    -fx-effect: null;
+}
+
+/* Hide the internal scroll pane that holds the content */
+.transparent-context-menu .scroll-pane,
+.transparent-context-menu .scroll-pane .viewport,
+.transparent-context-menu .scroll-pane .content {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+/* The Row */
+.transparent-context-menu .menu-item {
+    -fx-background-color: transparent;
     -fx-padding: 0;
     -fx-border-width: 0;
-    -fx-effect: null; /* Removes the default grey shadow box */
 }
 
-/* 2. Dig deeper: Make the internal 'skin' of the menu transparent */
-.transparent-context-menu .context-menu-skin {
-    -fx-background-color: transparent;
-}
-
-/* 3. Make the individual item container transparent */
-.transparent-context-menu .menu-item,
-.transparent-context-menu .transparent-menu-item {
-    -fx-background-color: transparent;
-    -fx-padding: 0;
-}
-
-/* 4. Remove the blue hover highlight on the empty space */
-.transparent-context-menu .menu-item:focused,
-.transparent-context-menu .menu-item:hover {
-    -fx-background-color: transparent;
-}
-
-/* 5. STYLE THE RED BUTTON ITSELF */
+/* The Button */
 .report-context-button {
-    -fx-background-color: linear-gradient(to right, #ed4245, #ff6b6b);
+    -fx-background-color: #ED4245;
     -fx-text-fill: white;
-    -fx-font-weight: bold;
-    -fx-font-size: 13px;
-    -fx-background-radius: 5px;
-    -fx-padding: 8px 18px; /* Button size */
+    -fx-font-weight: 700;
+    -fx-font-size: 14px;
+    -fx-background-radius: 4px;
+    -fx-padding: 6px 12px;
     -fx-cursor: hand;
-    /* Add a shadow to the BUTTON, not the window */
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 5, 0, 0, 2);
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 6, 0, 0, 2);
 }
 
 .report-context-button:hover {
-    -fx-background-color: linear-gradient(to right, #c03537, #e05e5e);
+    -fx-background-color: #c03537;
+}
+
+.transparent-context-menu .menu-item:focused,
+.transparent-context-menu .menu-item:hover {
+    -fx-background-color: transparent;
 }
