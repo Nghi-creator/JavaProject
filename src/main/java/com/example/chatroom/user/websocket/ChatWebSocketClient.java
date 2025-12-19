@@ -12,10 +12,12 @@ import java.util.function.BiConsumer;
 public class ChatWebSocketClient extends WebSocketClient {
 
     private BiConsumer<Long, Boolean> statusCallback;
+    public BiConsumer<JSONObject, Void> messageCallback;
 
-    public ChatWebSocketClient(URI serverUri, BiConsumer<Long, Boolean> statusCallback) {
+    public ChatWebSocketClient(URI serverUri, BiConsumer<Long, Boolean> statusCallback, BiConsumer<JSONObject, Void> messageCallback) {
         super(serverUri);
         this.statusCallback = statusCallback;
+        this.messageCallback = messageCallback;
     }
 
     public void setStatusCallback(BiConsumer<Long, Boolean> statusCallback) {
@@ -29,7 +31,6 @@ public class ChatWebSocketClient extends WebSocketClient {
 
     @Override
     public void onMessage(String message) {
-//        System.out.println("WS message received: " + message);
         try {
             JSONObject json = new JSONObject(message);
             String type = json.getString("type");
@@ -49,6 +50,10 @@ public class ChatWebSocketClient extends WebSocketClient {
                     }
                     break;
 
+                case "MESSAGE":
+                    Platform.runLater(() -> messageCallback.accept(json, null));
+                    break;
+
                 default:
                     System.out.println("Unknown WebSocket message type: " + type);
             }
@@ -66,5 +71,16 @@ public class ChatWebSocketClient extends WebSocketClient {
     @Override
     public void onError(Exception ex) {
         ex.printStackTrace();
+    }
+
+    public void sendMessage(long conversationId, String content, String senderName) {
+        if (this.isOpen()) {
+            JSONObject json = new JSONObject();
+            json.put("type", "MESSAGE");
+            json.put("conversationId", conversationId);
+            json.put("content", content);
+            json.put("senderName", senderName);
+            send(json.toString());
+        }
     }
 }

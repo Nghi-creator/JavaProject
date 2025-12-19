@@ -84,10 +84,18 @@ public class LoginViewController {
                                 // 5. Connect WebSocket AFTER HTTP login
                                 try {
                                     URI wsUri = new URI("ws://" + serverIp + ":8080/ws?userId=" + currentUserId);
-                                    ChatApp.chatWebSocketClient = new ChatWebSocketClient(wsUri, (userId, online) -> {
-                                        // Update your user list here, e.g., call ChatroomViewController method
-                                        System.out.println("User " + userId + " is now " + (online ? "online" : "offline"));
-                                    });
+                                    ChatApp.chatWebSocketClient = new ChatWebSocketClient(
+                                            wsUri,
+                                            (userId, online) -> {
+                                                // Status update callback
+                                                System.out.println("User " + userId + " is now " + (online ? "online" : "offline"));
+                                            },
+                                            (json2, v) -> {
+                                                // Message received callback
+                                                System.out.println("New message received: " + json2.toString());
+                                                // You can also forward this to your ChatroomViewController if needed
+                                            }
+                                    );
                                     ChatApp.chatWebSocketClient.connect();
                                 } catch (Exception e) {
                                     e.printStackTrace();
