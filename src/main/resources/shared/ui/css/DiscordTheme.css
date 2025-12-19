@@ -542,7 +542,44 @@
     -fx-border-width: 1px;
 }
 
-.member-list { -fx-background-color: transparent; }
+/* =========================================
+   === FIX FOR ADMIN GROUP DETAILS PANEL ===
+   ========================================= */
+
+.admin-details-panel {
+    -fx-background-color: linear-gradient(to bottom, #1a1f3b, #0a0f2b);
+    -fx-background-radius: 5px;
+    -fx-border-color: rgba(255,255,255,0.1);
+    -fx-border-radius: 5px;
+}
+
+.member-list {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-control-inner-background: transparent;
+    -fx-background: transparent;
+}
+
+.member-list .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #ffffff;
+    -fx-padding: 5px 10px;
+}
+
+.member-list .list-cell:empty {
+    -fx-background-color: transparent;
+}
+
+.member-list .list-cell:filled:selected,
+.member-list .list-cell:filled:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+}
+
+.member-list .scroll-bar:vertical .track,
+.member-list .scroll-bar:horizontal .track {
+    -fx-background-color: transparent;
+}
+
 .user-list-category {
     -fx-font-size: 13px;
     -fx-font-weight: 700;

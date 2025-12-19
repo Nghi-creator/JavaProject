@@ -133,23 +133,6 @@
             </VBox>
 
             <VBox spacing="10" styleClass="panel,gradient-bg" style="-fx-padding: 10;">
-                <Label text="Appearance" styleClass="heading1"/>
-                <Separator/>
-                <HBox spacing="10" alignment="CENTER_LEFT">
-                    <Label text="Theme:" styleClass="bold-text"/>
-                    <ComboBox fx:id="themeSelector" styleClass="theme-combo" prefWidth="150">
-                        <items>
-                            <FXCollections fx:factory="observableArrayList">
-                                <String fx:value="Light"/>
-                                <String fx:value="Dark"/>
-                                <String fx:value="Discord"/>
-                            </FXCollections>
-                        </items>
-                    </ComboBox>
-                </HBox>
-            </VBox>
-
-            <VBox spacing="10" styleClass="panel,gradient-bg" style="-fx-padding: 10;">
                 <Label text="Notifications" styleClass="heading1"/>
                 <Separator/>
                 <CheckBox fx:id="notificationsCheck" text="Enable Notifications" styleClass="normal-text"/>

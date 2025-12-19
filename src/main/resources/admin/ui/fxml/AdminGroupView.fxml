@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 <?import java.lang.String?>
 
@@ -35,11 +41,13 @@
                     </VBox>
                 </StackPane>
 
-                <StackPane prefWidth="300">
-                    <styleClass><String fx:value="panel"/><String fx:value="member-list-panel"/></styleClass>
+                <StackPane prefWidth="300" styleClass="admin-details-panel">
                     <VBox spacing="15">
                         <padding><Insets top="15" right="15" bottom="15" left="15"/></padding>
-                        <Text text="Group Details" styleClass="suggested-header"/>
+
+                        <HBox alignment="CENTER">
+                            <Text text="Group Details" styleClass="suggested-header"/>
+                        </HBox>
 
                         <Text text="Admins" styleClass="form-label"/>
                         <ListView fx:id="adminListView" styleClass="member-list" VBox.vgrow="SOMETIMES" prefHeight="100"/>
