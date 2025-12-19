@@ -11,20 +11,21 @@
         <top>
             <fx:include fx:id="header" source="AdminHeader.fxml"/>
         </top>
-        
+
         <center>
-             <HBox spacing="10">
+            <HBox spacing="10">
                 <BorderPane.margin><Insets top="10"/></BorderPane.margin>
+
                 <StackPane HBox.hgrow="ALWAYS">
                     <styleClass><String fx:value="panel"/><String fx:value="chat-area-panel"/></styleClass>
                     <VBox spacing="10">
                         <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
                         <HBox spacing="10">
-                             <fx:include source="../../../user/ui/fxml/SearchBar.fxml"/>
-                             <ComboBox fx:id="sortCombo" promptText="Sort By" styleClass="admin-action-button"/>
+                            <fx:include fx:id="searchBar" source="../../../user/ui/fxml/SearchBar.fxml"/>
+                            <ComboBox fx:id="sortCombo" promptText="Sort By" styleClass="admin-action-button"/>
                         </HBox>
                         <TableView fx:id="groupTable" VBox.vgrow="ALWAYS">
-                             <columns>
+                            <columns>
                                 <TableColumn fx:id="colGroupName" text="Group Name" prefWidth="250" reorderable="false"/>
                                 <TableColumn fx:id="colCreated" text="Created At" prefWidth="150" reorderable="false"/>
                                 <TableColumn fx:id="colAction" text="Action" prefWidth="100" reorderable="false"/>
@@ -33,19 +34,21 @@
                         </TableView>
                     </VBox>
                 </StackPane>
-                
+
                 <StackPane prefWidth="300">
                     <styleClass><String fx:value="panel"/><String fx:value="member-list-panel"/></styleClass>
                     <VBox spacing="15">
-                         <padding><Insets top="15" right="15" bottom="15" left="15"/></padding>
-                         <Text text="Group Details" styleClass="suggested-header"/>
-                         <Text text="Admins" styleClass="form-label"/>
-                         <ListView styleClass="member-list" VBox.vgrow="SOMETIMES"/>
-                         <Text text="Members" styleClass="form-label"/>
-                         <ListView styleClass="member-list" VBox.vgrow="ALWAYS"/>
+                        <padding><Insets top="15" right="15" bottom="15" left="15"/></padding>
+                        <Text text="Group Details" styleClass="suggested-header"/>
+
+                        <Text text="Admins" styleClass="form-label"/>
+                        <ListView fx:id="adminListView" styleClass="member-list" VBox.vgrow="SOMETIMES" prefHeight="100"/>
+
+                        <Text text="Members" styleClass="form-label"/>
+                        <ListView fx:id="memberListView" styleClass="member-list" VBox.vgrow="ALWAYS"/>
                     </VBox>
                 </StackPane>
-             </HBox>
+            </HBox>
         </center>
     </BorderPane>
 </StackPane>

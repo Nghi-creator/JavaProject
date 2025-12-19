@@ -1,15 +1,18 @@
 package com.example.chatroom.admin.controllers;
 
 import com.example.chatroom.core.shared.controllers.ConfigController;
+import com.example.chatroom.core.shared.controllers.SearchBarController;
+import com.example.chatroom.core.utils.TableDataManager;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.util.Callback;
-import javafx.beans.property.SimpleStringProperty;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -17,60 +20,113 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 
 public class AdminReportViewController {
 
     @FXML private AdminHeaderController headerController;
+    @FXML private SearchBarController searchBarController;
     @FXML private TableView<Report> reportTable;
     @FXML private TableColumn<Report, String> colTime, colReporter, colReported, colReason, colAction;
 
-    // Filters (Optional, keeping them empty/hidden for now to focus on core logic)
-    @FXML private ComboBox<String> timeFilter, userFilter;
+    @FXML private DatePicker startDatePicker, endDatePicker;
+    @FXML private ComboBox<String> sortCombo;
 
     private ObservableList<Report> reportList = FXCollections.observableArrayList();
+    private TableDataManager<Report> tableManager;
 
     @FXML
     public void initialize() {
-        headerController.focusButton("spamReports");
+        if (headerController != null) headerController.focusButton("spamReports");
 
         setupColumn(colTime, d -> d.time);
         setupColumn(colReporter, d -> d.reporter);
         setupColumn(colReported, d -> d.reported);
         setupColumn(colReason, d -> d.reason);
+        setupActionColumn();
 
-        // SETUP ACTIONS COLUMN
+        tableManager = new TableDataManager<>(reportTable, reportList);
+
+        tableManager.addSortOption("Time (Newest)", (r1, r2) -> r2.time.compareTo(r1.time));
+        tableManager.addSortOption("Time (Oldest)", Comparator.comparing(r -> r.time));
+        tableManager.addSortOption("Reporter (A-Z)", Comparator.comparing(r -> r.reporter.toLowerCase()));
+        tableManager.setupSortController(sortCombo);
+        sortCombo.getSelectionModel().select("Time (Newest)");
+
+        if (searchBarController != null) {
+            searchBarController.getSearchField().textProperty().addListener((o, ov, nv) -> updateTableFilters());
+        }
+        startDatePicker.valueProperty().addListener((o, ov, nv) -> updateTableFilters());
+        endDatePicker.valueProperty().addListener((o, ov, nv) -> updateTableFilters());
+
+        loadReports();
+    }
+
+    private void updateTableFilters() {
+        String query = searchBarController != null ? searchBarController.getSearchField().getText().toLowerCase() : "";
+        LocalDate start = startDatePicker.getValue();
+        LocalDate end = endDatePicker.getValue();
+
+        tableManager.setFilterPredicate(report -> {
+            boolean matchText = report.reporter.toLowerCase().contains(query)
+                    || report.reported.toLowerCase().contains(query);
+
+            boolean matchDate = true;
+            if (start != null || end != null) {
+                LocalDate reportDate = parseDate(report.time);
+                if (reportDate != null) {
+                    if (start != null && reportDate.isBefore(start)) matchDate = false;
+                    if (end != null && reportDate.isAfter(end)) matchDate = false;
+                }
+            }
+            return matchText && matchDate;
+        });
+    }
+
+    // --- FIX 1: Correct Date Parsing for "YYYY-MM-DD HH:MM" ---
+    private LocalDate parseDate(String dateStr) {
+        try {
+            if (dateStr == null || dateStr.isEmpty()) return null;
+            // Split by space OR 'T' to be safe
+            String cleanDate = dateStr.split("[ T]")[0];
+            return LocalDate.parse(cleanDate);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    // --- FIX 2: Vertical Centering for Buttons ---
+    private void setupActionColumn() {
         colAction.setCellFactory(new Callback<>() {
-            @Override
-            public TableCell<Report, String> call(TableColumn<Report, String> param) {
+            @Override public TableCell<Report, String> call(TableColumn<Report, String> param) {
                 return new TableCell<>() {
-                    @Override
-                    protected void updateItem(String item, boolean empty) {
+                    @Override protected void updateItem(String item, boolean empty) {
                         super.updateItem(item, empty);
-                        if (empty) {
-                            setGraphic(null);
-                        } else {
-                            Report report = getTableView().getItems().get(getIndex());
+                        if (empty) { setGraphic(null); return; }
 
-                            HBox box = new HBox(10);
+                        Report report = getTableView().getItems().get(getIndex());
+                        HBox box = new HBox(10);
+                        box.setAlignment(Pos.CENTER_LEFT); // Centers items inside the HBox
 
-                            Button btnLock = new Button("Lock User");
-                            btnLock.getStyleClass().add("admin-danger-button");
-                            btnLock.setOnAction(e -> handleLock(report));
+                        Button btnLock = new Button("Lock User");
+                        btnLock.getStyleClass().add("admin-danger-button");
+                        btnLock.setOnAction(e -> handleLock(report));
 
-                            Button btnDismiss = new Button("Dismiss");
-                            btnDismiss.getStyleClass().add("admin-action-button"); // Blue/Neutral button
-                            btnDismiss.setOnAction(e -> handleDismiss(report));
+                        Button btnDismiss = new Button("Dismiss");
+                        btnDismiss.getStyleClass().add("admin-action-button");
+                        btnDismiss.setOnAction(e -> handleDismiss(report));
 
-                            box.getChildren().addAll(btnLock, btnDismiss);
-                            setGraphic(box);
-                        }
+                        box.getChildren().addAll(btnLock, btnDismiss);
+
+                        // THIS LINE FIXES THE "STICKING TO CEILING" ISSUE
+                        setAlignment(Pos.CENTER_LEFT);
+                        setGraphic(box);
                     }
                 };
             }
         });
-
-        reportTable.setItems(reportList);
-        loadReports();
     }
 
     private void loadReports() {
@@ -102,42 +158,23 @@ public class AdminReportViewController {
         } catch (Exception e) { e.printStackTrace(); }
     }
 
-    private void handleLock(Report report) {
-        sendAction("/api/reports/" + report.id + "/lock", report);
-    }
-
-    private void handleDismiss(Report report) {
-        try {
-            String serverIp = ConfigController.getServerIp();
-            HttpClient client = HttpClient.newHttpClient();
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://" + serverIp + ":8080/api/reports/" + report.id))
-                    .DELETE()
-                    .build();
-
-            client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                    .thenAccept(res -> Platform.runLater(() -> {
-                        if (res.statusCode() == 200) reportList.remove(report);
-                    }));
-        } catch (Exception e) { e.printStackTrace(); }
-    }
+    private void handleLock(Report report) { sendAction("/api/reports/" + report.id + "/lock", report); }
+    private void handleDismiss(Report report) { sendAction("/api/reports/" + report.id, report); }
 
     private void sendAction(String endpoint, Report report) {
         try {
             String serverIp = ConfigController.getServerIp();
             HttpClient client = HttpClient.newHttpClient();
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://" + serverIp + ":8080" + endpoint))
-                    .POST(HttpRequest.BodyPublishers.noBody())
-                    .build();
+            HttpRequest.Builder builder = HttpRequest.newBuilder().uri(URI.create("http://" + serverIp + ":8080" + endpoint));
 
-            client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+            if (!endpoint.endsWith("/lock")) builder.DELETE();
+            else builder.POST(HttpRequest.BodyPublishers.noBody());
+
+            client.sendAsync(builder.build(), HttpResponse.BodyHandlers.ofString())
                     .thenAccept(res -> Platform.runLater(() -> {
                         if (res.statusCode() == 200) {
-                            // If locked successfully, we usually remove the report too
                             reportList.remove(report);
-                            Alert alert = new Alert(Alert.AlertType.INFORMATION, "User Locked & Report Resolved.");
-                            alert.show();
+                            if (endpoint.endsWith("/lock")) new Alert(Alert.AlertType.INFORMATION, "User Locked.").show();
                         }
                     }));
         } catch (Exception e) { e.printStackTrace(); }
@@ -145,9 +182,9 @@ public class AdminReportViewController {
 
     private void setupColumn(TableColumn<Report, String> column, Callback<Report, String> valueExtractor) {
         column.setCellValueFactory(data -> new SimpleStringProperty(valueExtractor.call(data.getValue())));
+        column.setReorderable(false);
     }
 
-    // Navigation (Keep as is)
     @FXML private void goToUsers(ActionEvent event) { /* ... */ }
 
     public static class Report {
