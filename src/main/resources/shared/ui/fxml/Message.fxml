@@ -7,14 +7,24 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
 
-<HBox xmlns:fx="http://javafx.com/fxml/1" spacing="15" styleClass="hoverable-bg" stylesheets="@/shared/ui/css/DiscordTheme.css"
+<HBox fx:id="root"
+      xmlns:fx="http://javafx.com/fxml/1"
+      spacing="15"
+      pickOnBounds="true"
+      styleClass="hoverable-bg"
+      stylesheets="@/shared/ui/css/DiscordTheme.css"
       fx:controller="com.example.chatroom.core.shared.controllers.MessageController">
+
     <fx:include fx:id="statusIcon" source="StatusIcon.fxml"/>
+
     <VBox>
         <HBox alignment="CENTER_LEFT" spacing="10.0">
-            <Text fx:id="title" fill="#ffffff" styleClass="message-username" text="Username"/>
-            <Text fx:id="timestamp" fill="#a3a6aa" styleClass="message-timestamp" text="Today at 9:20 PM"/>
+            <Text fx:id="title" fill="#ffffff" styleClass="message-username"/>
+            <Text fx:id="timestamp" fill="#a3a6aa" styleClass="message-timestamp"/>
         </HBox>
-        <Text fx:id="content" fill="#dcddde" styleClass="message-content" text="Message message" wrappingWidth="600.0"/>
+        <Text fx:id="content"
+              fill="#dcddde"
+              styleClass="message-content"
+              wrappingWidth="600.0"/>
     </VBox>
 </HBox>

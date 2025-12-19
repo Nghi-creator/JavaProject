@@ -314,6 +314,7 @@ public class ChatroomViewController {
             controller.setContent(msg.getContent());
             controller.setTimeStamp(msg.getSentAt().format(formatter));
             controller.setStatus(StatusIconController.Status.DISABLED);
+            controller.setMessage(msg, () -> deleteMessage(msg));
             messagesVBox.getChildren().add(msgNode);
             scrollToBottom();
         } catch (Exception e) {
@@ -512,6 +513,37 @@ public class ChatroomViewController {
         if (globalSearchResults.isEmpty()) return;
         currentGlobalSearchIndex = (currentGlobalSearchIndex - 1 + globalSearchResults.size()) % globalSearchResults.size();
         jumpToMessage(globalSearchResults.get(currentGlobalSearchIndex));
+    }
+
+    private void deleteMessage(MessageDto msg) {
+        // Basic sanity check
+        if (msg == null || currentUserId == null) return;
+
+        // Optional: frontend permission check
+        if (!msg.getSenderId().equals(currentUserId)) {
+            System.out.println("Not allowed to delete this message");
+            return;
+        }
+
+        String serverIp = ConfigController.getServerIp();
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://" + serverIp + ":8080/api/messages/"
+                        + msg.getId() + "?userId=" + currentUserId))
+                .DELETE()
+                .build();
+
+        httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenRun(() -> Platform.runLater(() -> {
+                    messagesVBox.getChildren().removeIf(node ->
+                            node.getUserData() instanceof MessageDto m &&
+                                    m.getId().equals(msg.getId())
+                    );
+                }))
+                .exceptionally(e -> {
+                    e.printStackTrace();
+                    return null;
+                });
     }
 
 }
