@@ -1,12 +1,14 @@
 package com.example.chatroom.core.shared.controllers;
 
 import com.example.chatroom.user.ChatApp;
+import com.example.chatroom.user.controllers.FriendsViewController;
 import com.example.chatroom.user.websocket.ChatWebSocketClient;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.TranslateTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.*;
 import javafx.util.Duration;
@@ -82,8 +84,15 @@ public class HeaderController {
         SceneSwitcher.switchScene((javafx.scene.Node) event.getSource(), "/user/ui/fxml/ChatroomView.fxml");
     }
 
-    @FXML void handleFriendsClick(ActionEvent event) {
-        SceneSwitcher.switchScene((javafx.scene.Node) event.getSource(), "/user/ui/fxml/FriendsView.fxml");
+    @FXML
+    void handleFriendsClick(ActionEvent event) {
+        SceneSwitcher.switchScene(
+                (Node) event.getSource(),
+                "/user/ui/fxml/FriendsView.fxml",
+                (FriendsViewController controller) -> {
+                    controller.setWebSocketClient(ChatApp.chatWebSocketClient);
+                }
+        );
     }
 
     @FXML

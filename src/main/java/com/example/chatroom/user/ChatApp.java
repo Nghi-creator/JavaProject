@@ -9,6 +9,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import java.net.URL;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ChatApp extends Application {
 
@@ -16,6 +18,7 @@ public class ChatApp extends Application {
     public static int currentUserId;
     public static ChatWebSocketClient chatWebSocketClient;
 
+    public static final Set<Integer> onlineUsers = ConcurrentHashMap.newKeySet();
 
     @Override
     public void start(Stage primaryStage) {

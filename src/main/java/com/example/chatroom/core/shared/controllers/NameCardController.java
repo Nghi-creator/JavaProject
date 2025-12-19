@@ -30,12 +30,22 @@ public class NameCardController {
 
     @FXML
     private void initialize() {
-        Object controllerObj = statusIcon.getProperties().get("fx:controller");
-        if (controllerObj instanceof StatusIconController controller) {
-            statusIconController = controller;
-            statusIconController.setStatus(StatusIconController.Status.ONLINE);
+        // --- Load StatusIcon properly ---
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/shared/ui/fxml/StatusIcon.fxml")
+            );
+            Parent statusIconNode = loader.load();
+            statusIconController = loader.getController();
+
+            statusIcon.getChildren().add(statusIconNode);
+            statusIconController.setStatus(StatusIconController.Status.OFFLINE);
+
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load StatusIcon.fxml", e);
         }
 
+        // --- Context menu trigger ---
         statusIcon.setOnMouseClicked(event -> {
             if (event.getButton() == MouseButton.PRIMARY) {
                 showContextMenu(event.getScreenX(), event.getScreenY());
@@ -50,18 +60,15 @@ public class NameCardController {
 
     private void showContextMenu(double x, double y) {
         ContextMenu contextMenu = new ContextMenu();
-        // Use your CSS class for the content
         contextMenu.getStyleClass().add("transparent-context-menu");
 
-        // --- CRITICAL FIX: STRIP THE ROOT PADDING/BACKGROUND ---
         contextMenu.setOnShown(e -> {
             Scene scene = contextMenu.getScene();
             if (scene != null && scene.getRoot() != null) {
-                // This overrides the .root style from DiscordTheme.css that adds padding: 10
                 scene.getRoot().setStyle(
-                        "-fx-background-color: transparent; " +
-                                "-fx-padding: 0; " +
-                                "-fx-background-radius: 0; " +
+                        "-fx-background-color: transparent;" +
+                                "-fx-padding: 0;" +
+                                "-fx-background-radius: 0;" +
                                 "-fx-effect: null;"
                 );
             }
@@ -95,7 +102,9 @@ public class NameCardController {
 
     private void openGroupSettings() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/user/ui/fxml/GroupSettingsView.fxml"));
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/user/ui/fxml/GroupSettingsView.fxml")
+            );
             Parent root = loader.load();
 
             Object controller = loader.getController();
@@ -106,14 +115,20 @@ public class NameCardController {
             Stage stage = (Stage) statusIcon.getScene().getWindow();
             stage.getScene().setRoot(root);
 
-        } catch (IOException e) { e.printStackTrace(); }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void openReportWindow() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/user/ui/fxml/ReportUserView.fxml"));
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/user/ui/fxml/ReportUserView.fxml")
+            );
             Parent root = loader.load();
-            com.example.chatroom.user.controllers.ReportUserViewController controller = loader.getController();
+
+            com.example.chatroom.user.controllers.ReportUserViewController controller =
+                    loader.getController();
             controller.setReportedUser(this.username);
 
             Stage stage = new Stage();
@@ -121,7 +136,10 @@ public class NameCardController {
             stage.setTitle("Report User");
             stage.setScene(new Scene(root));
             stage.show();
-        } catch (IOException e) { e.printStackTrace(); }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void setData(String username, String fullName) {
@@ -137,11 +155,15 @@ public class NameCardController {
         nameLabel.setStyle(style);
     }
 
-    public void setName(String name) { nameLabel.setText(name); }
-
-    public void setStatus(StatusIconController.Status status) {
-        if (statusIconController != null) statusIconController.setStatus(status);
+    public void setName(String name) {
+        nameLabel.setText(name);
     }
 
-    public void setIcon(Image image) { if (statusIconController != null) statusIconController.setIcon(image); }
+    public void setStatus(StatusIconController.Status status) {
+        statusIconController.setStatus(status);
+    }
+
+    public void setIcon(Image image) {
+        statusIconController.setIcon(image);
+    }
 }
