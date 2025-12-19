@@ -4,6 +4,7 @@ import com.example.chatroom.core.shared.controllers.*;
 import com.example.chatroom.core.dto.ConversationDto;
 import com.example.chatroom.core.dto.MessageDto;
 import com.example.chatroom.user.websocket.ChatWebSocketClient;
+import com.example.chatroom.core.utils.AESUtil; // Import AESUtil for encryption
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -95,7 +96,17 @@ public class ChatroomViewController {
             MessageDto msg = new MessageDto();
             msg.setSenderId(json.getInt("senderId"));
             msg.setSenderName(json.getString("senderName"));
-            msg.setContent(json.getString("content"));
+
+            // --- DECRYPT INCOMING LIVE MESSAGE ---
+            String rawContent = json.getString("content");
+            String displayContent = rawContent;
+
+            if (Boolean.TRUE.equals(selectedConversation.getIsEncrypted()) && selectedConversation.getSecretKey() != null) {
+                displayContent = AESUtil.decrypt(rawContent, selectedConversation.getSecretKey());
+            }
+            msg.setContent(displayContent);
+            // -------------------------------------
+
             msg.setSentAt(java.time.LocalDateTime.now());
             addMessageToVBox(msg);
         }
@@ -143,6 +154,12 @@ public class ChatroomViewController {
                         }
                     }
                     if (displayName == null || displayName.isBlank()) displayName = "DM";
+
+                    // --- VISUAL INDICATOR FOR ENCRYPTED CHATS ---
+                    if (Boolean.TRUE.equals(convo.getIsEncrypted())) {
+                        displayName = "🔒 " + displayName;
+                    }
+                    // --------------------------------------------
 
                     controller.setData(displayName, null);
 
@@ -217,7 +234,18 @@ public class ChatroomViewController {
         Platform.runLater(() -> {
             messagesVBox.getChildren().clear();
 
-            for (MessageDto msg : messages) addMessageToVBox(msg);
+            for (MessageDto msg : messages) {
+                // --- DECRYPT HISTORY MESSAGES ---
+                if (selectedConversation != null &&
+                        Boolean.TRUE.equals(selectedConversation.getIsEncrypted()) &&
+                        selectedConversation.getSecretKey() != null) {
+
+                    String decrypted = AESUtil.decrypt(msg.getContent(), selectedConversation.getSecretKey());
+                    msg.setContent(decrypted);
+                }
+                // --------------------------------
+                addMessageToVBox(msg);
+            }
 
             scrollToBottom();
         });
@@ -274,11 +302,18 @@ public class ChatroomViewController {
     private void sendMessage() {
         if (messageInput.getText().isBlank() || selectedConversation == null) return;
 
-        String content = messageInput.getText();
+        String rawContent = messageInput.getText();
         messageInput.clear();
 
-        // 1. Save to DB via HTTP
-        String encodedContent = URLEncoder.encode(content, StandardCharsets.UTF_8);
+        // --- ENCRYPT BEFORE SENDING ---
+        String contentToSend = rawContent;
+        if (Boolean.TRUE.equals(selectedConversation.getIsEncrypted()) && selectedConversation.getSecretKey() != null) {
+            contentToSend = AESUtil.encrypt(rawContent, selectedConversation.getSecretKey());
+        }
+        // ------------------------------
+
+        // 1. Save to DB via HTTP (Send Encrypted Content)
+        String encodedContent = URLEncoder.encode(contentToSend, StandardCharsets.UTF_8);
         String serverIp = ConfigController.getServerIp();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://" + serverIp + ":8080/api/messages" +
@@ -291,10 +326,10 @@ public class ChatroomViewController {
         httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .exceptionally(e -> { e.printStackTrace(); return null; });
 
-        // 2. Send via WebSocket for live updates
+        // 2. Send via WebSocket for live updates (Send Encrypted Content)
         webSocketClient.sendMessage(
                 selectedConversation.getId(),
-                content,
+                contentToSend,
                 getCurrentUserDisplayName()
         );
     }
@@ -314,7 +349,11 @@ public class ChatroomViewController {
             controller.setContent(msg.getContent());
             controller.setTimeStamp(msg.getSentAt().format(formatter));
             controller.setStatus(StatusIconController.Status.DISABLED);
+
+            // --- KEEP FRIEND'S DELETE LOGIC ---
             controller.setMessage(msg, () -> deleteMessage(msg));
+            // ----------------------------------
+
             messagesVBox.getChildren().add(msgNode);
             scrollToBottom();
         } catch (Exception e) {

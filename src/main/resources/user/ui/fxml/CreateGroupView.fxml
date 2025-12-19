@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
@@ -42,6 +43,11 @@
                     <VBox spacing="5">
                         <Text text="Group name" styleClass="form-label"/>
                         <TextField fx:id="groupNameField" promptText="Enter group name..." styleClass="form-input-field"/>
+                    </VBox>
+
+                    <VBox spacing="5">
+                        <Text text="Security" styleClass="form-label"/>
+                        <CheckBox fx:id="encryptCheckbox" text="Enable End-to-End Encryption" styleClass="form-label" style="-fx-text-fill: #b9bbbe;"/>
                     </VBox>
 
                     <VBox spacing="5">

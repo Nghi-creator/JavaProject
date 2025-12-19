@@ -14,6 +14,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -37,6 +38,7 @@ public class CreateGroupViewController {
     @FXML private HeaderController headerController;
     @FXML private SearchBarController memberSearchController;
     @FXML private TextField groupNameField;
+    @FXML private CheckBox encryptCheckbox; // <--- NEW: Encryption Checkbox
     @FXML private VBox resultContainer;     // Bottom list (Search Results)
     @FXML private VBox selectedContainer;   // Top list (Selected Members)
 
@@ -248,14 +250,17 @@ public class CreateGroupViewController {
 
             String encodedName = URLEncoder.encode(groupName, StandardCharsets.UTF_8);
 
-            // 3. Construct URL
-            // Added &adminIds param. The backend must handle this for it to take effect.
-            String url = String.format("http://%s:8080/api/conversations/group?creatorId=%d&groupName=%s&memberIds=%s&adminIds=%s",
+            // --- READ ENCRYPTION FLAG ---
+            boolean isEncrypted = encryptCheckbox != null && encryptCheckbox.isSelected();
+
+            // 3. Construct URL with isEncrypted param
+            String url = String.format("http://%s:8080/api/conversations/group?creatorId=%d&groupName=%s&memberIds=%s&adminIds=%s&isEncrypted=%b",
                     serverIp,
                     ChatApp.currentUserId,
                     encodedName,
                     memberIdsStr.toString(),
-                    adminIdsStr.toString()
+                    adminIdsStr.toString(),
+                    isEncrypted // <--- Pass to server
             );
 
             HttpClient client = HttpClient.newHttpClient();

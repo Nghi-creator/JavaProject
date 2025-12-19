@@ -1,27 +1,21 @@
 package com.example.chatroom.core.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
 public class ConversationDto {
-
     private Integer id;
-    private String type; // PRIVATE or GROUP, matches server
+    private String type;
     private String name;
-    private Boolean isEncrypted;
-
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") // ensures ISO format
     private LocalDateTime createdAt;
+    private MessageDto lastMessage;
+    private List<MemberDto> members;
 
-    private List<MemberDto> members; // full member info from server
-    private MessageDto lastMessage;   // last message info
+    // --- NEW FIELDS ---
+    private Boolean isEncrypted;
+    private String secretKey;
+    // ------------------
 
-    // --- no-args constructor for Jackson ---
-    public ConversationDto() {}
-
-    // --- getters & setters ---
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
 
@@ -31,36 +25,42 @@ public class ConversationDto {
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
-    public Boolean getIsEncrypted() { return isEncrypted; }
-    public void setIsEncrypted(Boolean isEncrypted) { this.isEncrypted = isEncrypted; }
-
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-
-    public List<MemberDto> getMembers() { return members; }
-    public void setMembers(List<MemberDto> members) { this.members = members; }
 
     public MessageDto getLastMessage() { return lastMessage; }
     public void setLastMessage(MessageDto lastMessage) { this.lastMessage = lastMessage; }
 
-    // --- nested MemberDto class ---
+    public List<MemberDto> getMembers() { return members; }
+    public void setMembers(List<MemberDto> members) { this.members = members; }
+
+    // --- NEW GETTERS/SETTERS ---
+    public Boolean getIsEncrypted() { return isEncrypted; }
+    public void setIsEncrypted(Boolean isEncrypted) { this.isEncrypted = isEncrypted; }
+
+    public String getSecretKey() { return secretKey; }
+    public void setSecretKey(String secretKey) { this.secretKey = secretKey; }
+
+    // Inner MemberDto Class
     public static class MemberDto {
         private Integer id;
         private String username;
         private String fullName;
         private String role;
 
-        public MemberDto() {} // no-args constructor for Jackson
+        public MemberDto() {}
+        public MemberDto(Integer id, String username, String fullName) {
+            this.id = id;
+            this.username = username;
+            this.fullName = fullName;
+        }
 
         public Integer getId() { return id; }
         public void setId(Integer id) { this.id = id; }
-
         public String getUsername() { return username; }
         public void setUsername(String username) { this.username = username; }
-
         public String getFullName() { return fullName; }
         public void setFullName(String fullName) { this.fullName = fullName; }
-
         public String getRole() { return role; }
         public void setRole(String role) { this.role = role; }
     }
