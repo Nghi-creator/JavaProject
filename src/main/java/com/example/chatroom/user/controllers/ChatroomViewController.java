@@ -12,6 +12,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
@@ -32,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.ArrayList;
 
 public class ChatroomViewController {
 
@@ -56,6 +58,12 @@ public class ChatroomViewController {
     private final Map<Integer, NameCardController> chatListCards = new ConcurrentHashMap<>();
     private final Map<Integer, NameCardController> memberListCards = new ConcurrentHashMap<>();
     private final Map<Integer, Boolean> pendingStatusUpdates = new ConcurrentHashMap<>();
+
+    @FXML private TextField chatSearchInput;
+    @FXML private ScrollPane messagesScrollPane;
+
+    private List<Node> searchResults = new ArrayList<>();
+    private int currentSearchIndex = -1;
 
     @FXML
     private void initialize() {
@@ -175,6 +183,7 @@ public class ChatroomViewController {
 
         populateMemberList(convo.getMembers());
         loadMessages(convo.getId());
+//        scrollToBottom();
     }
 
     private void loadMessages(int conversationId) {
@@ -199,6 +208,8 @@ public class ChatroomViewController {
             messagesVBox.getChildren().clear();
 
             for (MessageDto msg : messages) addMessageToVBox(msg);
+
+            scrollToBottom();
         });
     }
 
@@ -287,12 +298,14 @@ public class ChatroomViewController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/shared/ui/fxml/Message.fxml"));
             Node msgNode = loader.load();
+            msgNode.setUserData(msg);
             MessageController controller = loader.getController();
             controller.setTitle(msg.getSenderName() != null ? msg.getSenderName() : msg.getSenderId().toString());
             controller.setContent(msg.getContent());
             controller.setTimeStamp(msg.getSentAt().format(formatter));
             controller.setStatus(StatusIconController.Status.DISABLED);
             messagesVBox.getChildren().add(msgNode);
+            scrollToBottom();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -347,4 +360,68 @@ public class ChatroomViewController {
                 .exceptionally(e -> { e.printStackTrace(); return null; });
     }
 
+    @FXML
+    private void searchChatHistory() {
+        String query = chatSearchInput.getText().trim().toLowerCase();
+
+        // Clear previous highlights if the query is empty
+        if (query.isEmpty()) {
+            messagesVBox.getChildren().forEach(node -> node.setStyle(""));
+            searchResults.clear();
+            currentSearchIndex = -1;
+            return;
+        }
+
+        searchResults.clear();
+        currentSearchIndex = -1;
+
+        for (Node node : messagesVBox.getChildren()) {
+            if (node.getUserData() instanceof MessageDto msg) {
+                if (msg.getContent().toLowerCase().contains(query)) {
+                    searchResults.add(node);
+                }
+            }
+        }
+
+        if (!searchResults.isEmpty()) {
+            currentSearchIndex = 0;
+            scrollToMessage(searchResults.get(currentSearchIndex));
+            highlightMessage(searchResults.get(currentSearchIndex));
+        }
+    }
+
+
+    @FXML
+    private void nextSearchResult() {
+        if (searchResults.isEmpty()) return;
+        currentSearchIndex = (currentSearchIndex + 1) % searchResults.size();
+        scrollToMessage(searchResults.get(currentSearchIndex));
+        highlightMessage(searchResults.get(currentSearchIndex));
+    }
+
+    @FXML
+    private void prevSearchResult() {
+        if (searchResults.isEmpty()) return;
+        currentSearchIndex = (currentSearchIndex - 1 + searchResults.size()) % searchResults.size();
+        scrollToMessage(searchResults.get(currentSearchIndex));
+        highlightMessage(searchResults.get(currentSearchIndex));
+    }
+
+    private void scrollToMessage(Node node) {
+        Platform.runLater(() -> {
+            double height = messagesVBox.getHeight();
+            double y = node.getBoundsInParent().getMinY();
+            double vValue = y / height;
+            messagesScrollPane.setVvalue(vValue);
+        });
+    }
+
+    private void highlightMessage(Node node) {
+        messagesVBox.getChildren().forEach(n -> n.setStyle("")); // clear previous highlight
+        node.setStyle("-fx-background-color: rgba(255, 255, 0, 0.3); -fx-background-radius: 5;");
+    }
+
+    private void scrollToBottom() {
+        Platform.runLater(() -> messagesScrollPane.setVvalue(1.0));
+    }
 }
