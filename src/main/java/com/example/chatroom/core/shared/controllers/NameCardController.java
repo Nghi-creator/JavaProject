@@ -20,15 +20,15 @@ public class NameCardController {
     @FXML private StackPane statusIcon;
     @FXML private Label nameLabel;
 
-    private StatusIconController statusIconController;
+    @FXML private StatusIconController statusIconController;
+
     private String username;
 
     @FXML
     private void initialize() {
-        Object controllerObj = statusIcon.getProperties().get("fx:controller");
-        if (controllerObj instanceof StatusIconController controller) {
-            statusIconController = controller;
-            statusIconController.setStatusOnline(StatusIconController.Status.ONLINE);
+        FXMLLoader loader = (FXMLLoader) statusIcon.getProperties().get("javafx.fxml.FXMLLoader");
+        if (loader != null) {
+            statusIconController = loader.getController();
         }
 
         statusIcon.setOnMouseClicked(event -> {
@@ -99,6 +99,6 @@ public class NameCardController {
     }
 
     public void setName(String name) { nameLabel.setText(name); }
-    public void setStatus(StatusIconController.Status status) { if (statusIconController != null) statusIconController.setStatusOnline(status); }
+    public void setStatus(StatusIconController.Status status) { if (statusIconController != null) statusIconController.setStatus(status); }
     public void setIcon(Image image) { if (statusIconController != null) statusIconController.setIcon(image); }
 }

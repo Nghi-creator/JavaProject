@@ -4,8 +4,7 @@ import com.example.chatroom.core.dto.UserDto;
 import com.example.chatroom.core.shared.controllers.ConfigController;
 import com.example.chatroom.core.shared.controllers.SceneSwitcher;
 import com.example.chatroom.user.ChatApp;
-import com.example.chatroom.user.PresenceWebSocketManager;
-import com.example.chatroom.user.WebSocketManager; // <-- added
+import com.example.chatroom.user.websocket.ChatWebSocketClient;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -13,7 +12,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
-import org.java_websocket.client.WebSocketClient;
 import org.json.JSONObject;
 
 import java.net.URI;
@@ -84,27 +82,24 @@ public class LoginViewController {
                                 ChatApp.currentUser = user;
 
                                 // 5. Connect WebSocket AFTER HTTP login
-//                                PresenceWebSocketManager.getInstance().connect(serverIp);
-
-//                                WebSocketClient client = new StandardWebSocketClient();
-//                                StompClient stompClient = new StompClient(client);
-//
-//                                StompHeaders headers = new StompHeaders();
-//                                headers.add("userId", String.valueOf(currentUserId));
-//
-//                                stompClient.connect(
-//                                        "ws://localhost:8080/ws",
-//                                        headers,
-//                                        new StompSessionHandlerAdapter() {}
-//                                );
-
+                                try {
+                                    URI wsUri = new URI("ws://" + serverIp + ":8080/ws?userId=" + currentUserId);
+                                    ChatApp.chatWebSocketClient = new ChatWebSocketClient(wsUri, (userId, online) -> {
+                                        // Update your user list here, e.g., call ChatroomViewController method
+                                        System.out.println("User " + userId + " is now " + (online ? "online" : "offline"));
+                                    });
+                                    ChatApp.chatWebSocketClient.connect();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
 
                                 // 6. Switch Scene with controller consumer to set currentUserId
                                 SceneSwitcher.switchScene(
                                         (javafx.scene.Node) event.getSource(),
                                         "/user/ui/fxml/ChatroomView.fxml",
-                                        (com.example.chatroom.user.controllers.ChatroomViewController controller) -> {
+                                        (ChatroomViewController controller) -> {
                                             controller.setCurrentUserId(currentUserId);
+                                            controller.setWebSocketClient(ChatApp.chatWebSocketClient);
                                         }
                                 );
 

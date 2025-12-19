@@ -20,13 +20,13 @@ public class MessageController {
         Object controllerObj = statusIcon.getProperties().get("fx:controller");
         if (controllerObj instanceof StatusIconController controller) {
             statusIconController = controller;
-            statusIconController.setStatusOnline(StatusIconController.Status.ONLINE);
+            statusIconController.setStatus(StatusIconController.Status.ONLINE);
         }
     }
 
     public void setStatus(StatusIconController.Status status) {
         if (statusIconController != null) {
-            statusIconController.setStatusOnline(status);
+            statusIconController.setStatus(status);
         }
     }
 
