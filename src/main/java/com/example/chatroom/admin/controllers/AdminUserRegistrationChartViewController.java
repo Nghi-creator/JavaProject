@@ -6,6 +6,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.ComboBox;
@@ -37,21 +38,13 @@ public class AdminUserRegistrationChartViewController {
         yearCombo.setValue(currentYear);
 
         yearCombo.setOnAction(e -> updateChart());
+
+        CategoryAxis xAxis = (CategoryAxis) registrationChart.getXAxis();
+        xAxis.setCategories(FXCollections.observableArrayList(months));
+
         updateChart();
-
-        NumberAxis yAxis = (NumberAxis) registrationChart.getYAxis();
-        yAxis.setTickUnit(1);            // increment by 1
-        yAxis.setMinorTickCount(0);      // no minor ticks
-        yAxis.setAutoRanging(true);      // keep auto scaling
-        yAxis.setForceZeroInRange(true); // include 0
-        yAxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(yAxis) {
-            @Override
-            public String toString(Number object) {
-                return String.valueOf(object.intValue()); // only integers
-            }
-        });
-
     }
+
 
     private void updateChart() {
         Integer year = yearCombo.getValue();
@@ -75,11 +68,31 @@ public class AdminUserRegistrationChartViewController {
                             Platform.runLater(() -> {
                                 try {
                                     JSONArray dataArray = new JSONArray(response.body());
+
+                                    int maxCount = 0;
                                     for (int i = 0; i < 12; i++) {
                                         int count = dataArray.optInt(i, 0);
+                                        maxCount = Math.max(maxCount, count);
                                         series.getData().add(new XYChart.Data<>(months[i], count));
                                     }
+
                                     registrationChart.getData().add(series);
+
+                                    // Configure Y-axis with step = 1
+                                    NumberAxis yAxis = (NumberAxis) registrationChart.getYAxis();
+                                    yAxis.setAutoRanging(false);
+                                    yAxis.setLowerBound(0);
+                                    yAxis.setUpperBound(maxCount + 1); // +1 for padding
+                                    yAxis.setTickUnit(1);
+                                    yAxis.setMinorTickCount(0);
+                                    yAxis.setForceZeroInRange(true);
+                                    yAxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(yAxis) {
+                                        @Override
+                                        public String toString(Number object) {
+                                            return String.valueOf(object.intValue());
+                                        }
+                                    });
+
                                 } catch (Exception ex) {
                                     ex.printStackTrace();
                                 }
