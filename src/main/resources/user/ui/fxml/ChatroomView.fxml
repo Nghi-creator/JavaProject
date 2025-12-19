@@ -50,14 +50,16 @@
                             <Region HBox.hgrow="ALWAYS"/>
 
                             <!-- Search bar -->
-                            <fx:include source="SearchBar.fxml"/>
+                            <TextField fx:id="chatSearchInput" promptText="Search in chat..." onAction="#searchChatHistory"/>
+                            <Button text="Next" onAction="#nextSearchResult"/>
+                            <Button text="Prev" onAction="#prevSearchResult"/>
 
                             <!-- Options button -->
                             <MenuButton fx:id="optionsButton" text="..." styleClass="options-menu"/>
                         </HBox>
                     </top>
                     <center>
-                        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="ALWAYS" styleClass="scroll-pane">
+                        <ScrollPane fx:id="messagesScrollPane" fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="ALWAYS" styleClass="scroll-pane">
                             <VBox fx:id="messagesVBox" prefHeight="602.0" prefWidth="728.0" spacing="10.0" styleClass="chat-messages-area">
                                 <padding>
                                     <Insets bottom="10.0" left="15.0" right="15.0" top="10.0"/>
