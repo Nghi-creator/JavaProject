@@ -2,18 +2,17 @@ package com.example.chatroom.user.controllers;
 
 import com.example.chatroom.core.dto.ConversationDto;
 import com.example.chatroom.core.dto.UserDto;
-import com.example.chatroom.core.shared.controllers.ConfigController;
-import com.example.chatroom.core.shared.controllers.NameCardController;
-import com.example.chatroom.core.shared.controllers.SceneSwitcher;
-import com.example.chatroom.core.shared.controllers.SearchBarController;
+import com.example.chatroom.core.shared.controllers.*;
 import com.example.chatroom.core.utils.JsonUtil;
 import com.example.chatroom.user.ChatApp;
+import com.example.chatroom.user.websocket.ChatWebSocketClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -27,7 +26,9 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class FriendsViewController {
@@ -35,6 +36,9 @@ public class FriendsViewController {
     @FXML private VBox friendListPane, requestsPane, findFriendsPane, blockedPane;
     @FXML private VBox friendListContainer, requestsListContainer, findFriendsListContainer, blockedListContainer;
     @FXML private Button btnFriendList, btnFriendRequests, btnFindFriends, btnBlocked;
+    @FXML private ToggleButton btnOnlineOnly;
+    private boolean filterOnlineOnly = false;
+    private final Map<Integer, NameCardController> friendCards = new HashMap<>();
 
     // --- SEARCH CONTROLLERS (Injected via fx:include) ---
     @FXML private SearchBarController searchBarController;       // Existing (Find Friends)
@@ -46,6 +50,13 @@ public class FriendsViewController {
     // --- LOCAL CACHE (For instant filtering) ---
     private List<UserDto> allFriends = new ArrayList<>();
     private List<UserDto> allRequests = new ArrayList<>();
+
+    ChatWebSocketClient webSocketClient;
+    public void setWebSocketClient(ChatWebSocketClient client) {
+        this.webSocketClient = client;
+        client.setStatusCallback(this::onStatusUpdate);
+    }
+
 
     @FXML
     private void initialize() {
@@ -66,6 +77,15 @@ public class FriendsViewController {
             requestSearchBarController.setOnSearchListener(query ->
                     filterList(query, allRequests, requestsListContainer, "REQUEST_ACTIONS")
             );
+        }
+
+        btnOnlineOnly.selectedProperty().addListener((obs, oldVal, newVal) -> {
+            filterOnlineOnly = newVal;
+            applyFriendFilters();
+        });
+
+        if (friendSearchBarController != null) {
+            friendSearchBarController.setOnSearchListener(q -> applyFriendFilters());
         }
 
         showFriendList();
@@ -92,7 +112,11 @@ public class FriendsViewController {
         updateView(friendListPane, btnFriendList);
         // Clear search bar when switching tabs
         if (friendSearchBarController != null) friendSearchBarController.getSearchField().clear();
-        fetchUsers("/api/friends?userId=" + ChatApp.currentUserId, friendListContainer, "FRIEND_ACTIONS", allFriends);
+        fetchUsers("/api/friends?userId=" + ChatApp.currentUserId,
+                friendListContainer,
+                "FRIEND_ACTIONS",
+                allFriends);
+
     }
 
     @FXML private void showRequests() {
@@ -138,13 +162,19 @@ public class FriendsViewController {
                         cacheList.addAll(fetchedData);
                     }
 
-                    renderList(container, fetchedData, actionType);
+                    if (paneIsFriendList(container)) {
+                        applyFriendFilters();
+                    } else {
+                        renderList(container, fetchedData, actionType);
+                    }
+
                 }
             }));
         } catch (Exception e) { e.printStackTrace(); }
     }
 
     private void renderList(VBox container, List<UserDto> users, String actionType) {
+        friendCards.clear();
         container.getChildren().clear();
         for (UserDto user : users) {
             createRow(container, user, actionType);
@@ -157,6 +187,14 @@ public class FriendsViewController {
             Parent nameCard = loader.load();
             NameCardController controller = loader.getController();
             controller.setData(user.getUsername(), user.getFullName());
+
+            controller.setStatus(
+                    ChatApp.onlineUsers.contains(user.getId())
+                            ? StatusIconController.Status.ONLINE
+                            : StatusIconController.Status.OFFLINE
+            );
+
+            friendCards.put(user.getId(), controller);
 
             HBox row = new HBox(10);
             row.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
@@ -303,6 +341,57 @@ public class FriendsViewController {
                     });
                 }
         );
+    }
+
+    private void applyFriendFilters() {
+        String query;
+        if (friendSearchBarController != null) {
+            query = friendSearchBarController.getSearchField().getText().toLowerCase();
+        } else {
+            query = "";
+        }
+
+        List<UserDto> filtered = allFriends.stream()
+                .filter(u -> {
+                    boolean matchesText =
+                            query.isBlank()
+                                    || u.getUsername().toLowerCase().contains(query)
+                                    || (u.getFullName() != null && u.getFullName().toLowerCase().contains(query));
+
+                    boolean matchesOnline =
+                            !filterOnlineOnly
+                                    || ChatApp.onlineUsers.contains(u.getId());
+
+                    return matchesText && matchesOnline;
+                })
+                .toList();
+
+        renderList(friendListContainer, filtered, "FRIEND_ACTIONS");
+    }
+
+    private boolean paneIsFriendList(VBox container) {
+        return container == friendListContainer;
+    }
+
+    private void onStatusUpdate(Integer userId, boolean online) {
+        if (online) ChatApp.onlineUsers.add(userId);
+        else ChatApp.onlineUsers.remove(userId);
+
+        NameCardController card = friendCards.get(userId);
+        if (card != null) {
+            Platform.runLater(() ->
+                    card.setStatus(
+                            online
+                                    ? StatusIconController.Status.ONLINE
+                                    : StatusIconController.Status.OFFLINE
+                    )
+            );
+        }
+
+        // Re-apply filters only if needed
+        if (friendListPane.isVisible() && filterOnlineOnly) {
+            applyFriendFilters();
+        }
     }
 
 }

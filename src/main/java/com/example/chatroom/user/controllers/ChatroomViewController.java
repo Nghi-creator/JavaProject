@@ -3,6 +3,7 @@ package com.example.chatroom.user.controllers;
 import com.example.chatroom.core.shared.controllers.*;
 import com.example.chatroom.core.dto.ConversationDto;
 import com.example.chatroom.core.dto.MessageDto;
+import com.example.chatroom.user.ChatApp;
 import com.example.chatroom.user.websocket.ChatWebSocketClient;
 import com.example.chatroom.core.utils.AESUtil; // Import AESUtil for encryption
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -58,7 +59,6 @@ public class ChatroomViewController {
 
     private final Map<Integer, NameCardController> chatListCards = new ConcurrentHashMap<>();
     private final Map<Integer, NameCardController> memberListCards = new ConcurrentHashMap<>();
-    private final Map<Integer, Boolean> pendingStatusUpdates = new ConcurrentHashMap<>();
 
     @FXML private TextField chatSearchInput;
     @FXML private ScrollPane messagesScrollPane;
@@ -85,9 +85,9 @@ public class ChatroomViewController {
         this.webSocketClient.setStatusCallback(this::updateUserStatus);
         this.webSocketClient.messageCallback = (json, v) -> handleIncomingMessage(json);
 
-        if (!this.webSocketClient.isOpen()) {
-            this.webSocketClient.connect();
-        }
+//        if (!this.webSocketClient.isOpen()) {
+//            this.webSocketClient.connect();
+//        }
     }
 
     private void handleIncomingMessage(JSONObject json) {
@@ -168,8 +168,17 @@ public class ChatroomViewController {
                             if (!member.getId().equals(currentUserId)) {
                                 chatListCards.put(member.getId(), controller);
 
-                                Boolean pending = pendingStatusUpdates.remove(member.getId());
-                                if (pending != null) controller.setStatus(pending ? StatusIconController.Status.ONLINE : StatusIconController.Status.OFFLINE);
+//                                Boolean pending = pendingStatusUpdates.remove(member.getId());
+//                                if (pending != null) controller.setStatus(pending ? StatusIconController.Status.ONLINE : StatusIconController.Status.OFFLINE);
+
+                                boolean isOnline = ChatApp.onlineUsers.contains(member.getId());
+                                System.out.println(isOnline);
+                                controller.setStatus(
+                                        isOnline
+                                                ? StatusIconController.Status.ONLINE
+                                                : StatusIconController.Status.OFFLINE
+                                );
+
                             }
                         }
                     } else controller.setStatus(StatusIconController.Status.DISABLED);
@@ -272,7 +281,7 @@ public class ChatroomViewController {
     private void populateMemberList(List<ConversationDto.MemberDto> members) {
         Platform.runLater(() -> {
             memberListVBox.getChildren().clear();
-            if (members == null) return;
+//            if (members == null) return;
             for (var member : members) {
                 try {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/shared/ui/fxml/NameCard.fxml"));
@@ -282,12 +291,20 @@ public class ChatroomViewController {
                     controller.setData(displayName, null);
                     memberListCards.put(member.getId(), controller);
 
-                    Boolean pending = pendingStatusUpdates.remove(member.getId());
-                    if (pending != null) {
-                        controller.setStatus(pending ? StatusIconController.Status.ONLINE : StatusIconController.Status.OFFLINE);
-                    } else {
-                        controller.setStatus(StatusIconController.Status.OFFLINE);
-                    }
+//                    Boolean pending = pendingStatusUpdates.remove(member.getId());
+//                    if (pending != null) {
+//                        controller.setStatus(pending ? StatusIconController.Status.ONLINE : StatusIconController.Status.OFFLINE);
+//                    } else {
+//                        controller.setStatus(StatusIconController.Status.OFFLINE);
+//                    }
+
+                    boolean isOnline = ChatApp.onlineUsers.contains(member.getId());
+                    controller.setStatus(
+                            isOnline
+                                    ? StatusIconController.Status.ONLINE
+                                    : StatusIconController.Status.OFFLINE
+                    );
+
 
                     memberNode.setOnMouseClicked(event -> System.out.println("Clicked on member: " + displayName));
 
@@ -362,15 +379,28 @@ public class ChatroomViewController {
         }
     }
 
-    private void updateUserStatus(long userId, boolean online) {
+    private void updateUserStatus(int userId, boolean online) {
+//        System.out.println("UI UPDATE -> user=" + userId + " online=" + online);
+
+        if (online) ChatApp.onlineUsers.add(userId);
+        else ChatApp.onlineUsers.remove(userId);
+
         Platform.runLater(() -> {
             NameCardController chatCard = chatListCards.get((int) userId);
-            if (chatCard != null) chatCard.setStatus(online ? StatusIconController.Status.ONLINE : StatusIconController.Status.OFFLINE);
+            if (chatCard != null) {
+                chatCard.setStatus(
+                        online ? StatusIconController.Status.ONLINE
+                                : StatusIconController.Status.OFFLINE
+                );
+            }
 
             NameCardController memberCard = memberListCards.get((int) userId);
-            if (memberCard != null) memberCard.setStatus(online ? StatusIconController.Status.ONLINE : StatusIconController.Status.OFFLINE);
-
-            if (chatCard == null && memberCard == null) pendingStatusUpdates.put((int) userId, online);
+            if (memberCard != null) {
+                memberCard.setStatus(
+                        online ? StatusIconController.Status.ONLINE
+                                : StatusIconController.Status.OFFLINE
+                );
+            }
         });
     }
 

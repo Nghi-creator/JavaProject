@@ -87,8 +87,8 @@ public class LoginViewController {
                                     ChatApp.chatWebSocketClient = new ChatWebSocketClient(
                                             wsUri,
                                             (userId, online) -> {
-                                                // Status update callback
-                                                System.out.println("User " + userId + " is now " + (online ? "online" : "offline"));
+                                                if (online) ChatApp.onlineUsers.add(userId);
+                                                else ChatApp.onlineUsers.remove(userId);
                                             },
                                             (json2, v) -> {
                                                 // Message received callback
