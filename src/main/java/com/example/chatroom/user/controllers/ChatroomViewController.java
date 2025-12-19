@@ -15,7 +15,6 @@ import javafx.scene.Node;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
 import java.io.IOException;
@@ -52,6 +51,7 @@ public class ChatroomViewController {
 
     private final Map<Integer, NameCardController> chatListCards = new ConcurrentHashMap<>();
     private final Map<Integer, NameCardController> memberListCards = new ConcurrentHashMap<>();
+    private final Map<Long, Boolean> pendingStatusUpdates = new ConcurrentHashMap<>();
 
     @FXML
     private void initialize() {
@@ -116,7 +116,12 @@ public class ChatroomViewController {
                     if ("PRIVATE".equals(convo.getType())) {
                         for (var member : convo.getMembers()) {
                             if (!member.getId().equals(currentUserId)) {
+                                System.out.println("Adding chat card for user: " + member.getId());
                                 chatListCards.put(member.getId(), controller);
+
+                                // Apply any pending status update
+                                Boolean pending = pendingStatusUpdates.remove(member.getId().longValue());
+                                if (pending != null) controller.setStatus(pending ? StatusIconController.Status.ONLINE : StatusIconController.Status.OFFLINE);
                             }
                         }
                     } else controller.setStatus(StatusIconController.Status.DISABLED);
@@ -194,6 +199,10 @@ public class ChatroomViewController {
                     controller.setData(displayName, null);
                     memberListCards.put(member.getId(), controller);
 
+                    // Apply pending status if any
+                    Boolean pending = pendingStatusUpdates.remove(member.getId().longValue());
+                    if (pending != null) controller.setStatus(pending ? StatusIconController.Status.ONLINE : StatusIconController.Status.OFFLINE);
+
                     memberNode.setOnMouseClicked(event -> {
                         System.out.println("Clicked on member: " + displayName);
                     });
@@ -243,13 +252,15 @@ public class ChatroomViewController {
     }
 
     private void updateUserStatus(long userId, boolean online) {
-        System.out.println("Updating user " + userId + " -> " + online);
         Platform.runLater(() -> {
-            NameCardController chatCard = chatListCards.get(userId);
-            if (chatCard != null) chatCard.setStatus(online ? StatusIconController.Status.ONLINE : StatusIconController.Status.DISABLED);
+            NameCardController chatCard = chatListCards.get((int) userId);
+            if (chatCard != null) chatCard.setStatus(online ? StatusIconController.Status.ONLINE : StatusIconController.Status.OFFLINE);
 
-            NameCardController memberCard = memberListCards.get(userId);
-            if (memberCard != null) memberCard.setStatus(online ? StatusIconController.Status.ONLINE : StatusIconController.Status.DISABLED);
+            NameCardController memberCard = memberListCards.get((int) userId);
+            if (memberCard != null) memberCard.setStatus(online ? StatusIconController.Status.ONLINE : StatusIconController.Status.OFFLINE);
+
+            // Save for later if card does not exist yet
+            if (chatCard == null && memberCard == null) pendingStatusUpdates.put(userId, online);
         });
     }
 
