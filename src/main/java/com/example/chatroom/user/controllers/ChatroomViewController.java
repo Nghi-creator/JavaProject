@@ -18,6 +18,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URI;
@@ -69,8 +70,22 @@ public class ChatroomViewController {
     public void setWebSocketClient(ChatWebSocketClient webSocketClient) {
         this.webSocketClient = webSocketClient;
         this.webSocketClient.setStatusCallback(this::updateUserStatus);
+        this.webSocketClient.messageCallback = (json, v) -> handleIncomingMessage(json);
+
         if (!this.webSocketClient.isOpen()) {
             this.webSocketClient.connect();
+        }
+    }
+
+    private void handleIncomingMessage(JSONObject json) {
+        long convId = json.getLong("conversationId");
+        if (selectedConversation != null && selectedConversation.getId() == convId) {
+            MessageDto msg = new MessageDto();
+            msg.setSenderId(json.getInt("senderId"));
+            msg.setSenderName(json.getString("senderName"));
+            msg.setContent(json.getString("content"));
+            msg.setSentAt(java.time.LocalDateTime.now());
+            addMessageToVBox(msg);
         }
     }
 
@@ -120,11 +135,9 @@ public class ChatroomViewController {
                     if ("PRIVATE".equals(convo.getType())) {
                         for (var member : convo.getMembers()) {
                             if (!member.getId().equals(currentUserId)) {
-                                System.out.println("Adding chat card for user: " + member.getId());
                                 chatListCards.put(member.getId(), controller);
 
-                                // Apply any pending status update
-                                Boolean pending = pendingStatusUpdates.remove(member.getId().longValue());
+                                Boolean pending = pendingStatusUpdates.remove(member.getId());
                                 if (pending != null) controller.setStatus(pending ? StatusIconController.Status.ONLINE : StatusIconController.Status.OFFLINE);
                             }
                         }
@@ -145,7 +158,6 @@ public class ChatroomViewController {
         this.selectedConversation = convo;
         chatHeading.setText(heading);
 
-        // Populate options menu
         optionsButton.getItems().clear();
         if ("PRIVATE".equals(convo.getType()) || isCurrentUserAdmin(convo)) {
             MenuItem deleteItem = new MenuItem("Delete Conversation");
@@ -164,7 +176,6 @@ public class ChatroomViewController {
         populateMemberList(convo.getMembers());
         loadMessages(convo.getId());
     }
-
 
     private void loadMessages(int conversationId) {
         if (currentUserId == null) return;
@@ -228,9 +239,7 @@ public class ChatroomViewController {
                         controller.setStatus(StatusIconController.Status.OFFLINE);
                     }
 
-                    memberNode.setOnMouseClicked(event -> {
-                        System.out.println("Clicked on member: " + displayName);
-                    });
+                    memberNode.setOnMouseClicked(event -> System.out.println("Clicked on member: " + displayName));
 
                     memberListVBox.getChildren().add(memberNode);
                 } catch (IOException e) {
@@ -246,9 +255,10 @@ public class ChatroomViewController {
 
         String content = messageInput.getText();
         messageInput.clear();
+
+        // 1. Save to DB via HTTP
         String encodedContent = URLEncoder.encode(content, StandardCharsets.UTF_8);
         String serverIp = ConfigController.getServerIp();
-
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://" + serverIp + ":8080/api/messages" +
                         "?conversationId=" + selectedConversation.getId() +
@@ -258,8 +268,19 @@ public class ChatroomViewController {
                 .build();
 
         httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenRun(() -> loadMessages(selectedConversation.getId()))
                 .exceptionally(e -> { e.printStackTrace(); return null; });
+
+        // 2. Send via WebSocket for live updates
+        webSocketClient.sendMessage(
+                selectedConversation.getId(),
+                content,
+                getCurrentUserDisplayName()
+        );
+    }
+
+    private String getCurrentUserDisplayName() {
+        // Implement your logic to get current user display name
+        return "You"; // placeholder
     }
 
     private void addMessageToVBox(MessageDto msg) {
@@ -285,7 +306,6 @@ public class ChatroomViewController {
             NameCardController memberCard = memberListCards.get((int) userId);
             if (memberCard != null) memberCard.setStatus(online ? StatusIconController.Status.ONLINE : StatusIconController.Status.OFFLINE);
 
-            // Save for later if card does not exist yet
             if (chatCard == null && memberCard == null) pendingStatusUpdates.put((int) userId, online);
         });
     }
@@ -312,7 +332,6 @@ public class ChatroomViewController {
 
         httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenRun(() -> {
-                    // Remove from UI
                     Platform.runLater(() -> {
                         chatListVBox.getChildren().removeIf(node -> {
                             Object userData = node.getUserData();
