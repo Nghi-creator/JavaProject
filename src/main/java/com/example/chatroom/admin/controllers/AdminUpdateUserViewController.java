@@ -1,5 +1,6 @@
 package com.example.chatroom.admin.controllers;
 
+import com.example.chatroom.core.model.User;
 import com.example.chatroom.core.shared.controllers.ConfigController;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -17,12 +18,12 @@ import java.time.LocalDate;
 public class AdminUpdateUserViewController {
 
     @FXML private TextField firstNameField, lastNameField, usernameField, emailField, addressField;
-    @FXML private PasswordField passwordField; // <--- NEW FIELD
+    @FXML private PasswordField passwordField;
     @FXML private ComboBox<String> genderCombo;
     @FXML private DatePicker dobPicker;
     @FXML private Button btnCancel;
 
-    private AdminUserViewController.User currentUser;
+    private User currentUser;
     private AdminUserViewController parentController;
 
     @FXML
@@ -30,30 +31,25 @@ public class AdminUpdateUserViewController {
         genderCombo.setItems(FXCollections.observableArrayList("MALE", "FEMALE", "OTHER"));
     }
 
-    public void setUserData(AdminUserViewController.User user) {
+    public void setUserData(User user) {
         this.currentUser = user;
-        usernameField.setText(user.username);
-        emailField.setText(user.email);
-        addressField.setText(user.address);
-        usernameField.setDisable(true); // Username cannot be changed
 
-        String[] names = user.fullname.split(" ", 2);
-        firstNameField.setText(names.length > 0 ? names[0] : "");
-        lastNameField.setText(names.length > 1 ? names[1] : "");
+        usernameField.setText(user.getUsername());
+        emailField.setText(user.getEmail());
+        addressField.setText(user.getAddress());
+        usernameField.setDisable(true);
 
-        if (user.gender != null && !user.gender.isEmpty()) {
-            genderCombo.getSelectionModel().select(user.gender);
-        } else {
-            genderCombo.getSelectionModel().select("OTHER");
+        if (user.getFullName() != null) {
+            String[] names = user.getFullName().split(" ", 2);
+            firstNameField.setText(names.length > 0 ? names[0] : "");
+            lastNameField.setText(names.length > 1 ? names[1] : "");
         }
 
-        if (user.dob != null && !user.dob.isEmpty()) {
-            try {
-                String datePart = user.dob.split("T")[0];
-                dobPicker.setValue(LocalDate.parse(datePart));
-            } catch (Exception e) {
-                System.err.println("Could not parse DOB: " + user.dob);
-            }
+        genderCombo.getSelectionModel()
+                .select(user.getGender() != null ? user.getGender() : "OTHER");
+
+        if (user.getDob() != null) {
+            dobPicker.setValue(user.getDob());
         }
     }
 
@@ -71,20 +67,19 @@ public class AdminUpdateUserViewController {
         }
 
         JSONObject json = new JSONObject();
+        json.put("username", currentUser.getUsername());
         json.put("fullName", fullName);
         json.put("email", emailField.getText());
         json.put("address", addressField.getText());
-        json.put("username", currentUser.username);
-
-        // ONLY SEND PASSWORD IF NOT EMPTY
-        String newPass = passwordField.getText();
-        if (newPass != null && !newPass.isEmpty()) {
-            json.put("password", newPass);
-        }
-
         json.put("gender", genderCombo.getValue());
+
         if (dobPicker.getValue() != null) {
             json.put("dob", dobPicker.getValue().toString());
+        }
+
+        String newPassword = passwordField.getText();
+        if (newPassword != null && !newPassword.isBlank()) {
+            json.put("password", newPassword);
         }
 
         try {
@@ -92,7 +87,7 @@ public class AdminUpdateUserViewController {
             HttpClient client = HttpClient.newHttpClient();
 
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://" + serverIp + ":8080/api/users/" + currentUser.id))
+                    .uri(URI.create("http://" + serverIp + ":8080/api/users/" + currentUser.getId()))
                     .header("Content-Type", "application/json")
                     .PUT(HttpRequest.BodyPublishers.ofString(json.toString()))
                     .build();
@@ -107,14 +102,19 @@ public class AdminUpdateUserViewController {
                         }
                     }))
                     .exceptionally(e -> {
-                        Platform.runLater(() -> showAlert("Error", "Connection failed: " + e.getMessage()));
+                        Platform.runLater(() ->
+                                showAlert("Error", "Connection failed: " + e.getMessage()));
                         return null;
                     });
 
         } catch (Exception e) {
-            e.printStackTrace();
-            showAlert("Error", "An unexpected error occurred.");
+            showAlert("Error", "Unexpected error occurred.");
         }
+    }
+
+    @FXML
+    private void closeWindow() {
+        ((Stage) btnCancel.getScene().getWindow()).close();
     }
 
     private void showAlert(String title, String content) {
@@ -125,13 +125,8 @@ public class AdminUpdateUserViewController {
         alert.showAndWait();
     }
 
-    @FXML
-    private void closeWindow() {
-        Stage stage = (Stage) btnCancel.getScene().getWindow();
-        stage.close();
-    }
-
     private boolean isValidEmail(String email) {
-        return email != null && email.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$");
+        return email != null &&
+                email.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$");
     }
 }

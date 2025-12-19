@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
 <?import java.lang.String?>
 
 <StackPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.chatroom.admin.controllers.AdminUserViewController" styleClass="root" stylesheets="@../../../shared/ui/css/DiscordTheme.css">
@@ -15,7 +16,7 @@
             <StackPane>
                 <BorderPane.margin><Insets top="10"/></BorderPane.margin>
                 <styleClass><String fx:value="panel"/><String fx:value="chat-area-panel"/></styleClass>
-
+                
                 <VBox spacing="15">
                     <padding><Insets top="15" right="15" bottom="15" left="15"/></padding>
 
@@ -31,14 +32,15 @@
 
                         <Label text="To:" styleClass="normal-text"/>
                         <DatePicker fx:id="endDatePicker" prefWidth="130"/>
-
+                        <ComboBox fx:id="sortCombo" promptText="Sort by..." styleClass="admin-action-button"/>
+<!--                        <ComboBox fx:id="filterCombo" promptText="Filter" styleClass="admin-action-button"/>-->
                         <Region HBox.hgrow="ALWAYS"/>
 
-                        <ComboBox fx:id="sortCombo" promptText="Sort by..." styleClass="admin-action-button"/>
+<!--                        <ComboBox fx:id="sortCombo" promptText="Sort by..." styleClass="admin-action-button"/>-->
 
                         <Button text="+ Add User" styleClass="admin-action-button" onAction="#openAddUser"/>
                     </HBox>
-
+                    
                     <TableView fx:id="userTable" VBox.vgrow="ALWAYS">
                         <columns>
                             <TableColumn fx:id="colUsername" text="Username" prefWidth="120" reorderable="false"/>
