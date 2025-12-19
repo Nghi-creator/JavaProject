@@ -23,7 +23,12 @@
                         <Insets top="10" right="10" bottom="10" left="10"/>
                     </StackPane.margin>
                     <Text fill="WHITE" styleClass="chat-list-title" text="CHATS"/>
-                    <fx:include fx:id="chatSearch" source="SearchBar.fxml"/>
+<!--                    <fx:include fx:id="chatSearch" source="SearchBar.fxml"/>-->
+                    <HBox spacing="5" alignment="CENTER_LEFT">
+                        <TextField fx:id="globalSearchInput" promptText="Search all messages..." onAction="#searchAllChats" />
+                        <Button text="prev" onAction="#prevGlobalSearch"/>
+                        <Button text="next" onAction="#nextGlobalSearch"/>
+                    </HBox>
                     <Separator/>
                     <VBox fx:id="chatListVBox" spacing="5"/>
 <!--                    <fx:include fx:id="userOneCard" source="../../../shared/ui/fxml/NameCard.fxml"/>-->

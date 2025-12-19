@@ -65,6 +65,10 @@ public class ChatroomViewController {
     private List<Node> searchResults = new ArrayList<>();
     private int currentSearchIndex = -1;
 
+    @FXML private TextField globalSearchInput;
+    private List<MessageDto> globalSearchResults = new ArrayList<>();
+    private int currentGlobalSearchIndex = -1;
+
     @FXML
     private void initialize() {
         headerController.focusButton("chat");
@@ -152,7 +156,7 @@ public class ChatroomViewController {
                     } else controller.setStatus(StatusIconController.Status.DISABLED);
 
                     String finalDisplayName = displayName;
-                    cardNode.setOnMouseClicked(event -> selectConversation(convo, finalDisplayName));
+                    cardNode.setOnMouseClicked(event -> selectConversation(convo, finalDisplayName, null));
 
                     chatListVBox.getChildren().add(cardNode);
                 } catch (IOException e) {
@@ -162,7 +166,7 @@ public class ChatroomViewController {
         });
     }
 
-    private void selectConversation(ConversationDto convo, String heading) {
+    private void selectConversation(ConversationDto convo, String heading, Runnable afterLoad) {
         this.selectedConversation = convo;
         chatHeading.setText(heading);
 
@@ -182,11 +186,12 @@ public class ChatroomViewController {
         });
 
         populateMemberList(convo.getMembers());
-        loadMessages(convo.getId());
-//        scrollToBottom();
+
+        // Only load messages if no callback provided (normal case) OR force load if callback exists
+        loadMessages(convo.getId(), afterLoad);
     }
 
-    private void loadMessages(int conversationId) {
+    private void loadMessages(int conversationId, Runnable afterLoad) {
         if (currentUserId == null) return;
 
         String serverIp = ConfigController.getServerIp();
@@ -197,7 +202,10 @@ public class ChatroomViewController {
 
         httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(HttpResponse::body)
-                .thenAccept(this::populateMessages)
+                .thenAccept(json -> {
+                    populateMessages(json);
+                    if (afterLoad != null) afterLoad.run();
+                })
                 .exceptionally(e -> { e.printStackTrace(); return null; });
     }
 
@@ -424,4 +432,84 @@ public class ChatroomViewController {
     private void scrollToBottom() {
         Platform.runLater(() -> messagesScrollPane.setVvalue(1.0));
     }
+
+    @FXML
+    private void searchAllChats() {
+        String query = globalSearchInput.getText().trim();
+        if (query.isEmpty()) {
+            globalSearchResults.clear();
+            currentGlobalSearchIndex = -1;
+            return;
+        }
+
+        String serverIp = ConfigController.getServerIp();
+        String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8);
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://" + serverIp + ":8080/api/messages/search/all?userId="
+                        + currentUserId + "&query=" + encodedQuery))
+                .GET()
+                .build();
+
+        httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(HttpResponse::body)
+                .thenAccept(this::handleGlobalSearchResults)
+                .exceptionally(e -> { e.printStackTrace(); return null; });
+    }
+
+    private void handleGlobalSearchResults(String json) {
+        try {
+            List<MessageDto> results = objectMapper.readValue(json, new TypeReference<List<MessageDto>>() {});
+            Platform.runLater(() -> {
+                globalSearchResults = results;
+                if (!results.isEmpty()) {
+                    currentGlobalSearchIndex = 0;
+                    jumpToMessage(results.get(0));
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void jumpToMessage(MessageDto msg) {
+        if (selectedConversation == null || !selectedConversation.getId().equals(msg.getConversationId())) {
+            // Find conversation node and simulate click
+            for (Node node : chatListVBox.getChildren()) {
+                if (node.getUserData() instanceof ConversationDto convo && convo.getId().equals(msg.getConversationId())) {
+                    // Pass a callback to highlight after messages load
+                    selectConversation(convo, convo.getName(), () -> Platform.runLater(() -> scrollAndHighlight(msg)));
+                    return;
+                }
+            }
+        } else {
+            Platform.runLater(() -> scrollAndHighlight(msg));
+        }
+    }
+
+
+    private void scrollAndHighlight(MessageDto msg) {
+        for (Node node : messagesVBox.getChildren()) {
+            if (node.getUserData() instanceof MessageDto m && m.getId().equals(msg.getId())) {
+                highlightMessage(node);
+                scrollToMessage(node);
+                break;
+            }
+        }
+    }
+
+    @FXML
+    private void nextGlobalSearch() {
+        if (globalSearchResults.isEmpty()) return;
+        currentGlobalSearchIndex = (currentGlobalSearchIndex + 1) % globalSearchResults.size();
+        jumpToMessage(globalSearchResults.get(currentGlobalSearchIndex));
+    }
+
+    @FXML
+    private void prevGlobalSearch() {
+        if (globalSearchResults.isEmpty()) return;
+        currentGlobalSearchIndex = (currentGlobalSearchIndex - 1 + globalSearchResults.size()) % globalSearchResults.size();
+        jumpToMessage(globalSearchResults.get(currentGlobalSearchIndex));
+    }
+
 }
