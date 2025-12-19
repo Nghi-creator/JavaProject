@@ -185,7 +185,7 @@ public class ChatroomViewController {
         });
     }
 
-    private void selectConversation(ConversationDto convo, String heading, Runnable afterLoad) {
+    public void selectConversation(ConversationDto convo, String heading, Runnable afterLoad) {
         this.selectedConversation = convo;
         chatHeading.setText(heading);
 
@@ -272,6 +272,7 @@ public class ChatroomViewController {
     private void populateMemberList(List<ConversationDto.MemberDto> members) {
         Platform.runLater(() -> {
             memberListVBox.getChildren().clear();
+            if (members == null) return;
             for (var member : members) {
                 try {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/shared/ui/fxml/NameCard.fxml"));

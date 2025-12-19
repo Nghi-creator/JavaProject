@@ -1,10 +1,14 @@
 package com.example.chatroom.user.controllers;
 
+import com.example.chatroom.core.dto.ConversationDto;
 import com.example.chatroom.core.dto.UserDto;
 import com.example.chatroom.core.shared.controllers.ConfigController;
 import com.example.chatroom.core.shared.controllers.NameCardController;
+import com.example.chatroom.core.shared.controllers.SceneSwitcher;
 import com.example.chatroom.core.shared.controllers.SearchBarController;
+import com.example.chatroom.core.utils.JsonUtil;
 import com.example.chatroom.user.ChatApp;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -178,14 +182,25 @@ public class FriendsViewController {
                 row.getChildren().addAll(btnAccept, btnDecline);
 
             } else if (actionType.equals("FRIEND_ACTIONS")) {
+                Button btnMessage = new Button("Message");
+                btnMessage.getStyleClass().add("friend-action-button");
+                btnMessage.setOnAction(e -> openOrCreateConversation(user));
+
                 Button btnUnfriend = new Button("Unfriend");
                 btnUnfriend.getStyleClass().add("admin-danger-button");
-                btnUnfriend.setOnAction(e -> sendAction("/api/friends?userId=" + ChatApp.currentUserId + "&friendId=" + user.getId(), "DELETE", null));
+                btnUnfriend.setOnAction(e ->
+                        sendAction("/api/friends?userId=" + ChatApp.currentUserId +
+                                "&friendId=" + user.getId(), "DELETE", null)
+                );
 
                 Button btnBlock = new Button("Block");
                 btnBlock.getStyleClass().add("admin-danger-button");
-                btnBlock.setOnAction(e -> sendAction("/api/friends/block?userId=" + ChatApp.currentUserId + "&targetId=" + user.getId(), "POST", null));
-                row.getChildren().addAll(btnUnfriend, btnBlock);
+                btnBlock.setOnAction(e ->
+                        sendAction("/api/friends/block?userId=" + ChatApp.currentUserId +
+                                "&targetId=" + user.getId(), "POST", null)
+                );
+
+                row.getChildren().addAll(btnMessage, btnUnfriend, btnBlock);
 
             } else if (actionType.equals("BLOCKED_ACTIONS")) {
                 Button btnUnblock = new Button("Unblock");
@@ -230,4 +245,64 @@ public class FriendsViewController {
         btnBlocked.getStyleClass().replaceAll(s -> s.equals(active) ? inactive : s);
         activeBtn.getStyleClass().remove(inactive); activeBtn.getStyleClass().add(active);
     }
+
+    private void openOrCreateConversation(UserDto user) {
+        try {
+            String serverIp = ConfigController.getServerIp();
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(
+                            "http://" + serverIp + ":8080/api/conversations/dm" +
+                                    "?userAId=" + ChatApp.currentUserId +
+                                    "&userBId=" + user.getId()
+                    ))
+                    .POST(HttpRequest.BodyPublishers.noBody())
+                    .build();
+
+            client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                    .thenApply(HttpResponse::body)
+                    .thenAccept(json -> Platform.runLater(() -> {
+                        try {
+                            ConversationDto convo =
+                                    JsonUtil.MAPPER.readValue(json, ConversationDto.class);
+
+                            goToChatroom(convo, user);
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void goToChatroom(ConversationDto convo, UserDto user) {
+        // Any node in the current scene works as a source
+        VBox sourceNode = friendListPane;
+
+        SceneSwitcher.switchScene(
+                sourceNode,
+                "/user/ui/fxml/ChatroomView.fxml",
+                (ChatroomViewController controller) -> {
+
+                    controller.setCurrentUserId(ChatApp.currentUserId);
+                    controller.setWebSocketClient(ChatApp.chatWebSocketClient);
+
+                    // Let ChatroomView load conversations first,
+                    // then select the target conversation
+                    Platform.runLater(() -> {
+                        controller.selectConversation(
+                                convo,
+                                user.getFullName() != null && !user.getFullName().isBlank()
+                                        ? user.getFullName()
+                                        : user.getUsername(),
+                                null
+                        );
+                    });
+                }
+        );
+    }
+
 }
