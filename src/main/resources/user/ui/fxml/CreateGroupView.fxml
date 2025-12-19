@@ -49,6 +49,15 @@
                         <fx:include fx:id="memberSearch" source="SearchBar.fxml"/>
                     </VBox>
 
+                    <VBox spacing="5" VBox.vgrow="NEVER">
+                        <Text text="Selected Members" styleClass="suggested-header"/>
+                        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+                                    styleClass="scroll-pane" maxHeight="200" minHeight="0">
+                            <VBox fx:id="selectedContainer" spacing="10" styleClass="suggested-list-vbox">
+                            </VBox>
+                        </ScrollPane>
+                    </VBox>
+
                     <Separator styleClass="list-separator"/>
 
                     <Text text="Search Results" styleClass="suggested-header"/>

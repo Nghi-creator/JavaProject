@@ -2,7 +2,7 @@ package com.example.chatroom.admin.controllers;
 
 import com.example.chatroom.core.shared.controllers.ConfigController;
 import com.example.chatroom.core.shared.controllers.SearchBarController;
-import com.example.chatroom.core.utils.TableDataManager; // <--- Using Shared Helper
+import com.example.chatroom.core.utils.TableDataManager;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -79,7 +79,6 @@ public class AdminGroupViewController {
         // 5. Connect Search Bar
         if (searchBarController != null) {
             searchBarController.getSearchField().textProperty().addListener((o, ov, nv) ->
-                    // Re-trigger the predicate defined in step 3
                     tableManager.setFilterPredicate(group -> group.name.toLowerCase().contains(nv.toLowerCase()))
             );
         }
@@ -99,34 +98,67 @@ public class AdminGroupViewController {
             client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                     .thenAccept(response -> Platform.runLater(() -> {
                         if (response.statusCode() == 200) {
+                            System.out.println("DEBUG SERVER RESPONSE: " + response.body()); // <--- CHECK CONSOLE FOR THIS
                             masterData.clear();
-                            JSONArray arr = new JSONArray(response.body());
-                            for (int i = 0; i < arr.length(); i++) {
-                                JSONObject obj = arr.getJSONObject(i);
-                                List<String> members = new ArrayList<>();
-                                JSONArray mArr = obj.getJSONArray("memberUsernames");
-                                for(int j=0; j<mArr.length(); j++) members.add(mArr.getString(j));
+                            try {
+                                JSONArray arr = new JSONArray(response.body());
+                                for (int i = 0; i < arr.length(); i++) {
+                                    JSONObject obj = arr.getJSONObject(i);
 
-                                masterData.add(new Group(
-                                        obj.getString("name"),
-                                        obj.getString("createdAt"),
-                                        obj.getString("adminUsername"),
-                                        members
-                                ));
+                                    // --- 1. ROBUST ADMIN PARSING ---
+                                    List<String> admins = new ArrayList<>();
+                                    if (obj.has("adminUsernames") && !obj.isNull("adminUsernames")) {
+                                        JSONArray adminArr = obj.getJSONArray("adminUsernames");
+                                        for (int j = 0; j < adminArr.length(); j++) admins.add(adminArr.getString(j));
+                                    }
+                                    else if (obj.has("adminUsername") && !obj.isNull("adminUsername")) {
+                                        // Fallback for old server version
+                                        admins.add(obj.getString("adminUsername"));
+                                    }
+
+                                    // --- 2. ROBUST MEMBER PARSING ---
+                                    List<String> members = new ArrayList<>();
+                                    String memberKey = "memberUsernames"; // Default old key
+                                    if (obj.has("memberNames")) memberKey = "memberNames"; // New key
+
+                                    if (obj.has(memberKey) && !obj.isNull(memberKey)) {
+                                        JSONArray mArr = obj.getJSONArray(memberKey);
+                                        for (int j = 0; j < mArr.length(); j++) members.add(mArr.getString(j));
+                                    }
+
+                                    // Add to table data
+                                    masterData.add(new Group(
+                                            obj.optString("groupName", obj.optString("name", "Unknown")), // Check both keys
+                                            obj.optString("createdAt", ""),
+                                            admins,
+                                            members
+                                    ));
+                                }
+                            } catch (Exception e) {
+                                System.err.println("JSON PARSING ERROR: " + e.getMessage());
+                                e.printStackTrace();
                             }
+                        } else {
+                            System.err.println("SERVER ERROR: Code " + response.statusCode());
                         }
                     }));
         } catch (Exception e) { e.printStackTrace(); }
     }
 
     private void showDetails(Group group) {
+        // Update Admin List
         if(adminListView != null) {
             adminListView.getItems().clear();
-            adminListView.getItems().add(group.adminUsername);
+            if (group.adminUsernames != null) {
+                adminListView.getItems().addAll(group.adminUsernames);
+            }
         }
+        // Update Member List
         if(memberListView != null) {
             memberListView.getItems().clear();
-            memberListView.getItems().addAll(group.members);
+            if (group.members != null) {
+                memberListView.getItems().addAll(group.members);
+            }
         }
     }
 
@@ -137,10 +169,15 @@ public class AdminGroupViewController {
     }
 
     public static class Group {
-        String name, created, adminUsername;
+        String name, created;
+        List<String> adminUsernames; // CHANGED: Now a list
         List<String> members;
-        public Group(String n, String c, String admin, List<String> m) {
-            this.name = n; this.created = c; this.adminUsername = admin; this.members = m;
+
+        public Group(String n, String c, List<String> admins, List<String> m) {
+            this.name = n;
+            this.created = c;
+            this.adminUsernames = admins;
+            this.members = m;
         }
     }
 }

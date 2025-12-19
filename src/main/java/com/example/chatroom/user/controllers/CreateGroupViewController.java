@@ -16,6 +16,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -27,24 +29,25 @@ import java.nio.charset.StandardCharsets;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CreateGroupViewController {
 
     @FXML private HeaderController headerController;
     @FXML private SearchBarController memberSearchController;
     @FXML private TextField groupNameField;
-    @FXML private VBox resultContainer;
+    @FXML private VBox resultContainer;     // Bottom list (Search Results)
+    @FXML private VBox selectedContainer;   // Top list (Selected Members)
 
-    private List<Integer> selectedUserIds = new ArrayList<>();
+    // Tracks selected users: Key = UserId, Value = IsAdmin (boolean)
+    private final Map<Integer, Boolean> selectedUsers = new HashMap<>();
 
     @FXML
     public void initialize() {
         if (headerController != null) {
             headerController.focusButton("createGroup");
         }
-
         if (memberSearchController != null) {
             memberSearchController.setOnSearchListener(this::performSearch);
         }
@@ -59,7 +62,6 @@ public class CreateGroupViewController {
         try {
             String serverIp = ConfigController.getServerIp();
             HttpClient client = HttpClient.newHttpClient();
-            // Search users to add to group
             String url = "http://" + serverIp + ":8080/api/users/search?q=" +
                     URLEncoder.encode(query, StandardCharsets.UTF_8) +
                     "&userId=" + ChatApp.currentUserId;
@@ -72,13 +74,13 @@ public class CreateGroupViewController {
             client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                     .thenAccept(response -> Platform.runLater(() -> {
                         if (response.statusCode() == 200) {
-                            populateList(response.body());
+                            populateSearchList(response.body());
                         }
                     }));
         } catch (Exception e) { e.printStackTrace(); }
     }
 
-    private void populateList(String jsonBody) {
+    private void populateSearchList(String jsonBody) {
         resultContainer.getChildren().clear();
         JSONArray users = new JSONArray(jsonBody);
 
@@ -89,30 +91,122 @@ public class CreateGroupViewController {
             String fullName = user.optString("fullName", "");
 
             try {
+                // 1. Create the Row for Search Result
+                HBox row = new HBox(10);
+                row.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+                row.setPadding(new javafx.geometry.Insets(5));
+                // Store userId in the row so we can find it later if we need to re-enable the button
+                row.setUserData(userId);
+
+                // Load NameCard
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/shared/ui/fxml/NameCard.fxml"));
                 Parent card = loader.load();
                 NameCardController cardController = loader.getController();
                 cardController.setData(username, fullName);
 
-                HBox row = new HBox(10);
-                row.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+                Region spacer = new Region();
+                HBox.setHgrow(spacer, Priority.ALWAYS);
 
-                Button actionBtn = new Button(selectedUserIds.contains(userId) ? "Added" : "+");
-                actionBtn.getStyleClass().add("add-friend-button");
-                if (selectedUserIds.contains(userId)) actionBtn.setDisable(true);
+                // "Add" Button
+                Button addBtn = new Button(selectedUsers.containsKey(userId) ? "Added" : "+");
+                addBtn.getStyleClass().add("add-friend-button");
+                addBtn.setPrefWidth(80);
 
-                actionBtn.setOnAction(e -> {
-                    if (!selectedUserIds.contains(userId)) {
-                        selectedUserIds.add(userId);
-                        actionBtn.setText("Added");
-                        actionBtn.setDisable(true);
+                if (selectedUsers.containsKey(userId)) {
+                    addBtn.setDisable(true);
+                }
+
+                addBtn.setOnAction(e -> {
+                    if (!selectedUsers.containsKey(userId)) {
+                        addMemberToSelection(userId, username, fullName);
+                        addBtn.setText("Added");
+                        addBtn.setDisable(true);
                     }
                 });
 
-                row.getChildren().addAll(card, actionBtn);
+                row.getChildren().addAll(card, spacer, addBtn);
                 resultContainer.getChildren().add(row);
 
             } catch (IOException e) { e.printStackTrace(); }
+        }
+    }
+
+    private void addMemberToSelection(int userId, String username, String fullName) {
+        // 1. Add to Logic Map (Default: Not Admin)
+        selectedUsers.put(userId, false);
+
+        try {
+            // 2. Create UI Row for "Selected Members" area
+            HBox selectedRow = new HBox(10);
+            selectedRow.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+            selectedRow.setPadding(new javafx.geometry.Insets(5));
+            // Style it slightly differently so it looks like a list item
+            selectedRow.setStyle("-fx-background-color: rgba(255,255,255,0.05); -fx-background-radius: 5px;");
+
+            // Load NameCard
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/shared/ui/fxml/NameCard.fxml"));
+            Parent card = loader.load();
+            NameCardController cardController = loader.getController();
+            cardController.setData(username, fullName);
+
+            Region spacer = new Region();
+            HBox.setHgrow(spacer, Priority.ALWAYS);
+
+            // 3. "Make Admin" Button
+            Button adminBtn = new Button("Make Admin");
+            adminBtn.getStyleClass().add("normal-button"); // Default styling
+            adminBtn.setPrefWidth(110);
+
+            adminBtn.setOnAction(e -> toggleAdminStatus(userId, adminBtn));
+
+            // 4. "Remove" Button (Cancel)
+            Button removeBtn = new Button("Remove");
+            removeBtn.getStyleClass().add("friend-action-button-danger");
+            removeBtn.setPrefWidth(80);
+
+            removeBtn.setOnAction(e -> removeFromSelection(userId, selectedRow));
+
+            selectedRow.getChildren().addAll(card, spacer, adminBtn, removeBtn);
+            selectedContainer.getChildren().add(selectedRow);
+
+        } catch (IOException e) { e.printStackTrace(); }
+    }
+
+    private void toggleAdminStatus(int userId, Button btn) {
+        boolean isCurrentlyAdmin = selectedUsers.get(userId);
+        boolean newStatus = !isCurrentlyAdmin;
+
+        selectedUsers.put(userId, newStatus);
+
+        if (newStatus) {
+            btn.setText("Revoke Admin");
+            btn.setStyle("-fx-background-color: #3ba55c; -fx-text-fill: white;"); // Greenish for Active Admin
+        } else {
+            btn.setText("Make Admin");
+            btn.setStyle(""); // Reset to default CSS class style
+        }
+    }
+
+    private void removeFromSelection(int userId, HBox row) {
+        // 1. Remove from Logic
+        selectedUsers.remove(userId);
+
+        // 2. Remove from UI (Top List)
+        selectedContainer.getChildren().remove(row);
+
+        // 3. Re-enable the "+" button in the Search Results (Bottom List) if visible
+        for (Node node : resultContainer.getChildren()) {
+            if (node instanceof HBox searchRow && searchRow.getUserData() instanceof Integer id) {
+                if (id == userId) {
+                    // Find the button (last child)
+                    Node lastChild = searchRow.getChildren().get(searchRow.getChildren().size() - 1);
+                    if (lastChild instanceof Button btn) {
+                        btn.setText("+");
+                        btn.setDisable(false);
+                    }
+                    break;
+                }
+            }
         }
     }
 
@@ -120,49 +214,60 @@ public class CreateGroupViewController {
     private void handleCreateGroup() {
         String groupName = groupNameField.getText().trim();
 
-        // 1. Validate Input
         if (groupName.isEmpty()) {
             showAlert("Error", "Group name is required.");
             return;
         }
-        if (selectedUserIds.isEmpty()) {
+        if (selectedUsers.isEmpty()) {
             showAlert("Error", "Please select at least one member.");
             return;
         }
 
         try {
-            // 2. Format Data for @RequestParam (URL Query Params)
             String serverIp = ConfigController.getServerIp();
 
-            // Build comma-separated list of IDs: "1,2,5"
+            // 1. Build CSV for Member IDs
             StringBuilder memberIdsStr = new StringBuilder();
-            for (int i = 0; i < selectedUserIds.size(); i++) {
-                memberIdsStr.append(selectedUserIds.get(i));
-                if (i < selectedUserIds.size() - 1) memberIdsStr.append(",");
+            // 2. Build CSV for Admin IDs (The creator is usually handled by backend, but we send these additional ones)
+            StringBuilder adminIdsStr = new StringBuilder();
+
+            int count = 0;
+            for (Map.Entry<Integer, Boolean> entry : selectedUsers.entrySet()) {
+                int id = entry.getKey();
+                boolean isAdmin = entry.getValue();
+
+                memberIdsStr.append(id);
+                if (isAdmin) {
+                    if (adminIdsStr.length() > 0) adminIdsStr.append(",");
+                    adminIdsStr.append(id);
+                }
+
+                if (count < selectedUsers.size() - 1) memberIdsStr.append(",");
+                count++;
             }
 
             String encodedName = URLEncoder.encode(groupName, StandardCharsets.UTF_8);
 
-            // Construct the exact URL your Server Controller expects
-            String url = String.format("http://%s:8080/api/conversations/group?creatorId=%d&groupName=%s&memberIds=%s",
+            // 3. Construct URL
+            // Added &adminIds param. The backend must handle this for it to take effect.
+            String url = String.format("http://%s:8080/api/conversations/group?creatorId=%d&groupName=%s&memberIds=%s&adminIds=%s",
                     serverIp,
                     ChatApp.currentUserId,
                     encodedName,
-                    memberIdsStr.toString()
+                    memberIdsStr.toString(),
+                    adminIdsStr.toString()
             );
 
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url))
-                    .POST(HttpRequest.BodyPublishers.noBody()) // Empty Body, data is in URL
+                    .POST(HttpRequest.BodyPublishers.noBody())
                     .build();
 
-            // 3. Send Request
             client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                     .thenAccept(response -> Platform.runLater(() -> {
                         if (response.statusCode() == 200) {
                             showAlert("Success", "Group '" + groupName + "' created!");
-                            // Navigate back to Chatroom
                             SceneSwitcher.switchScene(groupNameField, "/user/ui/fxml/ChatroomView.fxml");
                         } else {
                             showAlert("Error", "Failed to create group. Server Code: " + response.statusCode());
