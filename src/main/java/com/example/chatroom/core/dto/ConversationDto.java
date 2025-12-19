@@ -48,6 +48,7 @@ public class ConversationDto {
         private Integer id;
         private String username;
         private String fullName;
+        private String role;
 
         public MemberDto() {} // no-args constructor for Jackson
 
@@ -59,5 +60,8 @@ public class ConversationDto {
 
         public String getFullName() { return fullName; }
         public void setFullName(String fullName) { this.fullName = fullName; }
+
+        public String getRole() { return role; }
+        public void setRole(String role) { this.role = role; }
     }
 }

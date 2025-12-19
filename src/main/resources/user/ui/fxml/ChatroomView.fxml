@@ -40,11 +40,20 @@
                     <top>
                         <HBox alignment="CENTER_LEFT" spacing="20" prefHeight="50.0" styleClass="chat-header">
                             <padding>
-                                <Insets left="15" right="15" bottom="5"/> 
+                                <Insets left="15" right="15" bottom="5"/>
                             </padding>
-                            <Text fx:id="chatHeading" fill="WHITE" styleClass="chat-header-text,hoverable-bg,clickable" text="group-chat" onMouseClicked="#displayGroupInfo"/>
-                            <Region HBox.hgrow="ALWAYS"/> 
+
+                            <!-- Chat title -->
+                            <Text fx:id="chatHeading" fill="WHITE" styleClass="chat-header-text,hoverable-bg,clickable"
+                                  text="group-chat" onMouseClicked="#displayGroupInfo"/>
+
+                            <Region HBox.hgrow="ALWAYS"/>
+
+                            <!-- Search bar -->
                             <fx:include source="SearchBar.fxml"/>
+
+                            <!-- Options button -->
+                            <MenuButton fx:id="optionsButton" text="..." styleClass="options-menu"/>
                         </HBox>
                     </top>
                     <center>
