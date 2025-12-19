@@ -129,6 +129,8 @@ public class ChatroomViewController {
                     cardNode.setUserData(convo);
                     NameCardController controller = loader.getController();
 
+                    controller.setConversationContext(convo);
+
                     String displayName = convo.getName();
                     if ((displayName == null || displayName.isBlank()) &&
                             Objects.equals(convo.getType(), "PRIVATE") &&

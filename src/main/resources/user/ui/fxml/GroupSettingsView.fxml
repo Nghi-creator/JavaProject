@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.text.Text?>
+<?import java.lang.String?>
+
+<StackPane xmlns="http://javafx.com/javafx/17"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.example.chatroom.user.controllers.GroupSettingsViewController"
+           styleClass="chat-area-panel"
+           style="-fx-background-radius: 0;"
+           stylesheets="@../../../shared/ui/css/DiscordTheme.css">
+
+    <BorderPane>
+
+        <top>
+            <HBox alignment="CENTER_LEFT" style="-fx-padding: 15; -fx-background-color: transparent;">
+                <Button text="&lt; Back to Chat" onAction="#handleBack" styleClass="nav-button"/>
+            </HBox>
+        </top>
+
+        <center>
+            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" styleClass="scroll-pane" style="-fx-background-color: transparent; -fx-background: transparent;">
+                <VBox spacing="20">
+                    <padding>
+                        <Insets top="10" left="20" right="20" bottom="20"/>
+                    </padding>
+
+                    <Text text="Group Settings" styleClass="title" style="-fx-fill: white;"/>
+                    <Separator styleClass="list-separator"/>
+
+                    <VBox spacing="5">
+                        <Text text="Group Name" styleClass="form-label"/>
+                        <TextField fx:id="groupNameField" styleClass="form-input-field"/>
+                    </VBox>
+
+                    <VBox spacing="5">
+                        <Text text="Add Members" styleClass="form-label"/>
+                        <fx:include fx:id="memberSearch" source="SearchBar.fxml"/>
+
+                        <Text text="Search Results" styleClass="suggested-header"/>
+                        <VBox fx:id="searchResultsContainer" spacing="5" styleClass="suggested-list-vbox"/>
+                    </VBox>
+
+                    <Separator styleClass="list-separator"/>
+
+                    <Text text="Current Members" styleClass="suggested-header" style="-fx-fill: #b9bbbe;"/>
+                    <VBox fx:id="memberListContainer" spacing="10"/>
+                </VBox>
+            </ScrollPane>
+        </center>
+
+        <bottom>
+            <HBox alignment="CENTER_RIGHT" spacing="15" style="-fx-padding: 15; -fx-background-color: transparent;">
+                <Button fx:id="deleteGroupBtn" text="Delete Group" onAction="#handleDeleteGroup"
+                        styleClass="admin-danger-button"
+                        prefWidth="120.0" visible="false" managed="false"/>
+
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <Button text="Cancel" onAction="#handleBack"
+                        styleClass="normal-button"
+                        prefWidth="100.0"/>
+
+                <Button text="Save Changes" onAction="#handleSaveChanges"
+                        styleClass="admin-action-button"
+                        prefWidth="120.0"/>
+            </HBox>
+        </bottom>
+
+    </BorderPane>
+</StackPane>
