@@ -1,5 +1,6 @@
 package com.example.chatroom.admin.controllers;
 
+import com.example.chatroom.core.model.User;
 import com.example.chatroom.core.shared.controllers.ConfigController;
 import com.example.chatroom.core.shared.controllers.SearchBarController;
 import javafx.beans.property.SimpleStringProperty;
@@ -25,6 +26,8 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.LocalDate;
+import java.util.Comparator;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -40,36 +43,51 @@ public class AdminUserViewController {
 
     private ObservableList<User> masterData = FXCollections.observableArrayList();
     private FilteredList<User> filteredData;
+    private SortedList<User> sortedData;
+
 
     @FXML
     public void initialize() {
         headerController.focusButton("users");
         try { ConfigController.loadServerIp(); } catch (Exception ignored) {}
 
-        sortCombo.setItems(FXCollections.observableArrayList("Name (A-Z)", "Created Date (Newest)"));
-        filterCombo.setItems(FXCollections.observableArrayList("Name", "Username", "Status"));
+        sortCombo.setItems(FXCollections.observableArrayList(
+                "Name (A–Z)",
+                "Name (Z–A)",
+                "Created (Newest)",
+                "Created (Oldest)"
+        ));
 
-        setupColumn(colUsername, data -> data.username);
-        setupColumn(colFullname, data -> data.fullname);
-        setupColumn(colAddress, data -> data.address);
-        setupColumn(colDob, data -> data.dob);
-        setupColumn(colEmail, data -> data.email);
-        setupColumn(colGender, data -> data.gender);
-        setupColumn(colStatus, data -> data.status);
-        setupColumn(colCreated, data -> data.createdAt);
+        setupColumn(colUsername, User::getUsername);
+        setupColumn(colFullname, User::getFullName);
+        setupColumn(colAddress, User::getAddress);
+        setupColumn(colDob, u -> u.getDob() != null ? u.getDob().toString() : "");
+        setupColumn(colEmail, User::getEmail);
+        setupColumn(colGender, User::getGender);
+        setupColumn(colStatus, User::getStatus);
+        setupColumn(colCreated, u -> u.getCreatedAt() != null ? u.getCreatedAt().toString() : "");
 
         setupActionColumn();
         loadDataFromServer();
 
         filteredData = new FilteredList<>(masterData, p -> true);
-        SortedList<User> sortedList = new SortedList<>(filteredData);
-        sortedList.comparatorProperty().bind(userTable.comparatorProperty());
-        userTable.setItems(sortedList);
+        sortedData = new SortedList<>(filteredData);
+        userTable.setItems(sortedData);
 
         if (searchBarController != null) {
-            searchBarController.getSearchField().textProperty().addListener((o, ov, nv) -> applyFilters());
+            searchBarController.getSearchField()
+                    .textProperty()
+                    .addListener((o, ov, nv) -> applyFilters());
         }
+
+        startDatePicker.valueProperty().addListener((o, ov, nv) -> applyFilters());
+        endDatePicker.valueProperty().addListener((o, ov, nv) -> applyFilters());
+
+        sortCombo.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) applySort(newVal);
+        });
     }
+
 
     private void loadDataFromServer() {
         try {
@@ -91,27 +109,37 @@ public class AdminUserViewController {
     }
 
     private void parseAndPopulateTable(String responseBody) {
-        javafx.application.Platform.runLater(() -> {
+        Platform.runLater(() -> {
             try {
                 masterData.clear();
                 JSONArray jsonArray = new JSONArray(responseBody);
+
                 for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject obj = jsonArray.getJSONObject(i);
-                    masterData.add(new User(
-                            obj.getInt("id"),
-                            obj.getString("username"),
-                            obj.optString("fullName", ""),
-                            obj.optString("address", ""),
-                            obj.optString("dob", ""),
-                            obj.optString("email", ""),
-                            obj.optString("gender", ""),
-                            obj.optString("status", ""),
-                            obj.optString("createdAt", "")
-                    ));
+
+                    User user = new User();
+                    user.setId(obj.getInt("id"));
+                    user.setUsername(obj.getString("username"));
+                    user.setFullName(obj.optString("fullName", ""));
+                    user.setAddress(obj.optString("address", ""));
+                    user.setEmail(obj.optString("email", ""));
+                    user.setGender(obj.optString("gender", ""));
+                    user.setStatus(obj.optString("status", ""));
+
+                    if (!obj.isNull("dob"))
+                        user.setDob(LocalDate.parse(obj.getString("dob")));
+
+                    if (!obj.isNull("createdAt"))
+                        user.setCreatedAt(java.time.LocalDateTime.parse(obj.getString("createdAt")));
+
+                    masterData.add(user);
                 }
-            } catch (Exception e) { e.printStackTrace(); }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         });
     }
+
 
     private void setupColumn(TableColumn<User, String> column, Callback<User, String> valueExtractor) {
         column.setCellValueFactory(data -> new SimpleStringProperty(valueExtractor.call(data.getValue())));
@@ -144,7 +172,7 @@ public class AdminUserViewController {
                     btnHistory.setOnAction(e -> openHistoryPopup(user));
 
                     Button btnLock = new Button();
-                    if ("LOCKED".equalsIgnoreCase(user.status)) {
+                    if ("LOCKED".equalsIgnoreCase(user.getStatus())) {
                         btnLock.setText("Unlock");
                         btnLock.getStyleClass().add("admin-action-button");
                     } else {
@@ -173,11 +201,11 @@ public class AdminUserViewController {
             Parent root = loader.load();
 
             AdminUserFriendsViewController controller = loader.getController();
-            controller.loadFriends(user.id, user.username);
+            controller.loadFriends(user.getId(), user.getUsername());
 
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setTitle("Friends of " + user.username);
+            stage.setTitle("Friends of " + user.getUsername());
             stage.setScene(new Scene(root));
             stage.show();
         } catch (IOException e) {
@@ -249,7 +277,7 @@ public class AdminUserViewController {
             String serverIp = ConfigController.getServerIp();
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://" + serverIp + ":8080/api/users/" + user.id + "/lock"))
+                    .uri(URI.create("http://" + serverIp + ":8080/api/users/" + user.getId() + "/lock"))
                     .PUT(HttpRequest.BodyPublishers.noBody())
                     .build();
 
@@ -262,14 +290,14 @@ public class AdminUserViewController {
     }
 
     private void handleDeleteUser(User user) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Delete " + user.username + "?", ButtonType.YES, ButtonType.NO);
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Delete " + user.getUsername() + "?", ButtonType.YES, ButtonType.NO);
         alert.showAndWait();
         if (alert.getResult() == ButtonType.YES) {
             try {
                 String serverIp = ConfigController.getServerIp();
                 HttpClient client = HttpClient.newHttpClient();
                 HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create("http://" + serverIp + ":8080/api/users/" + user.id))
+                        .uri(URI.create("http://" + serverIp + ":8080/api/users/" + user.getId()))
                         .DELETE()
                         .build();
 
@@ -283,7 +311,80 @@ public class AdminUserViewController {
     }
 
     public void refreshTable() { loadDataFromServer(); }
-    private void applyFilters() { /* Logic handled in listener */ }
+
+    private void applyFilters() {
+        String searchText = searchBarController != null
+                ? searchBarController.getSearchField().getText().toLowerCase()
+                : "";
+
+        LocalDate start = startDatePicker.getValue();
+        LocalDate end = endDatePicker.getValue();
+
+        filteredData.setPredicate(user -> {
+
+            // --- text filter ---
+            if (searchText != null && !searchText.isBlank()) {
+                boolean match =
+                        (user.getUsername() != null && user.getUsername().toLowerCase().contains(searchText)) ||
+                                (user.getFullName() != null && user.getFullName().toLowerCase().contains(searchText));
+                if (!match) return false;
+            }
+
+            // --- date filter ---
+            if (start == null && end == null) return true;
+            if (user.getCreatedAt() == null) return false;
+
+            LocalDate created = user.getCreatedAt().toLocalDate();
+
+            if (start != null && created.isBefore(start)) return false;
+            if (end != null && created.isAfter(end)) return false;
+
+            return true;
+        });
+    }
+
+    private void applySort(String sortOption) {
+
+        Comparator<User> comparator;
+
+        switch (sortOption) {
+            case "Name (A–Z)":
+                comparator = Comparator.comparing(
+                        User::getFullName,
+                        String.CASE_INSENSITIVE_ORDER
+                );
+                break;
+
+            case "Name (Z–A)":
+                comparator = Comparator.comparing(
+                        User::getFullName,
+                        String.CASE_INSENSITIVE_ORDER
+                ).reversed();
+                break;
+
+            case "Created (Newest)":
+                comparator = Comparator.comparing(
+                        User::getCreatedAt,
+                        Comparator.nullsLast(Comparator.naturalOrder())
+                ).reversed();
+                break;
+
+            case "Created (Oldest)":
+                comparator = Comparator.comparing(
+                        User::getCreatedAt,
+                        Comparator.nullsLast(Comparator.naturalOrder())
+                );
+                break;
+
+            default:
+                return;
+        }
+
+        sortedData.setComparator(comparator);
+    }
+
+
+
     private void showAlert(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
@@ -297,27 +398,16 @@ public class AdminUserViewController {
             Parent root = loader.load();
 
             AdminUserHistoryViewController controller = loader.getController();
-            controller.loadData(user.username);
+            controller.loadData(user.getUsername());
 
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setTitle("Login History: " + user.username);
+            stage.setTitle("Login History: " + user.getUsername());
             stage.setScene(new Scene(root));
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
             showAlert("Error", "Could not load history window.");
-        }
-    }
-    public static class User {
-        public int id;
-        public String username, fullname, address, dob, email, gender, status, createdAt;
-
-        public User(int id, String u, String f, String a, String d, String e, String g, String s, String c) {
-            this.id = id; this.username = u; this.fullname = f;
-            this.address = a; this.dob = d;
-            this.email = e; this.gender = g;
-            this.status = s; this.createdAt = c;
         }
     }
 }

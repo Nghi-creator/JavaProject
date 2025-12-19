@@ -27,7 +27,7 @@
                         <Label text="To:" styleClass="normal-text"/>
                         <DatePicker fx:id="endDatePicker" prefWidth="150"/>
                         <ComboBox fx:id="sortCombo" promptText="Sort by..." styleClass="admin-action-button"/>
-                        <ComboBox fx:id="filterCombo" promptText="Filter" styleClass="admin-action-button"/>
+<!--                        <ComboBox fx:id="filterCombo" promptText="Filter" styleClass="admin-action-button"/>-->
                         <Region HBox.hgrow="ALWAYS"/>
                         <Button text="Password Requests" styleClass="admin-action-button" onAction="#openPasswordRequests"/>
                         <Button text="+ Add User" styleClass="admin-action-button" onAction="#openAddUser"/>
