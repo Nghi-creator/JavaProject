@@ -3,9 +3,10 @@ package com.example.chatroom.user.controllers;
 import com.example.chatroom.core.shared.controllers.*;
 import com.example.chatroom.core.dto.ConversationDto;
 import com.example.chatroom.core.dto.MessageDto;
-import com.example.chatroom.user.PresenceWebSocketManager;
-import com.example.chatroom.user.WebSocketManager;
+import com.example.chatroom.user.websocket.ChatWebSocketClient;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -14,73 +15,66 @@ import javafx.scene.Node;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ChatroomViewController {
 
     @FXML private HeaderController headerController;
-    @FXML private VBox chatListVBox;      // Left panel VBox
-    @FXML private VBox messagesVBox;      // Center chat messages VBox
+    @FXML private VBox chatListVBox;
+    @FXML private VBox messagesVBox;
     @FXML private Text chatHeading;
     @FXML private TextField messageInput;
     @FXML private VBox memberListVBox;
 
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
     private final HttpClient httpClient = HttpClient.newHttpClient();
-    ObjectMapper objectMapper = new ObjectMapper()
+    private final ObjectMapper objectMapper = new ObjectMapper()
             .registerModule(new JavaTimeModule())
             .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
-
-    private Integer currentUserId;         // Set after login
+    private Integer currentUserId;
+    private ChatWebSocketClient webSocketClient;
     private ConversationDto selectedConversation;
+
+    private final Map<Integer, NameCardController> chatListCards = new ConcurrentHashMap<>();
+    private final Map<Integer, NameCardController> memberListCards = new ConcurrentHashMap<>();
 
     @FXML
     private void initialize() {
         headerController.focusButton("chat");
-
-        // Subscribe to online users updates
-        PresenceWebSocketManager.getInstance().addListener(users -> {
-            Platform.runLater(() -> {
-                memberListVBox.getChildren().clear();
-                for (String username : users) {
-                    // Load NameCard FXML dynamically for each user
-                    try {
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/shared/ui/fxml/NameCard.fxml"));
-                        Node node = loader.load();
-                        NameCardController controller = loader.getController();
-                        controller.setData(username, null);
-                        memberListVBox.getChildren().add(node);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-        });
     }
 
-    /**
-     * Fetch conversations from the server and populate the chat list
-     */
+    public void setCurrentUserId(Integer userId) {
+        this.currentUserId = userId;
+        loadUserConversations();
+    }
+
+    public void setWebSocketClient(ChatWebSocketClient webSocketClient) {
+        this.webSocketClient = webSocketClient;
+        this.webSocketClient.setStatusCallback(this::updateUserStatus);
+        if (!this.webSocketClient.isOpen()) {
+            this.webSocketClient.connect();
+        }
+    }
+
     private void loadUserConversations() {
         if (currentUserId == null) return;
 
         String serverIp = ConfigController.getServerIp();
-
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://" + serverIp + ":8080/api/conversations?userId=" + currentUserId))
                 .GET()
@@ -92,9 +86,6 @@ public class ChatroomViewController {
                 .exceptionally(e -> { e.printStackTrace(); return null; });
     }
 
-    /**
-     * Populate the left chat list panel dynamically
-     */
     private void populateChatList(String json) {
         List<ConversationDto> conversations = parseConversations(json);
 
@@ -107,12 +98,10 @@ public class ChatroomViewController {
                     Node cardNode = loader.load();
                     NameCardController controller = loader.getController();
 
-                    // Determine display name
                     String displayName = convo.getName();
-                    if ((displayName == null || displayName.isBlank())
-                            && Objects.equals(convo.getType(), "PRIVATE")
-                            && convo.getMembers() != null) {
-                        // Pick the other member's name
+                    if ((displayName == null || displayName.isBlank()) &&
+                            Objects.equals(convo.getType(), "PRIVATE") &&
+                            convo.getMembers() != null) {
                         for (var member : convo.getMembers()) {
                             if (!member.getId().equals(currentUserId)) {
                                 displayName = member.getFullName() != null ? member.getFullName() : member.getUsername();
@@ -120,11 +109,17 @@ public class ChatroomViewController {
                             }
                         }
                     }
-                    if (displayName == null || displayName.isBlank()) {
-                        displayName = "DM";
-                    }
+                    if (displayName == null || displayName.isBlank()) displayName = "DM";
 
                     controller.setData(displayName, null);
+
+                    if ("PRIVATE".equals(convo.getType())) {
+                        for (var member : convo.getMembers()) {
+                            if (!member.getId().equals(currentUserId)) {
+                                chatListCards.put(member.getId(), controller);
+                            }
+                        }
+                    } else controller.setStatus(StatusIconController.Status.DISABLED);
 
                     String finalDisplayName = displayName;
                     cardNode.setOnMouseClicked(event -> selectConversation(convo, finalDisplayName));
@@ -137,33 +132,17 @@ public class ChatroomViewController {
         });
     }
 
-
-    /**
-     * Handle conversation selection
-     */
     private void selectConversation(ConversationDto convo, String heading) {
         this.selectedConversation = convo;
         chatHeading.setText(heading);
         populateMemberList(convo.getMembers());
         loadMessages(convo.getId());
-
-        // Connect WebSocket for this conversation
-        WebSocketManager.getInstance().connect(
-                ConfigController.getServerIp(),
-                convo.getId(),
-                messagesVBox,
-                msg -> addMessageToVBox(msg) // callback to add message node
-        );
     }
 
-    /**
-     * Fetch messages for the selected conversation
-     */
     private void loadMessages(int conversationId) {
         if (currentUserId == null) return;
 
         String serverIp = ConfigController.getServerIp();
-
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://" + serverIp + ":8080/api/messages/" + conversationId + "?userId=" + currentUserId))
                 .GET()
@@ -175,35 +154,16 @@ public class ChatroomViewController {
                 .exceptionally(e -> { e.printStackTrace(); return null; });
     }
 
-    /**
-     * Populate the center messages area
-     */
     private void populateMessages(String json) {
         List<MessageDto> messages = parseMessages(json);
 
         Platform.runLater(() -> {
             messagesVBox.getChildren().clear();
 
-            for (MessageDto msg : messages) {
-                try {
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/shared/ui/fxml/Message.fxml"));
-                    Node msgNode = loader.load();
-                    MessageController controller = loader.getController();
-                    controller.setTitle(msg.getSenderName() != null ? msg.getSenderName() : msg.getSenderId().toString());
-                    controller.setContent(msg.getContent());
-                    controller.setTimeStamp(msg.getSentAt().format(formatter));
-
-                    messagesVBox.getChildren().add(msgNode);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            for (MessageDto msg : messages) addMessageToVBox(msg);
         });
     }
 
-    /**
-     * JSON parsing helpers
-     */
     private List<ConversationDto> parseConversations(String json) {
         try {
             return objectMapper.readValue(json, new TypeReference<List<ConversationDto>>() {});
@@ -222,39 +182,20 @@ public class ChatroomViewController {
         }
     }
 
-    /**
-     * Opens group info popup
-     */
-    public void displayGroupInfo(MouseEvent mouseEvent) {
-        SceneSwitcher.openPopup("/user/ui/fxml/GroupInfoView.fxml", "User Info");
-    }
-
-    /**
-     * Set the current logged-in user ID (call after login)
-     */
-    public void setCurrentUserId(Integer userId) {
-        this.currentUserId = userId;
-        loadUserConversations();
-    }
-
     private void populateMemberList(List<ConversationDto.MemberDto> members) {
         Platform.runLater(() -> {
             memberListVBox.getChildren().clear();
-
             for (var member : members) {
                 try {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/shared/ui/fxml/NameCard.fxml"));
                     Node memberNode = loader.load();
                     NameCardController controller = loader.getController();
-
-                    // Set display name
                     String displayName = member.getFullName() != null ? member.getFullName() : member.getUsername();
                     controller.setData(displayName, null);
+                    memberListCards.put(member.getId(), controller);
 
-                    // Optional: click handler
                     memberNode.setOnMouseClicked(event -> {
                         System.out.println("Clicked on member: " + displayName);
-                        // You can open a profile popup here
                     });
 
                     memberListVBox.getChildren().add(memberNode);
@@ -270,9 +211,8 @@ public class ChatroomViewController {
         if (messageInput.getText().isBlank() || selectedConversation == null) return;
 
         String content = messageInput.getText();
-        String encodedContent = URLEncoder.encode(content, StandardCharsets.UTF_8);
         messageInput.clear();
-
+        String encodedContent = URLEncoder.encode(content, StandardCharsets.UTF_8);
         String serverIp = ConfigController.getServerIp();
 
         HttpRequest request = HttpRequest.newBuilder()
@@ -284,13 +224,8 @@ public class ChatroomViewController {
                 .build();
 
         httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenRun(() -> loadMessages(selectedConversation.getId())) // refresh messages
+                .thenRun(() -> loadMessages(selectedConversation.getId()))
                 .exceptionally(e -> { e.printStackTrace(); return null; });
-    }
-
-    @FXML
-    private void onSendMessage(String text) {
-        WebSocketManager.getInstance().sendMessage(text);
     }
 
     private void addMessageToVBox(MessageDto msg) {
@@ -307,4 +242,18 @@ public class ChatroomViewController {
         }
     }
 
+    private void updateUserStatus(long userId, boolean online) {
+        System.out.println("Updating user " + userId + " -> " + online);
+        Platform.runLater(() -> {
+            NameCardController chatCard = chatListCards.get(userId);
+            if (chatCard != null) chatCard.setStatus(online ? StatusIconController.Status.ONLINE : StatusIconController.Status.DISABLED);
+
+            NameCardController memberCard = memberListCards.get(userId);
+            if (memberCard != null) memberCard.setStatus(online ? StatusIconController.Status.ONLINE : StatusIconController.Status.DISABLED);
+        });
+    }
+
+    public void displayGroupInfo(MouseEvent mouseEvent) {
+        SceneSwitcher.openPopup("/user/ui/fxml/GroupInfoView.fxml", "User Info");
+    }
 }

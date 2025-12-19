@@ -17,7 +17,7 @@ public class StatusIconController {
         icon.setImage(image);
     }
 
-    public void setStatusOnline(Status status) {
+    public void setStatus(Status status) {
         statusCircle.setStroke(
                 switch(status) {
                     case OFFLINE -> Color.GRAY;

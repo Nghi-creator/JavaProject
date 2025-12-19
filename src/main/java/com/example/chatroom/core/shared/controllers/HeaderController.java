@@ -1,6 +1,5 @@
 package com.example.chatroom.core.shared.controllers;
 
-import com.example.chatroom.user.WebSocketManager;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.TranslateTransition;
@@ -115,7 +114,6 @@ public class HeaderController {
 
     @FXML
     private void handleLogoutClick(ActionEvent event) {
-        WebSocketManager.getInstance().disconnect();
         SceneSwitcher.switchScene((javafx.scene.Node) event.getSource(), "/user/ui/fxml/LoginView.fxml");
     }
 
