@@ -16,6 +16,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
 
 import java.io.IOException;
 import java.net.URI;
@@ -38,6 +40,7 @@ public class ChatroomViewController {
     @FXML private Text chatHeading;
     @FXML private TextField messageInput;
     @FXML private VBox memberListVBox;
+    @FXML private MenuButton optionsButton;
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
     private final HttpClient httpClient = HttpClient.newHttpClient();
@@ -51,7 +54,7 @@ public class ChatroomViewController {
 
     private final Map<Integer, NameCardController> chatListCards = new ConcurrentHashMap<>();
     private final Map<Integer, NameCardController> memberListCards = new ConcurrentHashMap<>();
-    private final Map<Long, Boolean> pendingStatusUpdates = new ConcurrentHashMap<>();
+    private final Map<Integer, Boolean> pendingStatusUpdates = new ConcurrentHashMap<>();
 
     @FXML
     private void initialize() {
@@ -96,6 +99,7 @@ public class ChatroomViewController {
                 try {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/shared/ui/fxml/NameCard.fxml"));
                     Node cardNode = loader.load();
+                    cardNode.setUserData(convo);
                     NameCardController controller = loader.getController();
 
                     String displayName = convo.getName();
@@ -140,9 +144,27 @@ public class ChatroomViewController {
     private void selectConversation(ConversationDto convo, String heading) {
         this.selectedConversation = convo;
         chatHeading.setText(heading);
+
+        // Populate options menu
+        optionsButton.getItems().clear();
+        if ("PRIVATE".equals(convo.getType()) || isCurrentUserAdmin(convo)) {
+            MenuItem deleteItem = new MenuItem("Delete Conversation");
+            deleteItem.setOnAction(event -> deleteConversation(convo));
+            optionsButton.getItems().add(deleteItem);
+        }
+
+        chatHeading.setOnMouseClicked(event -> {
+            if ("PRIVATE".equals(convo.getType())) {
+                SceneSwitcher.openPopup("/user/ui/fxml/UserInfoView.fxml", heading);
+            } else {
+                SceneSwitcher.openPopup("/user/ui/fxml/GroupInfoView.fxml", heading);
+            }
+        });
+
         populateMemberList(convo.getMembers());
         loadMessages(convo.getId());
     }
+
 
     private void loadMessages(int conversationId) {
         if (currentUserId == null) return;
@@ -199,9 +221,12 @@ public class ChatroomViewController {
                     controller.setData(displayName, null);
                     memberListCards.put(member.getId(), controller);
 
-                    // Apply pending status if any
-                    Boolean pending = pendingStatusUpdates.remove(member.getId().longValue());
-                    if (pending != null) controller.setStatus(pending ? StatusIconController.Status.ONLINE : StatusIconController.Status.OFFLINE);
+                    Boolean pending = pendingStatusUpdates.remove(member.getId());
+                    if (pending != null) {
+                        controller.setStatus(pending ? StatusIconController.Status.ONLINE : StatusIconController.Status.OFFLINE);
+                    } else {
+                        controller.setStatus(StatusIconController.Status.OFFLINE);
+                    }
 
                     memberNode.setOnMouseClicked(event -> {
                         System.out.println("Clicked on member: " + displayName);
@@ -245,6 +270,7 @@ public class ChatroomViewController {
             controller.setTitle(msg.getSenderName() != null ? msg.getSenderName() : msg.getSenderId().toString());
             controller.setContent(msg.getContent());
             controller.setTimeStamp(msg.getSentAt().format(formatter));
+            controller.setStatus(StatusIconController.Status.DISABLED);
             messagesVBox.getChildren().add(msgNode);
         } catch (Exception e) {
             e.printStackTrace();
@@ -260,11 +286,46 @@ public class ChatroomViewController {
             if (memberCard != null) memberCard.setStatus(online ? StatusIconController.Status.ONLINE : StatusIconController.Status.OFFLINE);
 
             // Save for later if card does not exist yet
-            if (chatCard == null && memberCard == null) pendingStatusUpdates.put(userId, online);
+            if (chatCard == null && memberCard == null) pendingStatusUpdates.put((int) userId, online);
         });
     }
 
     public void displayGroupInfo(MouseEvent mouseEvent) {
         SceneSwitcher.openPopup("/user/ui/fxml/GroupInfoView.fxml", "User Info");
     }
+
+    private boolean isCurrentUserAdmin(ConversationDto convo) {
+        if (!"GROUP".equals(convo.getType()) || convo.getMembers() == null) return false;
+        return convo.getMembers().stream()
+                .anyMatch(member -> member.getId().equals(currentUserId) && "ADMIN".equals(member.getRole()));
+    }
+
+    private void deleteConversation(ConversationDto convo) {
+        if (currentUserId == null || convo == null) return;
+
+        String serverIp = ConfigController.getServerIp();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://" + serverIp + ":8080/api/conversations/"
+                        + convo.getId() + "?userId=" + currentUserId))
+                .DELETE()
+                .build();
+
+        httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenRun(() -> {
+                    // Remove from UI
+                    Platform.runLater(() -> {
+                        chatListVBox.getChildren().removeIf(node -> {
+                            Object userData = node.getUserData();
+                            return userData instanceof ConversationDto && ((ConversationDto) userData).getId().equals(convo.getId());
+                        });
+                        if (selectedConversation != null && selectedConversation.getId().equals(convo.getId())) {
+                            messagesVBox.getChildren().clear();
+                            chatHeading.setText("");
+                            selectedConversation = null;
+                        }
+                    });
+                })
+                .exceptionally(e -> { e.printStackTrace(); return null; });
+    }
+
 }

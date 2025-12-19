@@ -74,8 +74,25 @@ public class SceneSwitcher {
         }
     }
 
-    public static void openPopup(String fxmlPath, String title) {
-        openPopup(fxmlPath, title, null);
+    public static <T> T openPopup(String fxmlPath, String title) {
+        try {
+            FXMLLoader loader = loadFXML(fxmlPath);
+            Parent root = loader.load();
+
+            T controller = loader.getController();
+
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle(title);
+            stage.setScene(new Scene(root));
+            stage.showAndWait(); // waits until popup closes
+
+            return controller;
+        } catch (IOException e) {
+            System.err.println("Failed to open popup: " + fxmlPath);
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public static void showMessage(String msg) {
