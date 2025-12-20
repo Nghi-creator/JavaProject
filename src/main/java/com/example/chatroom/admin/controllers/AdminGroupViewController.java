@@ -170,7 +170,7 @@ public class AdminGroupViewController {
 
     public static class Group {
         String name, created;
-        List<String> adminUsernames; // CHANGED: Now a list
+        List<String> adminUsernames; 
         List<String> members;
 
         public Group(String n, String c, List<String> admins, List<String> m) {

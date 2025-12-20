@@ -1,11 +1,25 @@
 package com.example.chatroom.user.controllers;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import com.example.chatroom.core.dto.ConversationDto;
 import com.example.chatroom.core.dto.ConversationDto.MemberDto;
 import com.example.chatroom.core.shared.controllers.ConfigController;
 import com.example.chatroom.core.shared.controllers.NameCardController;
 import com.example.chatroom.core.shared.controllers.SearchBarController;
 import com.example.chatroom.user.ChatApp;
+
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -18,18 +32,6 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.net.URI;
-import java.net.URLEncoder;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 
 public class GroupSettingsViewController {
 
@@ -81,7 +83,6 @@ public class GroupSettingsViewController {
                 HBox row = new HBox(10);
                 row.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
                 row.setPadding(new javafx.geometry.Insets(5));
-                // Normal background for everyone
                 row.setStyle("-fx-background-color: rgba(255,255,255,0.05); -fx-background-radius: 5px;");
 
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/shared/ui/fxml/NameCard.fxml"));
@@ -91,11 +92,8 @@ public class GroupSettingsViewController {
                 String displayName = member.getFullName() != null ? member.getFullName() : member.getUsername();
                 if ("ADMIN".equalsIgnoreCase(member.getRole())) displayName += " [Admin]";
                 cardController.setData(displayName, null);
-
-                // Check if this is YOU
                 boolean isMe = member.getId().equals(ChatApp.currentUserId);
                 if (isMe) {
-                    // Turn name Text to BRIGHT GREEN
                     cardController.setNameStyle("-fx-text-fill: #3ba55c; -fx-font-weight: bold;");
                 }
 

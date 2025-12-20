@@ -1,57 +1,51 @@
 package com.example.chatroom.admin.controllers;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import com.example.chatroom.core.shared.controllers.ConfigController;
+
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 
 public class AdminLoginHistoryViewController {
 
     @FXML private AdminHeaderController headerController;
     @FXML private TableView<History> historyTable;
     @FXML private TableColumn<History, String> colTime, colUsername, colFullname;
-    @FXML private BorderPane rootPane; // Use this to hide header if needed
+    @FXML private BorderPane rootPane; 
 
     private ObservableList<History> masterData = FXCollections.observableArrayList();
 
     @FXML
     public void initialize() {
-        // Only setup header if we are in the main view (not a popup)
         if (headerController != null) {
             headerController.focusButton("loginHistory");
         }
 
         setupTable();
 
-        // Default: Load all history (System View)
-        // If opened as popup, this might be overwritten immediately by loadUserHistory
         loadData("/api/users/login-history");
     }
 
-    // --- NEW: Method called when opening as a Popup for 1 user ---
     public void loadUserHistory(String username) {
-        // 1. Hide the Admin Header (since it's a popup window)
         if (rootPane != null) {
             rootPane.setTop(null);
         }
 
-        // 2. Add a "Close" button at the bottom for convenience
         Button closeBtn = new Button("Close");
         closeBtn.getStyleClass().add("admin-action-button");
         closeBtn.setOnAction(e -> ((Stage) closeBtn.getScene().getWindow()).close());

@@ -1,6 +1,15 @@
 package com.example.chatroom.admin.controllers;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import com.example.chatroom.core.shared.controllers.ConfigController;
+
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -9,13 +18,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.text.Text;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 
 public class AdminUserFriendsViewController {
 
@@ -69,7 +71,6 @@ public class AdminUserFriendsViewController {
         } catch (Exception e) { e.printStackTrace(); }
     }
 
-    // Helper class for TableView
     public static class FriendshipRow {
         private String username;
         private String status;

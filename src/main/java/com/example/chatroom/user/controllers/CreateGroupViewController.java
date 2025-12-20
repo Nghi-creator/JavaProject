@@ -1,5 +1,18 @@
 package com.example.chatroom.user.controllers;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import com.example.chatroom.core.dto.UserDto;
 import com.example.chatroom.core.shared.controllers.ConfigController;
 import com.example.chatroom.core.shared.controllers.HeaderController;
@@ -7,6 +20,7 @@ import com.example.chatroom.core.shared.controllers.NameCardController;
 import com.example.chatroom.core.shared.controllers.SceneSwitcher;
 import com.example.chatroom.core.shared.controllers.SearchBarController;
 import com.example.chatroom.user.ChatApp;
+
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -21,18 +35,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.net.URI;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.util.HashMap;
-import java.util.Map;
 
 public class CreateGroupViewController {
 
@@ -143,7 +145,6 @@ public class CreateGroupViewController {
             HBox selectedRow = new HBox(10);
             selectedRow.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
             selectedRow.setPadding(new javafx.geometry.Insets(5));
-            // Style it slightly differently so it looks like a list item
             selectedRow.setStyle("-fx-background-color: rgba(255,255,255,0.05); -fx-background-radius: 5px;");
 
             // Load NameCard
@@ -157,7 +158,7 @@ public class CreateGroupViewController {
 
             // 3. "Make Admin" Button
             Button adminBtn = new Button("Make Admin");
-            adminBtn.getStyleClass().add("normal-button"); // Default styling
+            adminBtn.getStyleClass().add("normal-button"); 
             adminBtn.setPrefWidth(110);
 
             adminBtn.setOnAction(e -> toggleAdminStatus(userId, adminBtn));
@@ -186,7 +187,7 @@ public class CreateGroupViewController {
             btn.setStyle("-fx-background-color: #3ba55c; -fx-text-fill: white;"); // Greenish for Active Admin
         } else {
             btn.setText("Make Admin");
-            btn.setStyle(""); // Reset to default CSS class style
+            btn.setStyle(""); 
         }
     }
 
@@ -197,11 +198,9 @@ public class CreateGroupViewController {
         // 2. Remove from UI (Top List)
         selectedContainer.getChildren().remove(row);
 
-        // 3. Re-enable the "+" button in the Search Results (Bottom List) if visible
         for (Node node : resultContainer.getChildren()) {
             if (node instanceof HBox searchRow && searchRow.getUserData() instanceof Integer id) {
                 if (id == userId) {
-                    // Find the button (last child)
                     Node lastChild = searchRow.getChildren().get(searchRow.getChildren().size() - 1);
                     if (lastChild instanceof Button btn) {
                         btn.setText("+");
@@ -231,7 +230,6 @@ public class CreateGroupViewController {
 
             // 1. Build CSV for Member IDs
             StringBuilder memberIdsStr = new StringBuilder();
-            // 2. Build CSV for Admin IDs (The creator is usually handled by backend, but we send these additional ones)
             StringBuilder adminIdsStr = new StringBuilder();
 
             int count = 0;
@@ -254,14 +252,13 @@ public class CreateGroupViewController {
             // --- READ ENCRYPTION FLAG ---
             boolean isEncrypted = encryptCheckbox != null && encryptCheckbox.isSelected();
 
-            // 3. Construct URL with isEncrypted param
             String url = String.format("http://%s:8080/api/conversations/group?creatorId=%d&groupName=%s&memberIds=%s&adminIds=%s&isEncrypted=%b",
                     serverIp,
                     ChatApp.currentUserId,
                     encodedName,
                     memberIdsStr.toString(),
                     adminIdsStr.toString(),
-                    isEncrypted // <--- Pass to server
+                    isEncrypted 
             );
 
             HttpClient client = HttpClient.newHttpClient();
