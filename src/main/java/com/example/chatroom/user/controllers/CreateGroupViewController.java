@@ -274,7 +274,12 @@ public class CreateGroupViewController {
                     .thenAccept(response -> Platform.runLater(() -> {
                         if (response.statusCode() == 200) {
                             showAlert("Success", "Group '" + groupName + "' created!");
-                            SceneSwitcher.switchScene(groupNameField, "/user/ui/fxml/ChatroomView.fxml");
+                            SceneSwitcher.switchScene((Node) groupNameField, "/user/ui/fxml/ChatroomView.fxml",
+                                    (ChatroomViewController controller) -> {
+                                        controller.setCurrentUserId(ChatApp.currentUserId);
+                                        controller.setWebSocketClient(ChatApp.chatWebSocketClient);
+                                    }
+                            );
                         } else {
                             showAlert("Error", "Failed to create group. Server Code: " + response.statusCode());
                         }
@@ -292,7 +297,12 @@ public class CreateGroupViewController {
 
     @FXML
     private void handleCancel(ActionEvent event) {
-        SceneSwitcher.switchScene((Node) event.getSource(), "/user/ui/fxml/ChatroomView.fxml");
+        SceneSwitcher.switchScene((Node) event.getSource(), "/user/ui/fxml/ChatroomView.fxml",
+                (ChatroomViewController controller) -> {
+                    controller.setCurrentUserId(ChatApp.currentUserId);
+                    controller.setWebSocketClient(ChatApp.chatWebSocketClient);
+                }
+        );
     }
 
     private void showAlert(String title, String content) {
