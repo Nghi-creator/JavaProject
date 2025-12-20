@@ -40,14 +40,12 @@ public class FriendsViewController {
     private boolean filterOnlineOnly = false;
     private final Map<Integer, NameCardController> friendCards = new HashMap<>();
 
-    // --- SEARCH CONTROLLERS (Injected via fx:include) ---
-    @FXML private SearchBarController searchBarController;       // Existing (Find Friends)
-    @FXML private SearchBarController friendSearchBarController; // NEW (All Friends)
-    @FXML private SearchBarController requestSearchBarController;// NEW (Requests)
+    @FXML private SearchBarController searchBarController;
+    @FXML private SearchBarController friendSearchBarController;
+    @FXML private SearchBarController requestSearchBarController;
 
     private static final HttpClient client = HttpClient.newHttpClient();
 
-    // --- LOCAL CACHE (For instant filtering) ---
     private List<UserDto> allFriends = new ArrayList<>();
     private List<UserDto> allRequests = new ArrayList<>();
 
@@ -57,22 +55,16 @@ public class FriendsViewController {
         client.setStatusCallback(this::onStatusUpdate);
     }
 
-
     @FXML
     private void initialize() {
-        // 1. Global Search (Find New Friends) - API based
         if (searchBarController != null) {
             searchBarController.setOnSearchListener(this::handleGlobalSearch);
         }
-
-        // 2. Local Search (Filter Friend List) - Memory based
         if (friendSearchBarController != null) {
             friendSearchBarController.setOnSearchListener(query ->
                     filterList(query, allFriends, friendListContainer, "FRIEND_ACTIONS")
             );
         }
-
-        // 3. Local Search (Filter Requests) - Memory based
         if (requestSearchBarController != null) {
             requestSearchBarController.setOnSearchListener(query ->
                     filterList(query, allRequests, requestsListContainer, "REQUEST_ACTIONS")
@@ -97,7 +89,6 @@ public class FriendsViewController {
         fetchUsers("/api/friends/search?userId=" + ChatApp.currentUserId + "&q=" + query, findFriendsListContainer, "ADD", null);
     }
 
-    // --- FILTER LOGIC ---
     private void filterList(String query, List<UserDto> sourceList, VBox container, String actionType) {
         String lowerQuery = query.toLowerCase();
         List<UserDto> filtered = sourceList.stream()
@@ -108,16 +99,10 @@ public class FriendsViewController {
         renderList(container, filtered, actionType);
     }
 
-    // --- NAVIGATION ---
     @FXML private void showFriendList() {
         updateView(friendListPane, btnFriendList);
-        // Clear search bar when switching tabs
         if (friendSearchBarController != null) friendSearchBarController.getSearchField().clear();
-        fetchUsers("/api/friends?userId=" + ChatApp.currentUserId,
-                friendListContainer,
-                "FRIEND_ACTIONS",
-                allFriends);
-
+        fetchUsers("/api/friends?userId=" + ChatApp.currentUserId, friendListContainer, "FRIEND_ACTIONS", allFriends);
     }
 
     @FXML private void showRequests() {
@@ -138,7 +123,6 @@ public class FriendsViewController {
         }
     }
 
-    // --- DATA FETCHING ---
     private void fetchUsers(String endpoint, VBox container, String actionType, List<UserDto> cacheList) {
         try {
             String serverIp = ConfigController.getServerIp();
@@ -156,19 +140,12 @@ public class FriendsViewController {
                         user.setFullName(obj.optString("fullName", ""));
                         fetchedData.add(user);
                     }
-
-                    // Update Cache
                     if (cacheList != null) {
                         cacheList.clear();
                         cacheList.addAll(fetchedData);
                     }
-
-                    if (paneIsFriendList(container)) {
-                        applyFriendFilters();
-                    } else {
-                        renderList(container, fetchedData, actionType);
-                    }
-
+                    if (paneIsFriendList(container)) applyFriendFilters();
+                    else renderList(container, fetchedData, actionType);
                 }
             }));
         } catch (Exception e) { e.printStackTrace(); }
@@ -231,17 +208,11 @@ public class FriendsViewController {
 
                 Button btnUnfriend = new Button("Unfriend");
                 btnUnfriend.getStyleClass().add("admin-danger-button");
-                btnUnfriend.setOnAction(e ->
-                        sendAction("/api/friends?userId=" + ChatApp.currentUserId +
-                                "&friendId=" + user.getId(), "DELETE", null)
-                );
+                btnUnfriend.setOnAction(e -> sendAction("/api/friends?userId=" + ChatApp.currentUserId + "&friendId=" + user.getId(), "DELETE", null));
 
                 Button btnBlock = new Button("Block");
                 btnBlock.getStyleClass().add("admin-danger-button");
-                btnBlock.setOnAction(e ->
-                        sendAction("/api/friends/block?userId=" + ChatApp.currentUserId +
-                                "&targetId=" + user.getId(), "POST", null)
-                );
+                btnBlock.setOnAction(e -> sendAction("/api/friends/block?userId=" + ChatApp.currentUserId + "&targetId=" + user.getId(), "POST", null));
 
                 row.getChildren().addAll(btnMessage, btnCreateGroup, btnUnfriend, btnBlock);
 
@@ -271,6 +242,8 @@ public class FriendsViewController {
                         if (requestsPane.isVisible()) showRequests();
                         if (blockedPane.isVisible()) showBlocked();
                     }
+                } else {
+                    System.err.println("Action failed: " + res.statusCode() + " " + res.body());
                 }
             }));
         } catch (Exception e) { e.printStackTrace(); }
@@ -292,123 +265,50 @@ public class FriendsViewController {
     private void openOrCreateConversation(UserDto user) {
         try {
             String serverIp = ConfigController.getServerIp();
-
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(
-                            "http://" + serverIp + ":8080/api/conversations/dm" +
-                                    "?userAId=" + ChatApp.currentUserId +
-                                    "&userBId=" + user.getId()
-                    ))
-                    .POST(HttpRequest.BodyPublishers.noBody())
-                    .build();
+                    .uri(URI.create("http://" + serverIp + ":8080/api/conversations/dm?userAId=" + ChatApp.currentUserId + "&userBId=" + user.getId()))
+                    .POST(HttpRequest.BodyPublishers.noBody()).build();
 
             client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                     .thenApply(HttpResponse::body)
                     .thenAccept(json -> Platform.runLater(() -> {
                         try {
-                            ConversationDto convo =
-                                    JsonUtil.MAPPER.readValue(json, ConversationDto.class);
-
+                            ConversationDto convo = JsonUtil.MAPPER.readValue(json, ConversationDto.class);
                             goToChatroom(convo, user);
-
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+                        } catch (Exception e) { e.printStackTrace(); }
                     }));
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        } catch (Exception e) { e.printStackTrace(); }
     }
 
     private void goToChatroom(ConversationDto convo, UserDto user) {
-        // Any node in the current scene works as a source
         VBox sourceNode = friendListPane;
-
-        SceneSwitcher.switchScene(
-                sourceNode,
-                "/user/ui/fxml/ChatroomView.fxml",
-                (ChatroomViewController controller) -> {
-
-                    controller.setCurrentUserId(ChatApp.currentUserId);
-                    controller.setWebSocketClient(ChatApp.chatWebSocketClient);
-
-                    // Let ChatroomView load conversations first,
-                    // then select the target conversation
-                    Platform.runLater(() -> {
-                        controller.selectConversation(
-                                convo,
-                                user.getFullName() != null && !user.getFullName().isBlank()
-                                        ? user.getFullName()
-                                        : user.getUsername(),
-                                null
-                        );
-                    });
-                }
-        );
+        SceneSwitcher.switchScene(sourceNode, "/user/ui/fxml/ChatroomView.fxml", (ChatroomViewController controller) -> {
+            controller.setCurrentUserId(ChatApp.currentUserId);
+            controller.setWebSocketClient(ChatApp.chatWebSocketClient);
+            Platform.runLater(() -> controller.selectConversation(convo, user.getFullName() != null && !user.getFullName().isBlank() ? user.getFullName() : user.getUsername(), null));
+        });
     }
 
     private void applyFriendFilters() {
-        String query;
-        if (friendSearchBarController != null) {
-            query = friendSearchBarController.getSearchField().getText().toLowerCase();
-        } else {
-            query = "";
-        }
-
+        String query = (friendSearchBarController != null) ? friendSearchBarController.getSearchField().getText().toLowerCase() : "";
         List<UserDto> filtered = allFriends.stream()
-                .filter(u -> {
-                    boolean matchesText =
-                            query.isBlank()
-                                    || u.getUsername().toLowerCase().contains(query)
-                                    || (u.getFullName() != null && u.getFullName().toLowerCase().contains(query));
-
-                    boolean matchesOnline =
-                            !filterOnlineOnly
-                                    || ChatApp.onlineUsers.contains(u.getId());
-
-                    return matchesText && matchesOnline;
-                })
+                .filter(u -> (query.isBlank() || u.getUsername().toLowerCase().contains(query) || (u.getFullName() != null && u.getFullName().toLowerCase().contains(query))) &&
+                        (!filterOnlineOnly || ChatApp.onlineUsers.contains(u.getId())))
                 .toList();
-
         renderList(friendListContainer, filtered, "FRIEND_ACTIONS");
     }
 
-    private boolean paneIsFriendList(VBox container) {
-        return container == friendListContainer;
-    }
+    private boolean paneIsFriendList(VBox container) { return container == friendListContainer; }
 
     private void onStatusUpdate(Integer userId, boolean online) {
-        if (online) ChatApp.onlineUsers.add(userId);
-        else ChatApp.onlineUsers.remove(userId);
-
+        if (online) ChatApp.onlineUsers.add(userId); else ChatApp.onlineUsers.remove(userId);
         NameCardController card = friendCards.get(userId);
-        if (card != null) {
-            Platform.runLater(() ->
-                    card.setStatus(
-                            online
-                                    ? StatusIconController.Status.ONLINE
-                                    : StatusIconController.Status.OFFLINE
-                    )
-            );
-        }
-
-        // Re-apply filters only if needed
-        if (friendListPane.isVisible() && filterOnlineOnly) {
-            applyFriendFilters();
-        }
+        if (card != null) Platform.runLater(() -> card.setStatus(online ? StatusIconController.Status.ONLINE : StatusIconController.Status.OFFLINE));
+        if (friendListPane.isVisible() && filterOnlineOnly) applyFriendFilters();
     }
 
     private void openCreateGroupWithUser(UserDto user) {
         VBox sourceNode = friendListPane;
-
-        SceneSwitcher.switchScene(
-                sourceNode,
-                "/user/ui/fxml/CreateGroupView.fxml",
-                (CreateGroupViewController controller) -> {
-                    controller.preAddMember(user);
-                }
-        );
+        SceneSwitcher.switchScene(sourceNode, "/user/ui/fxml/CreateGroupView.fxml", (CreateGroupViewController controller) -> controller.preAddMember(user));
     }
-
 }

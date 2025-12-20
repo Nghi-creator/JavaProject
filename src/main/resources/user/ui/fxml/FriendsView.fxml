@@ -35,13 +35,14 @@
 
                             <VBox fx:id="friendListPane" spacing="15" visible="true">
                                 <Label text="All Friends" styleClass="heading1"/>
-                                <ToggleButton fx:id="btnOnlineOnly"
-                                              text="All"
-                                              styleClass="normal-button,translucent-bg"/>
+                                <ToggleButton fx:id="btnOnlineOnly" text="All" styleClass="normal-button,translucent-bg"/>
                                 <fx:include fx:id="friendSearchBar" source="SearchBar.fxml"/>
                                 <Separator styleClass="list-separator"/>
 
                                 <ScrollPane fitToWidth="true" style="-fx-background-color:transparent;">
+                                    <VBox.margin>
+                                        <Insets top="15"/>
+                                    </VBox.margin>
                                     <VBox fx:id="friendListContainer" spacing="10" styleClass="suggested-list-vbox"/>
                                 </ScrollPane>
                             </VBox>
@@ -52,6 +53,9 @@
                                 <Separator styleClass="list-separator"/>
 
                                 <ScrollPane fitToWidth="true" style="-fx-background-color:transparent;">
+                                    <VBox.margin>
+                                        <Insets top="15"/>
+                                    </VBox.margin>
                                     <VBox fx:id="requestsListContainer" spacing="10" styleClass="suggested-list-vbox"/>
                                 </ScrollPane>
                             </VBox>
@@ -60,7 +64,11 @@
                                 <Label text="Find Friends" styleClass="heading1"/>
                                 <fx:include fx:id="searchBar" source="SearchBar.fxml"/>
                                 <Separator styleClass="list-separator"/>
+
                                 <ScrollPane fitToWidth="true" style="-fx-background-color:transparent;">
+                                    <VBox.margin>
+                                        <Insets top="15"/>
+                                    </VBox.margin>
                                     <VBox fx:id="findFriendsListContainer" spacing="10" styleClass="suggested-list-vbox"/>
                                 </ScrollPane>
                             </VBox>
@@ -69,6 +77,9 @@
                                 <Label text="Blocked Users" styleClass="heading1"/>
                                 <Separator styleClass="list-separator"/>
                                 <ScrollPane fitToWidth="true" style="-fx-background-color:transparent;">
+                                    <VBox.margin>
+                                        <Insets top="15"/>
+                                    </VBox.margin>
                                     <VBox fx:id="blockedListContainer" spacing="10" styleClass="suggested-list-vbox"/>
                                 </ScrollPane>
                             </VBox>
