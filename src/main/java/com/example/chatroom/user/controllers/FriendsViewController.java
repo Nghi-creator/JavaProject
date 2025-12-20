@@ -2,11 +2,10 @@ package com.example.chatroom.user.controllers;
 
 import com.example.chatroom.core.dto.ConversationDto;
 import com.example.chatroom.core.dto.UserDto;
-import com.example.chatroom.core.shared.controllers.*;
-import com.example.chatroom.core.utils.JsonUtil;
 import com.example.chatroom.user.ChatApp;
 import com.example.chatroom.user.websocket.ChatWebSocketClient;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.example.chatroom.core.utils.JsonUtil;
+import com.example.chatroom.core.shared.controllers.*;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -33,6 +32,8 @@ import java.util.stream.Collectors;
 
 public class FriendsViewController {
 
+    // ... [Keep all your existing fields and initialize methods the same] ...
+
     @FXML private VBox friendListPane, requestsPane, findFriendsPane, blockedPane;
     @FXML private VBox friendListContainer, requestsListContainer, findFriendsListContainer, blockedListContainer;
     @FXML private Button btnFriendList, btnFriendRequests, btnFindFriends, btnBlocked;
@@ -57,6 +58,7 @@ public class FriendsViewController {
 
     @FXML
     private void initialize() {
+        // ... [Keep existing initialization code] ...
         if (searchBarController != null) {
             searchBarController.setOnSearchListener(this::handleGlobalSearch);
         }
@@ -83,6 +85,8 @@ public class FriendsViewController {
 
         showFriendList();
     }
+
+    // ... [Keep helper methods handleGlobalSearch, filterList, showFriendList, etc.] ...
 
     private void handleGlobalSearch(String query) {
         if (query.trim().isEmpty()) { findFriendsListContainer.getChildren().clear(); return; }
@@ -124,6 +128,7 @@ public class FriendsViewController {
     }
 
     private void fetchUsers(String endpoint, VBox container, String actionType, List<UserDto> cacheList) {
+        // ... [Keep existing fetchUsers code] ...
         try {
             String serverIp = ConfigController.getServerIp();
             HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://" + serverIp + ":8080" + endpoint)).GET().build();
@@ -159,6 +164,9 @@ public class FriendsViewController {
         }
     }
 
+    // ******************************************************
+    // *** THIS IS THE CRITICAL FIX IN createRow METHOD ***
+    // ******************************************************
     private void createRow(VBox container, UserDto user, String actionType) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/shared/ui/fxml/NameCard.fxml"));
@@ -188,16 +196,27 @@ public class FriendsViewController {
                 row.getChildren().add(btn);
 
             } else if (actionType.equals("REQUEST_ACTIONS")) {
+                // FIXED: Using receiverId and boolean accept to match your updated Server Controller
                 Button btnAccept = new Button("Accept");
                 btnAccept.getStyleClass().add("friend-action-button");
-                btnAccept.setOnAction(e -> sendAction("/api/friends/requests/" + user.getId() + "/response?accept=true", "POST", null));
+                btnAccept.setOnAction(e -> sendAction(
+                        "/api/friends/requests/" + user.getId() + "/response?receiverId=" + ChatApp.currentUserId + "&accept=true",
+                        "POST",
+                        null
+                ));
 
                 Button btnDecline = new Button("Decline");
                 btnDecline.getStyleClass().add("admin-danger-button");
-                btnDecline.setOnAction(e -> sendAction("/api/friends/requests/" + user.getId() + "/response?accept=false", "POST", null));
+                btnDecline.setOnAction(e -> sendAction(
+                        "/api/friends/requests/" + user.getId() + "/response?receiverId=" + ChatApp.currentUserId + "&accept=false",
+                        "POST",
+                        null
+                ));
+
                 row.getChildren().addAll(btnAccept, btnDecline);
 
             } else if (actionType.equals("FRIEND_ACTIONS")) {
+                // RESTORED: This handles your main friend list buttons (Message, Unfriend, etc.)
                 Button btnMessage = new Button("Message");
                 btnMessage.getStyleClass().add("friend-action-button");
                 btnMessage.setOnAction(e -> openOrCreateConversation(user));
@@ -227,6 +246,8 @@ public class FriendsViewController {
         } catch (IOException e) { e.printStackTrace(); }
     }
 
+    // ... [Keep the rest of the class the same: sendAction, updateView, openOrCreateConversation, etc.] ...
+
     private void sendAction(String url, String method, Button btn) {
         try {
             String serverIp = ConfigController.getServerIp();
@@ -238,6 +259,7 @@ public class FriendsViewController {
                 if (res.statusCode() == 200) {
                     if (btn != null) { btn.setText("Sent"); btn.setDisable(true); }
                     else {
+                        // Refresh the lists to show the new state
                         if (friendListPane.isVisible()) showFriendList();
                         if (requestsPane.isVisible()) showRequests();
                         if (blockedPane.isVisible()) showBlocked();

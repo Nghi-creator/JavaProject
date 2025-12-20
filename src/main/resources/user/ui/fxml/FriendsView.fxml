@@ -41,9 +41,9 @@
 
                                 <ScrollPane fitToWidth="true" style="-fx-background-color:transparent;">
                                     <VBox.margin>
-                                        <Insets top="15"/>
-                                    </VBox.margin>
-                                    <VBox fx:id="friendListContainer" spacing="10" styleClass="suggested-list-vbox"/>
+                                        <Insets top="20"/> </VBox.margin>
+                                    <VBox fx:id="friendListContainer" spacing="10" styleClass="suggested-list-vbox">
+                                        <padding><Insets top="10" bottom="10"/></padding> </VBox>
                                 </ScrollPane>
                             </VBox>
 
@@ -54,9 +54,9 @@
 
                                 <ScrollPane fitToWidth="true" style="-fx-background-color:transparent;">
                                     <VBox.margin>
-                                        <Insets top="15"/>
-                                    </VBox.margin>
-                                    <VBox fx:id="requestsListContainer" spacing="10" styleClass="suggested-list-vbox"/>
+                                        <Insets top="20"/> </VBox.margin>
+                                    <VBox fx:id="requestsListContainer" spacing="10" styleClass="suggested-list-vbox">
+                                        <padding><Insets top="10" bottom="10"/></padding> </VBox>
                                 </ScrollPane>
                             </VBox>
 
@@ -67,9 +67,9 @@
 
                                 <ScrollPane fitToWidth="true" style="-fx-background-color:transparent;">
                                     <VBox.margin>
-                                        <Insets top="15"/>
-                                    </VBox.margin>
-                                    <VBox fx:id="findFriendsListContainer" spacing="10" styleClass="suggested-list-vbox"/>
+                                        <Insets top="20"/> </VBox.margin>
+                                    <VBox fx:id="findFriendsListContainer" spacing="10" styleClass="suggested-list-vbox">
+                                        <padding><Insets top="10" bottom="10"/></padding> </VBox>
                                 </ScrollPane>
                             </VBox>
 
@@ -78,9 +78,9 @@
                                 <Separator styleClass="list-separator"/>
                                 <ScrollPane fitToWidth="true" style="-fx-background-color:transparent;">
                                     <VBox.margin>
-                                        <Insets top="15"/>
-                                    </VBox.margin>
-                                    <VBox fx:id="blockedListContainer" spacing="10" styleClass="suggested-list-vbox"/>
+                                        <Insets top="20"/> </VBox.margin>
+                                    <VBox fx:id="blockedListContainer" spacing="10" styleClass="suggested-list-vbox">
+                                        <padding><Insets top="10" bottom="10"/></padding> </VBox>
                                 </ScrollPane>
                             </VBox>
 
