@@ -1,5 +1,6 @@
 package com.example.chatroom.user.controllers;
 
+import com.example.chatroom.core.dto.UserDto;
 import com.example.chatroom.core.shared.controllers.ConfigController;
 import com.example.chatroom.core.shared.controllers.HeaderController;
 import com.example.chatroom.core.shared.controllers.NameCardController;
@@ -300,4 +301,15 @@ public class CreateGroupViewController {
         alert.setContentText(content);
         alert.showAndWait();
     }
+
+    public void preAddMember(UserDto user) {
+        Platform.runLater(() ->
+                addMemberToSelection(
+                        user.getId(),
+                        user.getUsername(),
+                        user.getFullName()
+                )
+        );
+    }
+
 }

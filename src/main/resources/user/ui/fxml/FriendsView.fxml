@@ -37,7 +37,7 @@
                                 <Label text="All Friends" styleClass="heading1"/>
                                 <ToggleButton fx:id="btnOnlineOnly"
                                               text="Online only"
-                                              styleClass="friends-filter-toggle"/>
+                                              styleClass="normal-button,translucent-bg"/>
                                 <fx:include fx:id="friendSearchBar" source="SearchBar.fxml"/>
                                 <Separator styleClass="list-separator"/>
 

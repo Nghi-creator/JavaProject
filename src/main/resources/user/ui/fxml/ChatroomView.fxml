@@ -25,9 +25,9 @@
                     <Text fill="WHITE" styleClass="chat-list-title" text="CHATS"/>
 <!--                    <fx:include fx:id="chatSearch" source="SearchBar.fxml"/>-->
                     <HBox spacing="5" alignment="CENTER_LEFT">
-                        <TextField fx:id="globalSearchInput" promptText="Search all messages..." onAction="#searchAllChats" />
-                        <Button text="prev" onAction="#prevGlobalSearch"/>
-                        <Button text="next" onAction="#nextGlobalSearch"/>
+                        <TextField fx:id="globalSearchInput" promptText="Search all messages..." styleClass="input-field" onAction="#searchAllChats" />
+                        <Button text="&lt;" styleClass="normal-button,translucent-bg" onAction="#prevGlobalSearch"/>
+                        <Button text="&gt;" styleClass="normal-button,translucent-bg" onAction="#nextGlobalSearch"/>
                     </HBox>
                     <Separator/>
                     <VBox fx:id="chatListVBox" spacing="5"/>
@@ -55,12 +55,12 @@
                             <Region HBox.hgrow="ALWAYS"/>
 
                             <!-- Search bar -->
-                            <TextField fx:id="chatSearchInput" promptText="Search in chat..." onAction="#searchChatHistory"/>
-                            <Button text="Next" onAction="#nextSearchResult"/>
-                            <Button text="Prev" onAction="#prevSearchResult"/>
+                            <TextField fx:id="chatSearchInput" promptText="Search in chat..." styleClass="input-field" onAction="#searchChatHistory"/>
+                            <Button text="&lt;" styleClass="normal-button,translucent-bg" onAction="#prevSearchResult"/>
+                            <Button text="&gt;" styleClass="normal-button,translucent-bg" onAction="#nextSearchResult"/>
 
                             <!-- Options button -->
-                            <MenuButton fx:id="optionsButton" text="..." styleClass="options-menu"/>
+                            <MenuButton fx:id="optionsButton" text="..." styleClass="normal-combo"/>
                         </HBox>
                     </top>
                     <center>
@@ -76,12 +76,15 @@
                         </ScrollPane>
                     </center>
                     <bottom>
-                        <HBox alignment="CENTER" prefHeight="68.0" styleClass="chat-input-box">
+                        <HBox alignment="CENTER" prefHeight="68.0" spacing="10" styleClass="chat-input-box">
                             <BorderPane.margin>
                                 <Insets left="10" right="10"/>
                             </BorderPane.margin>
-                            <TextField fx:id="messageInput" prefHeight="44.0" prefWidth="690.0" promptText="Enter message..."
+                            <TextField fx:id="messageInput" prefHeight="44.0" HBox.hgrow="ALWAYS" promptText="Enter message..."
                                        styleClass="input-field" onAction="#sendMessage"/>
+                            <Button prefHeight="44.0" text="Suggest"
+                                    styleClass="normal-button,translucent-bg"
+                                    onAction="#suggestMessage"/>
                         </HBox>
                     </bottom>
                 </BorderPane>
@@ -96,8 +99,8 @@
                     <StackPane.margin>
                         <Insets top="10" right="10" bottom="10" left="10"/>
                     </StackPane.margin>
-                    <Text fill="#8e9297" styleClass="user-list-category" text="MEMBERS (3 ONLINE)"/>
-                    <fx:include fx:id="memberSearch" source="SearchBar.fxml"/>
+                    <Text fx:id="memberCount" fill="#8e9297" styleClass="user-list-category" text="MEMBERS"/>
+<!--                    <fx:include fx:id="memberSearch" source="SearchBar.fxml"/>-->
                     <Separator/>
                     <VBox fx:id="memberListVBox" spacing="5"/>
 <!--                    <fx:include fx:id="userCard1" source="../../../shared/ui/fxml/NameCard.fxml"/>-->
