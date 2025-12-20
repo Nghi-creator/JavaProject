@@ -19,7 +19,7 @@ public class HeaderController {
     @FXML private Button chatButton;
     @FXML private Button friendsButton;
     @FXML private Button createGroupButton;
-    @FXML private Button notificationButton;
+//    @FXML private Button notificationButton;
     @FXML private Button accountButton;
     @FXML private HBox accountMenu;
 
@@ -37,7 +37,7 @@ public class HeaderController {
             case "chat" -> chatButton;
             case "friends" -> friendsButton;
             case "createGroup" -> createGroupButton;
-            case "notification" -> notificationButton;
+//            case "notification" -> notificationButton;
             default -> null;
         };
 

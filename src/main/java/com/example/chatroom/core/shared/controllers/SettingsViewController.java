@@ -244,10 +244,10 @@ public class SettingsViewController {
         SceneSwitcher.switchScene((javafx.scene.Node) event.getSource(), "/user/ui/fxml/ChatroomView.fxml");
     }
 
-    @FXML
-    private void handleGeneratePassword() {
-        showAlert("Info", "This feature is coming soon!");
-    }
+//    @FXML
+//    private void handleGeneratePassword() {
+//        showAlert("Info", "This feature is coming soon!");
+//    }
 
     // --- UTILS ---
 
