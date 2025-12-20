@@ -33,6 +33,7 @@
                 <Button fx:id="chatButton" text="Chat" styleClass="nav-button" onAction="#handleChatClick"/>
                 <Button fx:id="friendsButton" text="Friends" styleClass="nav-button" onAction="#handleFriendsClick"/>
                 <Button fx:id="createGroupButton" text="Create Group Chat" styleClass="nav-button" onAction="#handleCreateGroupClick"/>
+<!--                <Button fx:id="notificationButton" text="Notifications" styleClass="nav-button" onAction="#handleNotificationClick"/>-->
             </HBox>
         </center>
         <right>

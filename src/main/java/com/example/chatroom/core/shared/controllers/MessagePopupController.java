@@ -11,10 +11,12 @@ public class MessagePopupController {
 
     private Stage stage;
 
+    /** Set the stage so we can close it later */
     public void setStage(Stage stage) {
         this.stage = stage;
     }
 
+    /** Set the message to display */
     public void setMessage(String message) {
         messageLabel.setText(message);
     }

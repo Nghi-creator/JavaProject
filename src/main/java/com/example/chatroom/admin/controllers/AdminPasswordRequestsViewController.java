@@ -1,24 +1,19 @@
 package com.example.chatroom.admin.controllers;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import com.example.chatroom.core.shared.controllers.ConfigController;
-
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 
 public class AdminPasswordRequestsViewController {
 
@@ -53,7 +48,7 @@ public class AdminPasswordRequestsViewController {
         });
 
         requestTable.setItems(requests);
-        fetchRequests(); 
+        fetchRequests(); // <--- Fetch real data
     }
 
     private void fetchRequests() {
@@ -75,7 +70,7 @@ public class AdminPasswordRequestsViewController {
                                 requests.add(new PasswordRequest(
                                         obj.getInt("id"),
                                         obj.getString("username"),
-                                        obj.getString("newPassword"), 
+                                        obj.getString("newPassword"), // <--- Read password
                                         obj.getString("requestDate")
                                 ));
                             }

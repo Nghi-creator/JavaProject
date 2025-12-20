@@ -1,18 +1,19 @@
 package com.example.chatroom.core.shared.controllers;
 
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.Node;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.function.Consumer;
 
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-
 public class SceneSwitcher {
 
+    // --- Stage Scene Switching ---
     public static <T> void switchScene(Stage stage, String fxmlPath, Consumer<T> controllerConsumer) {
         try {
             FXMLLoader loader = loadFXML(fxmlPath);
@@ -37,6 +38,7 @@ public class SceneSwitcher {
         }
     }
 
+    // Overload without Consumer
     public static void switchScene(Stage stage, String fxmlPath) {
         switchScene(stage, fxmlPath, null);
     }
@@ -83,7 +85,7 @@ public class SceneSwitcher {
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.setTitle(title);
             stage.setScene(new Scene(root));
-            stage.showAndWait(); 
+            stage.showAndWait(); // waits until popup closes
 
             return controller;
         } catch (IOException e) {

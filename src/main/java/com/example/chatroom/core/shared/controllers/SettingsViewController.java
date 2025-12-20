@@ -1,28 +1,21 @@
 package com.example.chatroom.core.shared.controllers;
 
+import com.example.chatroom.user.ChatApp;
+import com.example.chatroom.core.dto.UserDto;
+import com.example.chatroom.core.dto.ChangePasswordRequest;
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
+import org.json.JSONObject;
+
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDate;
-
-import org.json.JSONObject;
-
-import com.example.chatroom.core.dto.ChangePasswordRequest;
-import com.example.chatroom.core.dto.UserDto;
-import com.example.chatroom.user.ChatApp;
-
-import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.VBox;
 
 public class SettingsViewController {
 
@@ -56,6 +49,7 @@ public class SettingsViewController {
     public void initialize() {
         genderCombo.setItems(FXCollections.observableArrayList("MALE", "FEMALE", "OTHER"));
 
+        // Load global user
         this.currentUser = ChatApp.currentUser;
 
         if (currentUser != null) {
@@ -64,6 +58,7 @@ public class SettingsViewController {
             System.err.println("User is null. Make sure you logged in correctly.");
         }
 
+        // Hide edit panels initially
         accountEditPanel.setVisible(false);
         accountEditPanel.setManaged(false);
         changePasswordPanel.setVisible(false);
@@ -71,6 +66,7 @@ public class SettingsViewController {
     }
 
     private void populateFields() {
+        // 1. UPDATE THE STATIC VIEW LABELS
         lblUsername.setText(currentUser.getUsername());
         lblEmail.setText(currentUser.getEmail());
         lblFullName.setText(currentUser.getFullName() != null ? currentUser.getFullName() : "");
@@ -78,6 +74,7 @@ public class SettingsViewController {
         lblDob.setText(currentUser.getDob() != null ? currentUser.getDob().toString() : "");
         lblGender.setText(currentUser.getGender() != null ? currentUser.getGender() : "");
 
+        // 2. UPDATE THE EDIT FIELDS
         usernameField.setText(currentUser.getUsername());
         emailField.setText(currentUser.getEmail());
         addressField.setText(currentUser.getAddress());
@@ -122,6 +119,7 @@ public class SettingsViewController {
 
         String fullName = (firstNameField.getText() + " " + lastNameField.getText()).trim();
 
+        // Build JSON
         JSONObject json = new JSONObject();
         json.put("fullName", fullName);
         json.put("email", emailField.getText());
@@ -150,14 +148,16 @@ public class SettingsViewController {
                         if (response.statusCode() == 200) {
                             showAlert("Success", "Profile updated!");
 
+                            // UPDATE LOCAL DATA IMMEDIATELY
                             currentUser.setFullName(json.getString("fullName"));
                             currentUser.setEmail(json.getString("email"));
                             currentUser.setAddress(json.getString("address"));
                             currentUser.setGender(json.optString("gender"));
                             if (json.has("dob")) currentUser.setDob(LocalDate.parse(json.getString("dob")));
 
+                            // REFRESH UI
                             populateFields();
-                            handleUpdateAccountInfo(); 
+                            handleUpdateAccountInfo(); // Close the panel
                         } else {
                             showAlert("Error", "Update failed. Server Code: " + response.statusCode());
                         }
@@ -173,6 +173,7 @@ public class SettingsViewController {
         String newPass = newPasswordField.getText();
         String confirmPass = confirmPasswordField.getText();
 
+        // Use the username from the text field, or fallback to the global user
         String username = usernameField.getText();
         if (username == null || username.isEmpty()) {
             if (currentUser != null) username = currentUser.getUsername();
@@ -225,7 +226,7 @@ public class SettingsViewController {
                             currentPasswordField.clear();
                             newPasswordField.clear();
                             confirmPasswordField.clear();
-                            toggleChangePassword(); 
+                            toggleChangePassword(); // Close panel
                         } else if (response.statusCode() == 401) {
                             showAlert("Error", "Incorrect current password.");
                         } else {
@@ -242,6 +243,13 @@ public class SettingsViewController {
     private void handleBack(ActionEvent event) {
         SceneSwitcher.switchScene((javafx.scene.Node) event.getSource(), "/user/ui/fxml/ChatroomView.fxml");
     }
+
+//    @FXML
+//    private void handleGeneratePassword() {
+//        showAlert("Info", "This feature is coming soon!");
+//    }
+
+    // --- UTILS ---
 
     private boolean isValidEmail(String email) {
         return email != null && email.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$");

@@ -1,5 +1,24 @@
 package com.example.chatroom.user.controllers;
 
+import com.example.chatroom.core.dto.ConversationDto;
+import com.example.chatroom.core.dto.UserDto;
+import com.example.chatroom.user.ChatApp;
+import com.example.chatroom.user.websocket.ChatWebSocketClient;
+import com.example.chatroom.core.utils.JsonUtil;
+import com.example.chatroom.core.shared.controllers.*;
+import javafx.application.Platform;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.control.Button;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -11,32 +30,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import com.example.chatroom.core.dto.ConversationDto;
-import com.example.chatroom.core.dto.UserDto;
-import com.example.chatroom.core.shared.controllers.ConfigController;
-import com.example.chatroom.core.shared.controllers.NameCardController;
-import com.example.chatroom.core.shared.controllers.SceneSwitcher;
-import com.example.chatroom.core.shared.controllers.SearchBarController;
-import com.example.chatroom.core.shared.controllers.StatusIconController;
-import com.example.chatroom.core.utils.JsonUtil;
-import com.example.chatroom.user.ChatApp;
-import com.example.chatroom.user.websocket.ChatWebSocketClient;
-
-import javafx.application.Platform;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
-
 public class FriendsViewController {
+
+    // ... [Keep all your existing fields and initialize methods the same] ...
+
     @FXML private VBox friendListPane, requestsPane, findFriendsPane, blockedPane;
     @FXML private VBox friendListContainer, requestsListContainer, findFriendsListContainer, blockedListContainer;
     @FXML private Button btnFriendList, btnFriendRequests, btnFindFriends, btnBlocked;
@@ -61,6 +58,7 @@ public class FriendsViewController {
 
     @FXML
     private void initialize() {
+        // ... [Keep existing initialization code] ...
         if (searchBarController != null) {
             searchBarController.setOnSearchListener(this::handleGlobalSearch);
         }
@@ -87,6 +85,9 @@ public class FriendsViewController {
 
         showFriendList();
     }
+
+    // ... [Keep helper methods handleGlobalSearch, filterList, showFriendList, etc.] ...
+
     private void handleGlobalSearch(String query) {
         if (query.trim().isEmpty()) { findFriendsListContainer.getChildren().clear(); return; }
         fetchUsers("/api/friends/search?userId=" + ChatApp.currentUserId + "&q=" + query, findFriendsListContainer, "ADD", null);
@@ -127,6 +128,7 @@ public class FriendsViewController {
     }
 
     private void fetchUsers(String endpoint, VBox container, String actionType, List<UserDto> cacheList) {
+        // ... [Keep existing fetchUsers code] ...
         try {
             String serverIp = ConfigController.getServerIp();
             HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://" + serverIp + ":8080" + endpoint)).GET().build();
@@ -162,6 +164,9 @@ public class FriendsViewController {
         }
     }
 
+    // ******************************************************
+    // *** THIS IS THE CRITICAL FIX IN createRow METHOD ***
+    // ******************************************************
     private void createRow(VBox container, UserDto user, String actionType) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/shared/ui/fxml/NameCard.fxml"));
@@ -191,6 +196,7 @@ public class FriendsViewController {
                 row.getChildren().add(btn);
 
             } else if (actionType.equals("REQUEST_ACTIONS")) {
+                // FIXED: Using receiverId and boolean accept to match your updated Server Controller
                 Button btnAccept = new Button("Accept");
                 btnAccept.getStyleClass().add("friend-action-button");
                 btnAccept.setOnAction(e -> sendAction(
@@ -210,6 +216,7 @@ public class FriendsViewController {
                 row.getChildren().addAll(btnAccept, btnDecline);
 
             } else if (actionType.equals("FRIEND_ACTIONS")) {
+                // RESTORED: This handles your main friend list buttons (Message, Unfriend, etc.)
                 Button btnMessage = new Button("Message");
                 btnMessage.getStyleClass().add("friend-action-button");
                 btnMessage.setOnAction(e -> openOrCreateConversation(user));
@@ -238,6 +245,9 @@ public class FriendsViewController {
             container.getChildren().add(row);
         } catch (IOException e) { e.printStackTrace(); }
     }
+
+    // ... [Keep the rest of the class the same: sendAction, updateView, openOrCreateConversation, etc.] ...
+
     private void sendAction(String url, String method, Button btn) {
         try {
             String serverIp = ConfigController.getServerIp();
@@ -249,6 +259,7 @@ public class FriendsViewController {
                 if (res.statusCode() == 200) {
                     if (btn != null) { btn.setText("Sent"); btn.setDisable(true); }
                     else {
+                        // Refresh the lists to show the new state
                         if (friendListPane.isVisible()) showFriendList();
                         if (requestsPane.isVisible()) showRequests();
                         if (blockedPane.isVisible()) showBlocked();
