@@ -5,7 +5,7 @@ import com.example.chatroom.core.dto.ConversationDto;
 import com.example.chatroom.core.dto.MessageDto;
 import com.example.chatroom.user.ChatApp;
 import com.example.chatroom.user.websocket.ChatWebSocketClient;
-import com.example.chatroom.core.utils.AESUtil; 
+import com.example.chatroom.core.utils.AESUtil; // Import AESUtil for encryption
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -85,6 +85,10 @@ public class ChatroomViewController {
         this.webSocketClient = webSocketClient;
         this.webSocketClient.setStatusCallback(this::updateUserStatus);
         this.webSocketClient.messageCallback = (json, v) -> handleIncomingMessage(json);
+
+//        if (!this.webSocketClient.isOpen()) {
+//            this.webSocketClient.connect();
+//        }
     }
 
     private void handleIncomingMessage(JSONObject json) {
@@ -102,6 +106,7 @@ public class ChatroomViewController {
                 displayContent = AESUtil.decrypt(rawContent, selectedConversation.getSecretKey());
             }
             msg.setContent(displayContent);
+            // -------------------------------------
 
             msg.setSentAt(java.time.LocalDateTime.now());
             addMessageToVBox(msg);
@@ -163,6 +168,10 @@ public class ChatroomViewController {
                         for (var member : convo.getMembers()) {
                             if (!member.getId().equals(currentUserId)) {
                                 chatListCards.put(member.getId(), controller);
+
+//                                Boolean pending = pendingStatusUpdates.remove(member.getId());
+//                                if (pending != null) controller.setStatus(pending ? StatusIconController.Status.ONLINE : StatusIconController.Status.OFFLINE);
+
                                 boolean isOnline = ChatApp.onlineUsers.contains(member.getId());
                                 System.out.println(isOnline);
                                 controller.setStatus(
@@ -207,6 +216,8 @@ public class ChatroomViewController {
 
         memberCount.setText(String.format("MEMBERS (%d)", convo.getMembers().size()));
         populateMemberList(convo.getMembers());
+
+        // Only load messages if no callback provided (normal case) OR force load if callback exists
         loadMessages(convo.getId(), afterLoad);
     }
 
@@ -281,6 +292,14 @@ public class ChatroomViewController {
                     String displayName = member.getFullName() != null ? member.getFullName() : member.getUsername();
                     controller.setData(displayName, null);
                     memberListCards.put(member.getId(), controller);
+
+//                    Boolean pending = pendingStatusUpdates.remove(member.getId());
+//                    if (pending != null) {
+//                        controller.setStatus(pending ? StatusIconController.Status.ONLINE : StatusIconController.Status.OFFLINE);
+//                    } else {
+//                        controller.setStatus(StatusIconController.Status.OFFLINE);
+//                    }
+
                     boolean isOnline = ChatApp.onlineUsers.contains(member.getId());
                     controller.setStatus(
                             isOnline
@@ -336,7 +355,8 @@ public class ChatroomViewController {
     }
 
     private String getCurrentUserDisplayName() {
-        return "You"; 
+        // Implement your logic to get current user display name
+        return "You"; // placeholder
     }
 
     private void addMessageToVBox(MessageDto msg) {
@@ -349,7 +369,11 @@ public class ChatroomViewController {
             controller.setContent(msg.getContent());
             controller.setTimeStamp(msg.getSentAt().format(formatter));
             controller.setStatus(StatusIconController.Status.DISABLED);
+
+            // --- KEEP FRIEND'S DELETE LOGIC ---
             controller.setMessage(msg, () -> deleteMessage(msg));
+            // ----------------------------------
+
             messagesVBox.getChildren().add(msgNode);
             scrollToBottom();
         } catch (Exception e) {
@@ -358,6 +382,8 @@ public class ChatroomViewController {
     }
 
     private void updateUserStatus(int userId, boolean online) {
+//        System.out.println("UI UPDATE -> user=" + userId + " online=" + online);
+
         if (online) ChatApp.onlineUsers.add(userId);
         else ChatApp.onlineUsers.remove(userId);
 
@@ -421,6 +447,7 @@ public class ChatroomViewController {
     private void searchChatHistory() {
         String query = chatSearchInput.getText().trim().toLowerCase();
 
+        // Clear previous highlights if the query is empty
         if (query.isEmpty()) {
             messagesVBox.getChildren().forEach(node -> node.setStyle(""));
             searchResults.clear();
@@ -473,7 +500,7 @@ public class ChatroomViewController {
     }
 
     private void highlightMessage(Node node) {
-        messagesVBox.getChildren().forEach(n -> n.setStyle("")); 
+        messagesVBox.getChildren().forEach(n -> n.setStyle("")); // clear previous highlight
         node.setStyle("-fx-background-color: rgba(255, 255, 0, 0.3); -fx-background-radius: 5;");
     }
 
@@ -522,8 +549,10 @@ public class ChatroomViewController {
 
     private void jumpToMessage(MessageDto msg) {
         if (selectedConversation == null || !selectedConversation.getId().equals(msg.getConversationId())) {
+            // Find conversation node and simulate click
             for (Node node : chatListVBox.getChildren()) {
                 if (node.getUserData() instanceof ConversationDto convo && convo.getId().equals(msg.getConversationId())) {
+                    // Pass a callback to highlight after messages load
                     selectConversation(convo, convo.getName(), () -> Platform.runLater(() -> scrollAndHighlight(msg)));
                     return;
                 }
@@ -559,8 +588,10 @@ public class ChatroomViewController {
     }
 
     private void deleteMessage(MessageDto msg) {
+        // Basic sanity check
         if (msg == null || currentUserId == null) return;
 
+        // Optional: frontend permission check
         if (!msg.getSenderId().equals(currentUserId)) {
             System.out.println("Not allowed to delete this message");
             return;

@@ -127,6 +127,8 @@
                 <HBox spacing="10" alignment="CENTER_LEFT">
                     <Button fx:id="btnChangePassword" text="Save" onAction="#handleChangePassword" styleClass="normal-button"
                             style="-fx-background-color: #544766;"/>
+<!--                    <Button text="Generate &amp; Send to Email" onAction="#handleGeneratePassword"-->
+<!--                            styleClass="normal-button" style="-fx-background-color: #544766;"/>-->
                 </HBox>
             </VBox>
 

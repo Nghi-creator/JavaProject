@@ -49,7 +49,36 @@
                     <fx:include source="../../../shared/ui/fxml/NameCard.fxml"/>
                 </VBox>
             </ScrollPane>
+<!--            <VBox VBox.vgrow="ALWAYS" alignment="CENTER">-->
+<!--                <VBox spacing="10" alignment="CENTER_LEFT">-->
+<!--                    <HBox spacing="10" alignment="CENTER_LEFT">-->
+<!--                        <Label text="Email:" styleClass="bold-text"/>-->
+<!--                        <Label text="takhoa23@clc.fitus.edu.vn" styleClass="darkened-text"/>-->
+<!--                    </HBox>-->
+
+<!--                    <HBox spacing="10" alignment="CENTER_LEFT">-->
+<!--                        <Label text="Full Name:" styleClass="bold-text"/>-->
+<!--                        <Label text="Khoa Tran" styleClass="darkened-text"/>-->
+<!--                    </HBox>-->
+
+<!--                    <HBox spacing="10" alignment="CENTER_LEFT">-->
+<!--                        <Label text="Address:" styleClass="bold-text"/>-->
+<!--                        <Label text="123 Nguyen Trai, Hanoi" styleClass="darkened-text"/>-->
+<!--                    </HBox>-->
+
+<!--                    <HBox spacing="10" alignment="CENTER_LEFT">-->
+<!--                        <Label text="Date of Birth:" styleClass="bold-text"/>-->
+<!--                        <Label text="01/01/2000" styleClass="darkened-text"/>-->
+<!--                    </HBox>-->
+
+<!--                    <HBox spacing="10" alignment="CENTER_LEFT">-->
+<!--                        <Label text="Gender:" styleClass="bold-text"/>-->
+<!--                        <Label text="Male" styleClass="darkened-text"/>-->
+<!--                    </HBox>-->
+<!--                </VBox>-->
+<!--            </VBox>-->
         </VBox>
+
         <VBox spacing="10" maxWidth="Infinity">
             <Button fx:id="changeGroupNameButton" text="Change Group Name" onAction="#handlechangeGroupNameClick" styleClass="normal-button,translucent-bg" maxWidth="Infinity"/>
             <Button fx:id="addMemberButton" text="Add Member" onAction="#handleAddMemberClick" styleClass="normal-button,translucent-bg" maxWidth="Infinity"/>

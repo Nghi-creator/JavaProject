@@ -1,5 +1,19 @@
 package com.example.chatroom.admin.controllers;
 
+import com.example.chatroom.core.shared.controllers.ConfigController;
+import com.example.chatroom.core.shared.controllers.SearchBarController;
+import com.example.chatroom.core.utils.TableDataManager;
+import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -7,25 +21,6 @@ import java.net.http.HttpResponse;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import com.example.chatroom.core.shared.controllers.ConfigController;
-import com.example.chatroom.core.shared.controllers.SearchBarController;
-import com.example.chatroom.core.utils.TableDataManager;
-
-import javafx.application.Platform;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
-import javafx.fxml.FXML;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
 
 public class AdminUserActivityViewController {
 
@@ -53,6 +48,7 @@ public class AdminUserActivityViewController {
         setupCombos();
         masterData = FXCollections.observableArrayList();
 
+        // Replace manual FilteredList / SortedList with TableDataManager
         tableManager = new TableDataManager<>(activeTable, masterData);
 
         tableManager.addSortOption("Name (A-Z)", Comparator.comparing(u -> u.fullname.toLowerCase()));
@@ -63,8 +59,10 @@ public class AdminUserActivityViewController {
 
         bindFilters();
 
+        // Load initial data
         loadUserActivityData();
 
+        // Reload from server when date pickers change
         startDatePicker.valueProperty().addListener((obs, oldV, newV) -> loadUserActivityData());
         endDatePicker.valueProperty().addListener((obs, oldV, newV) -> loadUserActivityData());
     }
@@ -80,6 +78,7 @@ public class AdminUserActivityViewController {
 
     private void setupColumn(TableColumn<ActiveUser, String> col, java.util.function.Function<ActiveUser, String> extractor) {
         col.setCellValueFactory(data -> new SimpleStringProperty(extractor.apply(data.getValue())));
+//        col.setSortable(false);
         col.setReorderable(false);
     }
 
