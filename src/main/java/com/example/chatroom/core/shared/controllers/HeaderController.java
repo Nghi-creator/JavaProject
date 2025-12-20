@@ -4,6 +4,7 @@ import com.example.chatroom.user.ChatApp;
 import com.example.chatroom.user.controllers.ChatroomViewController;
 import com.example.chatroom.user.controllers.FriendsViewController;
 import com.example.chatroom.user.websocket.ChatWebSocketClient;
+
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.TranslateTransition;
@@ -11,7 +12,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.layout.*;
+import javafx.scene.layout.HBox;
 import javafx.util.Duration;
 
 public class HeaderController {
@@ -19,7 +20,6 @@ public class HeaderController {
     @FXML private Button chatButton;
     @FXML private Button friendsButton;
     @FXML private Button createGroupButton;
-//    @FXML private Button notificationButton;
     @FXML private Button accountButton;
     @FXML private HBox accountMenu;
 
@@ -37,7 +37,6 @@ public class HeaderController {
             case "chat" -> chatButton;
             case "friends" -> friendsButton;
             case "createGroup" -> createGroupButton;
-//            case "notification" -> notificationButton;
             default -> null;
         };
 
@@ -135,7 +134,7 @@ public class HeaderController {
         ChatWebSocketClient webSocketClient = ChatApp.chatWebSocketClient;
         if (webSocketClient.isOpen()) {
             webSocketClient.send("{\"type\":\"LOGOUT\"}");
-            webSocketClient.close(); // optional, close gracefully
+            webSocketClient.close(); 
         }
     }
 

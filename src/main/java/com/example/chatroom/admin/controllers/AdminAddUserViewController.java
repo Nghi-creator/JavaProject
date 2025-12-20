@@ -1,23 +1,30 @@
 package com.example.chatroom.admin.controllers;
 
-import com.example.chatroom.core.shared.controllers.ConfigController;
-import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.stage.Stage;
-import org.json.JSONObject;
-
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDate;
 
+import org.json.JSONObject;
+
+import com.example.chatroom.core.shared.controllers.ConfigController;
+
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
+import javafx.stage.Stage;
+
 public class AdminAddUserViewController {
 
     @FXML private TextField firstNameField, lastNameField, usernameField, emailField, addressField;
-    @FXML private PasswordField passwordField; // <--- NEW FIELD
+    @FXML private PasswordField passwordField; 
     @FXML private ComboBox<String> genderCombo;
     @FXML private DatePicker dobPicker;
     @FXML private Button btnCancel;
@@ -59,7 +66,6 @@ public class AdminAddUserViewController {
         json.put("email", emailField.getText());
         json.put("address", addressField.getText());
 
-        // USE INPUT PASSWORD INSTEAD OF "123456"
         json.put("password", passwordField.getText());
 
         json.put("status", "ACTIVE");

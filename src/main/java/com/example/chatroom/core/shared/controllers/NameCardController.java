@@ -1,7 +1,10 @@
 package com.example.chatroom.core.shared.controllers;
 
+import java.io.IOException;
+
 import com.example.chatroom.core.dto.ConversationDto;
 import com.example.chatroom.user.controllers.GroupSettingsViewController;
+
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -16,8 +19,6 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import java.io.IOException;
-
 public class NameCardController {
 
     @FXML private StackPane statusIcon;
@@ -30,7 +31,6 @@ public class NameCardController {
 
     @FXML
     private void initialize() {
-        // --- Load StatusIcon properly ---
         try {
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource("/shared/ui/fxml/StatusIcon.fxml")
@@ -45,7 +45,6 @@ public class NameCardController {
             throw new RuntimeException("Failed to load StatusIcon.fxml", e);
         }
 
-        // --- Context menu trigger ---
         statusIcon.setOnMouseClicked(event -> {
             if (event.getButton() == MouseButton.PRIMARY) {
                 showContextMenu(event.getScreenX(), event.getScreenY());

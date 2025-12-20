@@ -1,11 +1,13 @@
 package com.example.chatroom.admin.controllers;
 
+import java.util.List;
+
 import com.example.chatroom.core.shared.controllers.SceneSwitcher;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import java.util.List;
 
 public class AdminHeaderController {
 
@@ -22,7 +24,6 @@ public class AdminHeaderController {
 
     @FXML
     public void initialize() {
-        // Initialize the list for focus management
         navButtons = List.of(
                 usersButton,
                 friendCountButton,
@@ -36,7 +37,6 @@ public class AdminHeaderController {
     }
 
     public void focusButton(String buttonStr) {
-        // Reset all buttons to default style
         navButtons.forEach(btn -> {
             btn.getStyleClass().remove("nav-button-selected");
             if (!btn.getStyleClass().contains("nav-button")) {
@@ -44,7 +44,6 @@ public class AdminHeaderController {
             }
         });
 
-        // Highlight the active button
         Button buttonToFocus = switch (buttonStr) {
             case "users" -> usersButton;
             case "friendCount" -> friendCountButton;

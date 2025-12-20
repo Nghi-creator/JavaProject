@@ -1,9 +1,23 @@
 package com.example.chatroom.admin.controllers;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import com.example.chatroom.core.model.User;
 import com.example.chatroom.core.shared.controllers.ConfigController;
 import com.example.chatroom.core.shared.controllers.SearchBarController;
 import com.example.chatroom.core.utils.TableDataManager;
+
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -14,23 +28,18 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
 
 public class AdminUserViewController {
 
@@ -90,7 +99,7 @@ public class AdminUserViewController {
             if (d1 == null && d2 == null) return 0;
             if (d1 == null) return 1;
             if (d2 == null) return -1;
-            return d1.compareTo(d2); // Ascending (oldest first)
+            return d1.compareTo(d2); 
         });
         tableManager.setupSortController(sortCombo);
 

@@ -1,8 +1,9 @@
 package com.example.chatroom.core.shared.controllers;
 
+import java.util.function.Consumer;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
-import java.util.function.Consumer;
 
 public class SearchBarController {
     @FXML private TextField searchField;
@@ -19,6 +20,5 @@ public class SearchBarController {
         this.onSearchListener = listener;
     }
 
-    // --- FIXED: Added Getter ---
     public TextField getSearchField() { return searchField; }
 }

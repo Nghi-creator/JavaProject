@@ -1,10 +1,20 @@
 package com.example.chatroom.user.controllers;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.LocalDate;
+
+import org.json.JSONObject;
+
 import com.example.chatroom.core.dto.UserDto;
 import com.example.chatroom.core.shared.controllers.ConfigController;
 import com.example.chatroom.core.shared.controllers.SceneSwitcher;
 import com.example.chatroom.user.ChatApp;
+import static com.example.chatroom.user.ChatApp.currentUserId;
 import com.example.chatroom.user.websocket.ChatWebSocketClient;
+
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -12,15 +22,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
-import org.json.JSONObject;
-
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.LocalDate;
-
-import static com.example.chatroom.user.ChatApp.currentUserId;
 
 public class LoginViewController {
 
@@ -91,9 +92,7 @@ public class LoginViewController {
                                                 else ChatApp.onlineUsers.remove(userId);
                                             },
                                             (json2, v) -> {
-                                                // Message received callback
                                                 System.out.println("New message received: " + json2.toString());
-                                                // You can also forward this to your ChatroomViewController if needed
                                             }
                                     );
                                     ChatApp.chatWebSocketClient.connect();

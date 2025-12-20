@@ -1,19 +1,21 @@
 package com.example.chatroom.user.controllers;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
+import org.json.JSONObject;
+
 import com.example.chatroom.core.shared.controllers.ConfigController;
 import com.example.chatroom.core.shared.controllers.SceneSwitcher;
+
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import org.json.JSONObject;
-
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 
 public class ForgotPasswordViewController {
 
@@ -38,8 +40,6 @@ public class ForgotPasswordViewController {
             return;
         }
 
-        // Reuse the server's ChangePasswordRequest format for convenience
-        // username = user, oldPassword = email, newPassword = pass
         JSONObject json = new JSONObject();
         json.put("username", user);
         json.put("oldPassword", email);
