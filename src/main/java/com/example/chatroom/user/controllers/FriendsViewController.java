@@ -224,6 +224,10 @@ public class FriendsViewController {
                 btnMessage.getStyleClass().add("friend-action-button");
                 btnMessage.setOnAction(e -> openOrCreateConversation(user));
 
+                Button btnCreateGroup = new Button("Create Group");
+                btnCreateGroup.getStyleClass().add("friend-action-button");
+                btnCreateGroup.setOnAction(e -> openCreateGroupWithUser(user));
+
                 Button btnUnfriend = new Button("Unfriend");
                 btnUnfriend.getStyleClass().add("admin-danger-button");
                 btnUnfriend.setOnAction(e ->
@@ -238,7 +242,7 @@ public class FriendsViewController {
                                 "&targetId=" + user.getId(), "POST", null)
                 );
 
-                row.getChildren().addAll(btnMessage, btnUnfriend, btnBlock);
+                row.getChildren().addAll(btnMessage, btnCreateGroup, btnUnfriend, btnBlock);
 
             } else if (actionType.equals("BLOCKED_ACTIONS")) {
                 Button btnUnblock = new Button("Unblock");
@@ -392,6 +396,18 @@ public class FriendsViewController {
         if (friendListPane.isVisible() && filterOnlineOnly) {
             applyFriendFilters();
         }
+    }
+
+    private void openCreateGroupWithUser(UserDto user) {
+        VBox sourceNode = friendListPane;
+
+        SceneSwitcher.switchScene(
+                sourceNode,
+                "/user/ui/fxml/CreateGroupView.fxml",
+                (CreateGroupViewController controller) -> {
+                    controller.preAddMember(user);
+                }
+        );
     }
 
 }

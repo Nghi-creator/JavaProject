@@ -46,6 +46,7 @@ public class ChatroomViewController {
     @FXML private TextField messageInput;
     @FXML private VBox memberListVBox;
     @FXML private MenuButton optionsButton;
+    @FXML private Text memberCount;
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
     private final HttpClient httpClient = HttpClient.newHttpClient();
@@ -213,6 +214,7 @@ public class ChatroomViewController {
             }
         });
 
+        memberCount.setText(String.format("MEMBERS (%d)", convo.getMembers().size()));
         populateMemberList(convo.getMembers());
 
         // Only load messages if no callback provided (normal case) OR force load if callback exists
@@ -614,6 +616,65 @@ public class ChatroomViewController {
                     e.printStackTrace();
                     return null;
                 });
+    }
+
+    private String getLatestMessageText() {
+        for (int i = messagesVBox.getChildren().size() - 1; i >= 0; i--) {
+            Node node = messagesVBox.getChildren().get(i);
+            if (node.getUserData() instanceof MessageDto msg) {
+                String content = msg.getContent();
+                if (content != null && !content.isBlank()) {
+                    return content;
+                }
+            }
+        }
+        return null;
+    }
+
+    @FXML
+    private void suggestMessage() {
+        String lastMessage = getLatestMessageText();
+        if (lastMessage == null || lastMessage.isBlank()) {
+            return;
+        }
+
+        String serverIp = ConfigController.getServerIp();
+
+        try {
+            String body = objectMapper.writeValueAsString(
+                    Map.of("lastMessage", lastMessage)
+            );
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("http://" + serverIp + ":8080/api/ai/suggest"))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(body))
+                    .build();
+
+            httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                    .thenApply(HttpResponse::body)
+                    .thenAccept(json -> {
+                        try {
+                            JSONObject obj = new JSONObject(json);
+                            String suggestion = obj.optString("suggestion", "");
+
+                            if (!suggestion.isBlank()) {
+                                Platform.runLater(() ->
+                                        messageInput.setText(suggestion)
+                                );
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    })
+                    .exceptionally(e -> {
+                        e.printStackTrace();
+                        return null;
+                    });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }
