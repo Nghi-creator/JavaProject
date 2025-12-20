@@ -81,6 +81,7 @@ public class FriendsViewController {
 
         btnOnlineOnly.selectedProperty().addListener((obs, oldVal, newVal) -> {
             filterOnlineOnly = newVal;
+            btnOnlineOnly.setText(newVal ? "Online" : "All");
             applyFriendFilters();
         });
 

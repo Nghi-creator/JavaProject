@@ -1,6 +1,7 @@
 package com.example.chatroom.core.shared.controllers;
 
 import com.example.chatroom.user.ChatApp;
+import com.example.chatroom.user.controllers.ChatroomViewController;
 import com.example.chatroom.user.controllers.FriendsViewController;
 import com.example.chatroom.user.websocket.ChatWebSocketClient;
 import javafx.animation.FadeTransition;
@@ -81,7 +82,12 @@ public class HeaderController {
 
     @FXML
     private void handleChatClick(ActionEvent event) {
-        SceneSwitcher.switchScene((javafx.scene.Node) event.getSource(), "/user/ui/fxml/ChatroomView.fxml");
+        SceneSwitcher.switchScene((Node) event.getSource(), "/user/ui/fxml/ChatroomView.fxml",
+                (ChatroomViewController controller) -> {
+                    controller.setCurrentUserId(ChatApp.currentUserId);
+                    controller.setWebSocketClient(ChatApp.chatWebSocketClient);
+                }
+        );
     }
 
     @FXML
